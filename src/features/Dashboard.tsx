@@ -22,7 +22,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <TotalAssetEUR />
         <TotalAssetUSD />
-        <AssetBarList className="col-span-2" />
+        <AssetBarList className="lg:col-span-2" />
       </div>
       <RiskDonut />
       <TagDonut />

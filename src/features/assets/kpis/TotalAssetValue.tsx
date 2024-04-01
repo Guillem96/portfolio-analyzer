@@ -28,14 +28,8 @@ export default function TotalAssetValue({ currency }: Props) {
     [assets, currency],
   )
 
-  const rate = assetAmount / investmentAmount
-  const changeType = rate > 1 ? "positive" : "negative"
-  let rateToRender = rate
-  if (changeType === "positive") {
-    rateToRender = (1 - rateToRender) * 100
-  } else {
-    rateToRender = (1 - rateToRender) * 100
-  }
+  const rate = (assetAmount / investmentAmount - 1) * 100
+  const changeType = rate > 0 ? "positive" : "negative"
 
   return (
     <Card>
@@ -52,8 +46,7 @@ export default function TotalAssetValue({ currency }: Props) {
             } 
             inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
-          {changeType === "negative" ? "-" : ""}
-          {rateToRender.toFixed(2)}%
+          {rate.toFixed(2)}%
         </span>
       </div>
       <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
