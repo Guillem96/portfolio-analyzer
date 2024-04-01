@@ -32,9 +32,9 @@ export default function TotalAssetValue({ currency }: Props) {
   const changeType = rate > 1 ? "positive" : "negative"
   let rateToRender = rate
   if (changeType === "positive") {
-    rateToRender = rateToRender * 100
+    rateToRender = (1 - rateToRender) * 100
   } else {
-    rateToRender = (1 - rate) * 100
+    rateToRender = (1 - rateToRender) * 100
   }
 
   return (
@@ -52,6 +52,7 @@ export default function TotalAssetValue({ currency }: Props) {
             } 
             inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
+          {changeType === "negative" ? "-" : ""}
           {rateToRender.toFixed(2)}%
         </span>
       </div>
