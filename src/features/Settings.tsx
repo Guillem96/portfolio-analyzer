@@ -32,7 +32,7 @@ export default function Settings() {
       <div className="text-tremor-content dark:text-dark-tremor-content">
         <p>
           Portfolio Analyzer uses{" "}
-          <a href="https://jsonbin.io/" target="_blank">
+          <a href="https://jsonbin.io/" target="_blank" rel="noreferrer">
             JSON Bin
           </a>{" "}
           as the database.
