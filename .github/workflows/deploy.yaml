@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: latest
       - name: Build with npm
-        run: npm run build
+        run: npm run install && npm run build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
