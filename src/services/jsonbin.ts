@@ -1,6 +1,6 @@
 import type { JSONBin, JSONBinSettings } from "@/types.d"
 
-const buildUrl = ({ binId }: JSONBinSettings) => `${import.meta.env.VITE_API_URL}/${binId}`
+const buildUrl = ({ binId }: JSONBinSettings) => `https://api.jsonbin.io/v3/b/${binId}`
 
 export const fetchAllBin = async (settings: JSONBinSettings): Promise<JSONBin> => {
   const response = await fetch(buildUrl(settings), {
