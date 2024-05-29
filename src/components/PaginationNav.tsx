@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { RiArrowLeftDoubleLine, RiArrowRightDoubleLine } from "@remixicon/react"
+import { RiArrowLeftDoubleLine, RiArrowRightDoubleLine, RiSkipLeftLine, RiSkipRightLine } from "@remixicon/react"
 import { Button } from "@tremor/react"
 
 interface Props {
@@ -22,23 +22,41 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
     pagesToShow.sort()
 
     const leading = (
-      <Button
-        key="leading-btn"
-        variant="light"
-        onClick={() => onPageNavigation(currentPage - 1)}
-        disabled={pagesToShow[0] == 1}
-        icon={RiArrowLeftDoubleLine}
-      ></Button>
+      <>
+        <Button
+          key="first-page-btn"
+          variant="light"
+          onClick={() => onPageNavigation(1)}
+          disabled={currentPage === 1}
+          icon={RiSkipLeftLine}
+        ></Button>
+        <Button
+          key="leading-btn"
+          variant="light"
+          onClick={() => onPageNavigation(currentPage - 1)}
+          disabled={pagesToShow[0] == 1}
+          icon={RiArrowLeftDoubleLine}
+        ></Button>
+      </>
     )
 
     const trailing = (
-      <Button
-        key="trailing-btn"
-        variant="light"
-        onClick={() => onPageNavigation(currentPage + 1)}
-        icon={RiArrowRightDoubleLine}
-        disabled={pagesToShow[pagesToShow.length - 1] === nPages}
-      ></Button>
+      <>
+        <Button
+          key="trailing-btn"
+          variant="light"
+          onClick={() => onPageNavigation(currentPage + 1)}
+          icon={RiArrowRightDoubleLine}
+          disabled={pagesToShow[pagesToShow.length - 1] === nPages}
+        ></Button>
+        <Button
+          key="last-page-btn"
+          variant="light"
+          onClick={() => onPageNavigation(nPages)}
+          disabled={currentPage === nPages}
+          icon={RiSkipRightLine}
+        ></Button>
+      </>
     )
 
     return [leading]

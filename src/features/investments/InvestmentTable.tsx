@@ -6,7 +6,7 @@ import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { currencyFormatter } from "@/services/utils"
 
-const MAX_ITEMS_PER_PAGE = 5
+const MAX_ITEMS_PER_PAGE = 10
 
 export default function InvestmentTable() {
   const [investments, loading, fetchInvestments, deleteInvestment] = useBoundStore((state) => [

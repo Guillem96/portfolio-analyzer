@@ -24,7 +24,7 @@ interface RowProps {
   onEdit: (asset: AssetWithId) => void
 }
 
-const MAX_ITEMS_PER_PAGE = 5
+const MAX_ITEMS_PER_PAGE = 8
 
 const extractValueAndCurrency: (text: string) => { value: number; currency: "$" | "€" } | null = (text) => {
   const pattern = /(\d+(?:\.\d+)?)([$€])/

@@ -1,31 +1,50 @@
 import AssetsCard from "@features/assets"
 import InvestmentsCard from "@features/investments"
-import InvestmentCount from "@features/investments/kpis/InvestmentCount"
-import { InvestmentEurTotalAmount, InvestmentUsdTotalAmount } from "@features/investments/kpis/InvestmentTotalAmount"
-import { TotalAssetEUR, TotalAssetUSD } from "@features/assets/kpis/TotalAssetValue"
-import { VariableFixDonut } from "@features/assets/kpis/VariableFixDonut"
-import AssetBarList from "@features/assets/kpis/AssetBarList"
-import RiskDonut from "@features/assets/kpis/RiskDonut"
-import TagDonut from "@features/assets/kpis/TagDonut"
+
+import {
+  InvestmentEurTotalAmount,
+  InvestmentUsdTotalAmount,
+  InvestmentCount,
+  InvestmentPerMonth,
+} from "@features/investments/kpis"
+import {
+  TotalAssetEUR,
+  TotalAssetUSD,
+  VariableFixDonut,
+  AssetBarList,
+  RiskDonut,
+  TagDonut,
+} from "@features/assets/kpis"
 
 export default function Dashboard() {
   return (
-    <div className="mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-2 antialiased">
-      <InvestmentsCard />
-      <AssetsCard />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-        <InvestmentCount />
-        <InvestmentEurTotalAmount />
-        <InvestmentUsdTotalAmount />
-        <VariableFixDonut className="lg:col-span-3" />
+    <div className="mx-auto p-4 antialiased flex flex-col gap-y-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+        <InvestmentsCard />
+        <div className="flex flex-col gap-2">
+          <InvestmentPerMonth />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+            <InvestmentCount />
+            <InvestmentEurTotalAmount />
+            <InvestmentUsdTotalAmount />
+          </div>
+        </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        <TotalAssetEUR />
-        <TotalAssetUSD />
-        <AssetBarList className="lg:col-span-2" />
+        <AssetsCard />
+        <div className="flex flex-col gap-2">
+          <AssetBarList />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            <TotalAssetEUR />
+            <TotalAssetUSD />
+          </div>
+        </div>
       </div>
-      <RiskDonut />
-      <TagDonut />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+        <VariableFixDonut />
+        <RiskDonut />
+        <TagDonut />
+      </div>
     </div>
   )
 }
