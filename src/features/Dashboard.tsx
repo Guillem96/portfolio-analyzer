@@ -15,6 +15,7 @@ import {
   RiskDonut,
   TagDonut,
 } from "@features/assets/kpis"
+import DividendCard from "./dividends"
 
 export default function Dashboard() {
   return (
@@ -44,6 +45,9 @@ export default function Dashboard() {
         <VariableFixDonut />
         <RiskDonut />
         <TagDonut />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+        <DividendCard />
       </div>
     </div>
   )

@@ -9,6 +9,27 @@ export interface InvestmentWithId extends Investment {
   id: string
 }
 
+export enum Country {
+  ES = "Spain",
+  FR = "France",
+  US = "US",
+  GR = "Germany",
+  UK = "United Kingdom",
+}
+
+export interface Dividend {
+  company: string
+  amount: number
+  date: number
+  country: Country
+  currency: "$" | "€"
+  preview?: boolean
+}
+
+export interface DividendWithId extends Dividend {
+  id: string
+}
+
 export enum Risk {
   LOW_RISK = "low",
   MEDIUM_RISK = "medium",
