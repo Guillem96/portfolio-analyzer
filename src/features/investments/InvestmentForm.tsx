@@ -1,4 +1,4 @@
-import { Button, DatePicker, DatePickerValue, NumberInput, Select, SelectItem } from "@tremor/react"
+import { Button, DatePicker, DatePickerValue, Select, SelectItem, TextInput } from "@tremor/react"
 import { RiMoneyEuroBoxFill } from "@remixicon/react"
 import { useState } from "react"
 import { useBoundStore } from "@/store"
@@ -6,7 +6,7 @@ import { useBoundStore } from "@/store"
 export default function InvestmentForm() {
   const [loading, addInvestment] = useBoundStore((state) => [state.investmentLoading, state.addInvestment])
   const [selectedDate, setSelectedDate] = useState<number>(Date.now())
-
+  const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>(null)
   const handleInvestmentCreation = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (loading) return
@@ -18,8 +18,12 @@ export default function InvestmentForm() {
     if (currency !== "€" && currency !== "$") return
 
     const amount = Number(data.get("amount")?.toString() ?? "")
-    if (isNaN(amount)) return
+    if (isNaN(amount)) {
+      setAmountErrorMessage("Invalid number")
+      return
+    }
 
+    setAmountErrorMessage(null)
     addInvestment({
       amount,
       currency,
@@ -35,15 +39,16 @@ export default function InvestmentForm() {
     <>
       <form onSubmit={handleInvestmentCreation}>
         <div className="flex flex-col md:flex-row justify-center gap-2">
-          <NumberInput
+          <TextInput
             name="amount"
             disabled={loading}
             icon={RiMoneyEuroBoxFill}
-            min={20}
-            defaultValue={400}
+            defaultValue={"400"}
             placeholder="Amount..."
+            error={amountErrorMessage != null}
+            errorMessage={amountErrorMessage ?? ""}
           />
-          <Select name="currency" disabled={loading} defaultValue="$">
+          <Select name="currency" disabled={loading} defaultValue="€">
             <SelectItem value="€">€</SelectItem>
             <SelectItem value="$">$</SelectItem>
           </Select>

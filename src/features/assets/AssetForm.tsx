@@ -1,4 +1,4 @@
-import { Button, NumberInput, Select, SelectItem, Switch, TextInput } from "@tremor/react"
+import { Button, Select, SelectItem, Switch, TextInput } from "@tremor/react"
 import { RiMoneyEuroBoxFill } from "@remixicon/react"
 import { useBoundStore } from "@/store"
 import { useState } from "react"
@@ -16,6 +16,7 @@ export default function AssetForm() {
   const [risk, setRisk] = useState(Risk.LOW_RISK)
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({
     name: null,
+    amount: null,
   })
 
   const handleAssetCreation = (event: React.FormEvent<HTMLFormElement>) => {
@@ -86,12 +87,12 @@ export default function AssetForm() {
             >
               Value
             </label>
-            <NumberInput
+            <TextInput
               id="asset-value"
               name="asset-value"
               disabled={loading}
               icon={RiMoneyEuroBoxFill}
-              defaultValue={400}
+              defaultValue={"400"}
               placeholder="Amount..."
               error={errorMessages.amount != null}
               errorMessage={errorMessages.amount ?? ""}
@@ -104,7 +105,7 @@ export default function AssetForm() {
             >
               Currency
             </label>
-            <Select id="asset-currency" name="asset-currency" disabled={loading} defaultValue="$">
+            <Select id="asset-currency" name="asset-currency" disabled={loading} defaultValue="€">
               <SelectItem value="€">€</SelectItem>
               <SelectItem value="$">$</SelectItem>
             </Select>

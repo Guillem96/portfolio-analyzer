@@ -51,36 +51,39 @@ export default function InvestmentTable() {
 
       {investmentsToRender.length > 0 ? (
         <>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell>Amount</TableHeaderCell>
-                <TableHeaderCell>Date</TableHeaderCell>
-                <TableHeaderCell className="text-right">Actions</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {investmentsToRender.map(({ id, amount, currency, date, preview }) => (
-                <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                  <TableCell>{currencyFormatter(amount, currency)}</TableCell>
-                  <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                  <TableCell className="flex flex-row gap-x-4 justify-end">
-                    <Button
-                      size="xs"
-                      disabled={preview}
-                      color="red"
-                      className="hover:cursor-pointer"
-                      icon={RiDeleteBin2Line}
-                      onClick={handleDeleteInvestment(id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
+          <div className="lg:max-h-[30em] lg:overflow-y-scroll mb-4">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell>Date</TableHeaderCell>
+                  <TableHeaderCell className="text-right">Actions</TableHeaderCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+
+              <TableBody>
+                {investmentsToRender.map(({ id, amount, currency, date, preview }) => (
+                  <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                    <TableCell>{currencyFormatter(amount, currency)}</TableCell>
+                    <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                    <TableCell className="flex flex-row gap-x-4 justify-end">
+                      <Button
+                        size="xs"
+                        disabled={preview}
+                        color="red"
+                        className="hover:cursor-pointer"
+                        icon={RiDeleteBin2Line}
+                        onClick={handleDeleteInvestment(id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
           <PaginationNav
             currentPage={currentPage}
             nPages={nPages}
