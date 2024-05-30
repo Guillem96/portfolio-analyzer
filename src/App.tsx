@@ -15,9 +15,11 @@ function App() {
 
   useEffect(() => {
     const $body = document.querySelector("body")
-    if (darkMode && !$body?.classList.contains("dark")) document.querySelector("body")?.classList.add("dark")
-
-    if (!darkMode && $body?.classList.contains("dark")) document.querySelector("body")?.classList.remove("dark")
+    if (!$body) return
+    if (darkMode && !$body.classList.contains("dark")) $body.classList.add("dark")
+    if (darkMode && !$body.classList.contains("bg-gray-950")) $body.classList.add("bg-gray-950")
+    if (!darkMode && $body.classList.contains("dark")) $body.classList.remove("dark")
+    if (!darkMode && $body.classList.contains("bg-gray-950")) $body.classList.remove("bg-gray-950")
   }, [darkMode])
 
   const inSettings = jsonBinAccessKey == null || jsonBinId == null || inSettingsScreen
