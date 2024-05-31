@@ -21,10 +21,10 @@ export default function AssetBarList({ className = "" }: Props) {
   )
   return (
     <Card className={className}>
-      <h3 className="text-tremor-title text-tremor-content-strong dark:text-dark-tremor-content-strong font-medium">
+      <h3 className="text-tremor-title font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
         Assets list
       </h3>
-      <p className="mt-4 text-tremor-default flex items-center justify-between text-tremor-content dark:text-dark-tremor-content">
+      <p className="mt-4 flex items-center justify-between text-tremor-default text-tremor-content dark:text-dark-tremor-content">
         <span>Source</span>
         <span>Value</span>
       </p>

@@ -63,7 +63,7 @@ export default function AssetForm() {
   return (
     <>
       <form onSubmit={handleAssetCreation}>
-        <div className="flex flex-col md:grid md:grid-cols-3 gap-x-2 gap-y-4 justify-center">
+        <div className="flex flex-col justify-center gap-x-2 gap-y-4 md:grid md:grid-cols-3">
           <div className="max-w-xs">
             <label
               htmlFor="asset-name"
@@ -129,12 +129,12 @@ export default function AssetForm() {
 
           <div className="max-w-xs">
             <label className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">Risk</label>
-            <div className="uppercase flex flex-row gap-x-4">
+            <div className="flex flex-row gap-x-4 uppercase">
               {[Risk.LOW_RISK, Risk.MEDIUM_RISK, Risk.HIGH_RISK].map((r) => (
                 <RiskBadge
                   key={r}
                   risk={r}
-                  className={(r == risk ? "scale-125 ring-4" : "") + " hover:cursor-pointer transition-all"}
+                  className={(r == risk ? "scale-125 ring-4" : "") + "transition-all hover:cursor-pointer"}
                   onClick={setRisk}
                 />
               ))}

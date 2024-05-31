@@ -27,7 +27,7 @@ function App() {
     <>
       <Controls />
       {inSettings ? (
-        <div className="grid content-center min-h-screen">
+        <div className="grid min-h-screen content-center">
           <Settings />
         </div>
       ) : (

@@ -97,7 +97,7 @@ const AssetTableRow = ({ asset, onDelete, onEdit }: RowProps) => {
         <RiskBadge risk={risk} />
       </TableCell>
       <TableCell>{tag ? <Badge size="sm">{tag}</Badge> : "-"}</TableCell>
-      <TableCell className="flex flex-row gap-x-4 justify-end">
+      <TableCell className="flex flex-row justify-end gap-x-4">
         <Button
           size="xs"
           disabled={preview}
@@ -148,7 +148,7 @@ export default function AssetTable() {
       ) : null}
 
       {assetsToRender.length === 0 && !loading ? (
-        <p className="text-center py-4 text-tremor-content dark:text-dark-tremor-content">No assets yet available</p>
+        <p className="py-4 text-center text-tremor-content dark:text-dark-tremor-content">No assets yet available</p>
       ) : null}
 
       {assetsToRender.length > 0 ? (
@@ -156,7 +156,7 @@ export default function AssetTable() {
           <small className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
             Double click the value to edit it
           </small>
-          <div className="lg:max-h-[30em] lg:overflow-y-scroll mb-4">
+          <div className="mb-4 lg:max-h-[30em] lg:overflow-y-scroll">
             <Table>
               <TableHead>
                 <TableRow>

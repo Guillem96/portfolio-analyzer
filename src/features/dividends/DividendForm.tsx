@@ -49,7 +49,7 @@ export default function DividendForm() {
   return (
     <>
       <form onSubmit={handleDividendCreation}>
-        <div className="flex flex-col md:grid md:grid-cols-3 gap-x-2 gap-y-4 justify-center">
+        <div className="flex flex-col justify-center gap-x-2 gap-y-4 md:grid md:grid-cols-3">
           <div className="max-w-xs">
             <label
               htmlFor="dividend-from"
@@ -109,7 +109,7 @@ export default function DividendForm() {
             </Select>
           </div>
 
-          <div className="max-w-xs ">
+          <div className="max-w-xs">
             <label
               htmlFor="dividend-date"
               className="text-tremor-default text-tremor-content dark:text-dark-tremor-content"

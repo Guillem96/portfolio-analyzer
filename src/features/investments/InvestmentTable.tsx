@@ -51,7 +51,7 @@ export default function InvestmentTable() {
 
       {investmentsToRender.length > 0 ? (
         <>
-          <div className="min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll mb-4">
+          <div className="mb-4 min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll">
             <Table>
               <TableHead>
                 <TableRow>
@@ -66,7 +66,7 @@ export default function InvestmentTable() {
                   <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
                     <TableCell>{currencyFormatter(amount, currency)}</TableCell>
                     <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                    <TableCell className="flex flex-row gap-x-4 justify-end">
+                    <TableCell className="flex flex-row justify-end gap-x-4">
                       <Button
                         size="xs"
                         disabled={preview}

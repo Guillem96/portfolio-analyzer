@@ -23,9 +23,9 @@ export default function Settings() {
   }
 
   return (
-    <Card className="flex flex-col justify-center items-center text-center gap-y-8 max-w-md mx-auto">
+    <Card className="mx-auto flex max-w-md flex-col items-center justify-center gap-y-8 text-center">
       <div>
-        <Icon size="xl" icon={RiDashboard3Line} className="scale-150 mb-2" />
+        <Icon size="xl" icon={RiDashboard3Line} className="mb-2 scale-150" />
         <h1 className="text-4xl tracking-tight text-slate-900 dark:text-neutral-300">Portfolio Analyzer</h1>
       </div>
 
@@ -45,7 +45,7 @@ export default function Settings() {
           You will also have to create a <strong>BIN</strong>.
         </p>
       </div>
-      <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 mx-auto">
+      <form onSubmit={handleFormSubmit} className="mx-auto flex flex-col gap-4">
         <div className="w-full">
           <label
             htmlFor="json-bin-access-key"

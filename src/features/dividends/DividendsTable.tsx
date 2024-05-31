@@ -52,7 +52,7 @@ export default function DividendTable() {
 
       {dividendsToRender.length > 0 ? (
         <>
-          <div className="lg:max-h-[30em] lg:overflow-y-scroll mb-4">
+          <div className="mb-4 lg:max-h-[30em] lg:overflow-y-scroll">
             <Table>
               <TableHead>
                 <TableRow>
@@ -72,7 +72,7 @@ export default function DividendTable() {
                     <TableCell>{COUNTRY_EMOJI[country] + " " + country}</TableCell>
                     <TableCell>{currencyFormatter(amount, currency)}</TableCell>
                     <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                    <TableCell className="flex flex-row gap-x-4 justify-end">
+                    <TableCell className="flex flex-row justify-end gap-x-4">
                       <Button
                         size="xs"
                         disabled={preview}

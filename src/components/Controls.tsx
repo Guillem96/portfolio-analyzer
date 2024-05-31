@@ -11,7 +11,7 @@ export default function Control() {
   ])
 
   return (
-    <div className="flex flex-row justify-end w-full p-4 gap-x-4">
+    <div className="flex w-full flex-row justify-end gap-x-4 p-4">
       {inSettingsScreen ? (
         <Button
           variant="light"

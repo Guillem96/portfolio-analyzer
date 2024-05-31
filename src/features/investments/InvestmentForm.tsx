@@ -38,7 +38,7 @@ export default function InvestmentForm() {
   return (
     <>
       <form onSubmit={handleInvestmentCreation}>
-        <div className="flex flex-col md:flex-row justify-center gap-2">
+        <div className="flex flex-col justify-center gap-2 md:flex-row">
           <TextInput
             name="amount"
             disabled={loading}

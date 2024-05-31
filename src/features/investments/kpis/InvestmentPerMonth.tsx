@@ -43,7 +43,7 @@ const BarChartInvestments = ({ currency }: BarChartProps) => {
 export default function InvestmentPerMonth() {
   return (
     <Card decoration="top">
-      <h3 className="text-tremor-title text-tremor-content-strong dark:text-dark-tremor-content-strong font-medium">
+      <h3 className="text-tremor-title font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
         Investments per month
       </h3>
       <TabGroup>
