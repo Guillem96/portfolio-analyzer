@@ -51,7 +51,7 @@ export default function InvestmentTable() {
 
       {investmentsToRender.length > 0 ? (
         <>
-          <div className="lg:max-h-[30em] lg:overflow-y-scroll mb-4">
+          <div className="min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll mb-4">
             <Table>
               <TableHead>
                 <TableRow>

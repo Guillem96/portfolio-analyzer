@@ -156,25 +156,26 @@ export default function AssetTable() {
           <small className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
             Double click the value to edit it
           </small>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell>Name</TableHeaderCell>
+          <div className="lg:max-h-[30em] lg:overflow-y-scroll mb-4">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Name</TableHeaderCell>
+                  <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell>Income Type</TableHeaderCell>
+                  <TableHeaderCell>Risk</TableHeaderCell>
+                  <TableHeaderCell>Tag</TableHeaderCell>
+                  <TableHeaderCell className="text-right">Actions</TableHeaderCell>
+                </TableRow>
+              </TableHead>
 
-                <TableHeaderCell>Amount</TableHeaderCell>
-                <TableHeaderCell>Income Type</TableHeaderCell>
-                <TableHeaderCell>Risk</TableHeaderCell>
-                <TableHeaderCell>Tag</TableHeaderCell>
-                <TableHeaderCell className="text-right">Actions</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {assetsToRender.map((asset) => (
-                <AssetTableRow key={asset.id} asset={asset} onDelete={deleteAsset} onEdit={editAsset} />
-              ))}
-            </TableBody>
-          </Table>
+              <TableBody>
+                {assetsToRender.map((asset) => (
+                  <AssetTableRow key={asset.id} asset={asset} onDelete={deleteAsset} onEdit={editAsset} />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           <PaginationNav
             currentPage={currentPage}
             nPages={nPages}
