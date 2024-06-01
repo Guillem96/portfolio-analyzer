@@ -4,7 +4,7 @@ import { useMemo } from "react"
 import { currencyFormatter } from "@/services/utils"
 
 const TotalCardAmount = ({ currency }: { currency: "€" | "$" }) => {
-  const investments = useBoundStore((state) => state.investments)
+  const [investments, privateMode] = useBoundStore((state) => [state.investments, state.privateMode])
   const amount = useMemo(
     () =>
       investments
@@ -20,7 +20,7 @@ const TotalCardAmount = ({ currency }: { currency: "€" | "$" }) => {
       </p>
       <div className="mt-2 flex items-baseline space-x-2.5">
         <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-          {currencyFormatter(amount, currency)}
+          {currencyFormatter(amount, currency, privateMode)}
         </p>
       </div>
     </Card>

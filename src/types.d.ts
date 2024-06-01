@@ -22,6 +22,8 @@ export interface Dividend {
   amount: number
   date: number
   country: Country
+  doubleTaxationOrigin: number
+  doubleTaxationDestination: number
   currency: "$" | "€"
   preview?: boolean
 }

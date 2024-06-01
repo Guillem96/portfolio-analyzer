@@ -10,11 +10,12 @@ import { COUNTRY_EMOJI } from "@/constants"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function DividendTable() {
-  const [investments, loading, fetchDividends, deleteDividend] = useBoundStore((state) => [
+  const [investments, loading, fetchDividends, deleteDividend, privateMode] = useBoundStore((state) => [
     state.dividends,
     state.dividendLoading,
     state.fetchDividends,
     state.deleteDividend,
+    state.privateMode,
   ])
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -58,34 +59,57 @@ export default function DividendTable() {
                 <TableRow>
                   <TableHeaderCell>Company</TableHeaderCell>
                   <TableHeaderCell>Country</TableHeaderCell>
-
                   <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell>Taxes (Orig. - Dest)</TableHeaderCell>
+                  <TableHeaderCell>Net</TableHeaderCell>
                   <TableHeaderCell>Date</TableHeaderCell>
                   <TableHeaderCell className="text-right">Actions</TableHeaderCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {dividendsToRender.map(({ id, company, amount, country, currency, date, preview }) => (
-                  <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                    <TableCell>{company}</TableCell>
-                    <TableCell>{COUNTRY_EMOJI[country] + " " + country}</TableCell>
-                    <TableCell>{currencyFormatter(amount, currency)}</TableCell>
-                    <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                    <TableCell className="flex flex-row justify-end gap-x-4">
-                      <Button
-                        size="xs"
-                        disabled={preview}
-                        color="red"
-                        className="hover:cursor-pointer"
-                        icon={RiDeleteBin2Line}
-                        onClick={handleDeleteDividend(id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {dividendsToRender.map(
+                  ({
+                    id,
+                    company,
+                    amount,
+                    doubleTaxationOrigin,
+                    doubleTaxationDestination,
+                    country,
+                    currency,
+                    date,
+                    preview,
+                  }) => (
+                    <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                      <TableCell>{company}</TableCell>
+                      <TableCell>{COUNTRY_EMOJI[country]}</TableCell>
+                      <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
+                      <TableCell>
+                        {doubleTaxationOrigin} % - {doubleTaxationDestination} %
+                      </TableCell>
+                      <TableCell>
+                        {currencyFormatter(
+                          amount * (1 - doubleTaxationOrigin / 100) * (1 - doubleTaxationDestination / 100),
+                          currency,
+                          privateMode,
+                        )}
+                      </TableCell>
+                      <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                      <TableCell className="flex flex-row justify-end gap-x-4">
+                        <Button
+                          size="xs"
+                          disabled={preview}
+                          color="red"
+                          className="hover:cursor-pointer"
+                          icon={RiDeleteBin2Line}
+                          onClick={handleDeleteDividend(id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )}
               </TableBody>
             </Table>
           </div>

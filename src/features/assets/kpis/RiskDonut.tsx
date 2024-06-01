@@ -15,16 +15,16 @@ export default function RiskDonut({ className = "" }: RiskDonutProps) {
       <div className="max-w-lg"></div>
       <TabGroup>
         <TabList variant="line" defaultValue="1">
-          <Tab value="1">USD $</Tab>
-          <Tab value="2">EUR €</Tab>
+          <Tab value="1">EUR €</Tab>
+          <Tab value="2">USD $</Tab>
         </TabList>
 
         <TabPanels>
           <TabPanel>
-            <AssetDonut by="risk" colorMapping={RISK_COLOR} currency="$" />
+            <AssetDonut by="risk" colorMapping={RISK_COLOR} currency="€" />
           </TabPanel>
           <TabPanel>
-            <AssetDonut by="risk" colorMapping={RISK_COLOR} currency="€" />
+            <AssetDonut by="risk" colorMapping={RISK_COLOR} currency="$" />
           </TabPanel>
         </TabPanels>
       </TabGroup>

@@ -15,7 +15,7 @@ import {
   RiskDonut,
   TagDonut,
 } from "@features/assets/kpis"
-import { TotalDividendEarningsEUR, TotalDividendEarningsUSD } from "@features/dividends/kpis"
+import { DividendsPerYear, TotalDividendEarningsEUR, TotalDividendEarningsUSD } from "@features/dividends/kpis"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
 
@@ -67,9 +67,12 @@ export default function Dashboard() {
           <TabPanel>
             <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
               <DividendCard />
-              <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-                <TotalDividendEarningsEUR />
-                <TotalDividendEarningsUSD />
+              <div className="flex flex-col gap-2">
+                <DividendsPerYear />
+                <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+                  <TotalDividendEarningsEUR />
+                  <TotalDividendEarningsUSD />
+                </div>
               </div>
             </div>
           </TabPanel>

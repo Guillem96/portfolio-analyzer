@@ -19,13 +19,8 @@ export const useBoundStore = create<AssetSlice & InvestmentSlice & SettingSlice 
         jsonBinAccessKey: state.jsonBinAccessKey,
         jsonBinId: state.jsonBinId,
         darkMode: state.darkMode,
+        privateMode: state.privateMode,
       }),
-      onRehydrateStorage(state) {
-        console.log(state.darkMode)
-        if (!state.darkMode) {
-          document.querySelector("body")?.classList.toggle("dark")
-        }
-      },
     },
   ),
 )

@@ -39,6 +39,7 @@ const extractValueAndCurrency: (text: string) => { value: number; currency: "$" 
 }
 
 const AssetTableRow = ({ asset, onDelete, onEdit }: RowProps) => {
+  const privateMode = useBoundStore((state) => state.privateMode)
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
 
@@ -83,7 +84,7 @@ const AssetTableRow = ({ asset, onDelete, onEdit }: RowProps) => {
             defaultValue={`${value}${currency}`}
           />
         ) : (
-          currencyFormatter(value, currency)
+          currencyFormatter(value, currency, privateMode)
         )}
       </TableCell>
       <TableCell>

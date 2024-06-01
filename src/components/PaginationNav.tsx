@@ -21,45 +21,41 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
     }
     pagesToShow.sort()
 
-    const leading = (
-      <>
-        <Button
-          key="first-page-btn"
-          variant="light"
-          onClick={() => onPageNavigation(1)}
-          disabled={currentPage === 1}
-          icon={RiSkipLeftLine}
-        ></Button>
-        <Button
-          key="leading-btn"
-          variant="light"
-          onClick={() => onPageNavigation(currentPage - 1)}
-          disabled={pagesToShow[0] == 1}
-          icon={RiArrowLeftDoubleLine}
-        ></Button>
-      </>
-    )
+    const leading = [
+      <Button
+        key="first-page-btn"
+        variant="light"
+        onClick={() => onPageNavigation(1)}
+        disabled={currentPage === 1}
+        icon={RiSkipLeftLine}
+      ></Button>,
+      <Button
+        key="leading-btn"
+        variant="light"
+        onClick={() => onPageNavigation(currentPage - 1)}
+        disabled={pagesToShow[0] == 1}
+        icon={RiArrowLeftDoubleLine}
+      ></Button>,
+    ]
 
-    const trailing = (
-      <>
-        <Button
-          key="trailing-btn"
-          variant="light"
-          onClick={() => onPageNavigation(currentPage + 1)}
-          icon={RiArrowRightDoubleLine}
-          disabled={pagesToShow[pagesToShow.length - 1] === nPages}
-        ></Button>
-        <Button
-          key="last-page-btn"
-          variant="light"
-          onClick={() => onPageNavigation(nPages)}
-          disabled={currentPage === nPages}
-          icon={RiSkipRightLine}
-        ></Button>
-      </>
-    )
+    const trailing = [
+      <Button
+        key="trailing-btn"
+        variant="light"
+        onClick={() => onPageNavigation(currentPage + 1)}
+        icon={RiArrowRightDoubleLine}
+        disabled={pagesToShow[pagesToShow.length - 1] === nPages}
+      ></Button>,
+      <Button
+        key="last-page-btn"
+        variant="light"
+        onClick={() => onPageNavigation(nPages)}
+        disabled={currentPage === nPages}
+        icon={RiSkipRightLine}
+      ></Button>,
+    ]
 
-    return [leading]
+    return leading
       .concat(
         pagesToShow.map((i) =>
           i === currentPage ? (
@@ -73,7 +69,7 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
           ),
         ),
       )
-      .concat([trailing])
+      .concat(trailing)
   }, [currentPage, nPages, maxPagesToShow, onPageNavigation])
 
   return nPages > 1 ? <div className="flex flex-row justify-center gap-x-2">{pageButtons}</div> : null

@@ -9,11 +9,12 @@ import { currencyFormatter } from "@/services/utils"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function InvestmentTable() {
-  const [investments, loading, fetchInvestments, deleteInvestment] = useBoundStore((state) => [
+  const [investments, loading, fetchInvestments, deleteInvestment, privateMode] = useBoundStore((state) => [
     state.investments,
     state.investmentLoading,
     state.fetchInvestments,
     state.deleteInvestment,
+    state.privateMode,
   ])
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -64,7 +65,7 @@ export default function InvestmentTable() {
               <TableBody>
                 {investmentsToRender.map(({ id, amount, currency, date, preview }) => (
                   <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                    <TableCell>{currencyFormatter(amount, currency)}</TableCell>
+                    <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
                     <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
                     <TableCell className="flex flex-row justify-end gap-x-4">
                       <Button

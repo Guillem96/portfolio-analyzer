@@ -14,16 +14,16 @@ export default function TagDonut({ className = "" }: TagDonutProps) {
       <div className="max-w-lg"></div>
       <TabGroup>
         <TabList variant="line" defaultValue="1">
-          <Tab value="1">USD $</Tab>
-          <Tab value="2">EUR €</Tab>
+          <Tab value="1">EUR €</Tab>
+          <Tab value="2">USD $</Tab>
         </TabList>
 
         <TabPanels>
           <TabPanel>
-            <AssetDonut by="tag" currency="$" />
+            <AssetDonut by="tag" currency="€" />
           </TabPanel>
           <TabPanel>
-            <AssetDonut by="tag" currency="€" />
+            <AssetDonut by="tag" currency="$" />
           </TabPanel>
         </TabPanels>
       </TabGroup>

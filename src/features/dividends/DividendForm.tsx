@@ -1,5 +1,5 @@
-import { Button, DatePicker, DatePickerValue, Select, SelectItem, TextInput } from "@tremor/react"
-import { RiMoneyEuroBoxFill } from "@remixicon/react"
+import { Button, DatePicker, DatePickerValue, NumberInput, Select, SelectItem, TextInput } from "@tremor/react"
+import { RiMoneyEuroBoxFill, RiPercentLine } from "@remixicon/react"
 import { useBoundStore } from "@/store"
 import { useState } from "react"
 import { Country } from "@/types.d"
@@ -32,12 +32,22 @@ export default function DividendForm() {
       return
     }
 
+    const doubleTaxationOrigin = Number(data.get("dividend-tax-origin")?.toString() ?? "")
+    const doubleTaxationDestination = Number(data.get("dividend-tax-dest")?.toString() ?? "")
+
+    if (isNaN(amount)) {
+      setAmountErrorMessage("Invalid number")
+      return
+    }
+
     setAmountErrorMessage(null)
     addDividend({
       company,
       amount,
       currency,
       country,
+      doubleTaxationOrigin,
+      doubleTaxationDestination,
       date: selectedDate,
     })
   }
@@ -81,6 +91,43 @@ export default function DividendForm() {
               placeholder="Amount..."
               error={amountErrorMessage != null}
               errorMessage={amountErrorMessage ?? ""}
+            />
+          </div>
+
+          <div className="max-w-xs">
+            <label
+              htmlFor="dividend-tax-origin"
+              className="text-tremor-default text-tremor-content dark:text-dark-tremor-content"
+            >
+              Tax Origin (%)
+            </label>
+            <NumberInput
+              id="dividend-tax-origin"
+              name="dividend-tax-origin"
+              disabled={loading}
+              icon={RiPercentLine}
+              defaultValue={15}
+              min={0}
+              max={100}
+              placeholder="%"
+            />
+          </div>
+          <div className="max-w-xs">
+            <label
+              htmlFor="dividend-tax-dest"
+              className="text-tremor-default text-tremor-content dark:text-dark-tremor-content"
+            >
+              Tax Dest (%)
+            </label>
+            <NumberInput
+              id="dividend-tax-dest"
+              name="dividend-tax-dest"
+              disabled={loading}
+              icon={RiPercentLine}
+              defaultValue={15}
+              min={0}
+              max={100}
+              placeholder="%"
             />
           </div>
           <div className="max-w-xs">

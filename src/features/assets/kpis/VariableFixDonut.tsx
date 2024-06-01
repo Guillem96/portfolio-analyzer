@@ -13,16 +13,16 @@ export const VariableFixDonut = ({ className = "" }: VariableFixDonutProps) => {
       </h1>
       <TabGroup>
         <TabList variant="line" defaultValue="1">
-          <Tab value="1">USD $</Tab>
-          <Tab value="2">EUR €</Tab>
+          <Tab value="1">EUR €</Tab>
+          <Tab value="2">USD $</Tab>
         </TabList>
 
         <TabPanels>
           <TabPanel>
-            <AssetDonut by="isFixIncome" currency="$" />
+            <AssetDonut by="isFixIncome" currency="€" />
           </TabPanel>
           <TabPanel>
-            <AssetDonut by="isFixIncome" currency="€" />
+            <AssetDonut by="isFixIncome" currency="$" />
           </TabPanel>
         </TabPanels>
       </TabGroup>

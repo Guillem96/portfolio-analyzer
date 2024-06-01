@@ -4,39 +4,43 @@ import { useMemo } from "react"
 import { RiTimeLine } from "@remixicon/react"
 import { currencyFormatter } from "@/services/utils"
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 interface BarChartProps {
   currency: "€" | "$"
 }
 
-const BarChartInvestments = ({ currency }: BarChartProps) => {
-  const [investments, investmentLoading, privateMode] = useBoundStore((state) => [
-    state.investments,
-    state.investmentLoading,
+const BarChartDividends = ({ currency }: BarChartProps) => {
+  const [dividends, dividendsLoading, privateMode] = useBoundStore((state) => [
+    state.dividends,
+    state.dividendLoading,
     state.privateMode,
   ])
 
-  const year = new Date().getFullYear()
   const data = useMemo(() => {
-    if (investmentLoading) return []
+    if (dividendsLoading) return []
 
-    const invWithDate = investments.map((inv) => {
-      return { ...inv, date: new Date(inv.date) }
-    })
-    const currInv = invWithDate
-      .filter((inv) => inv.currency === currency)
-      .filter(({ date }) => date.getFullYear() === year || date.getFullYear() - 1)
-
-    const barData = MONTHS.map((month) => ({ date: month, [year]: 0, [year - 1]: 0 }))
-
-    currInv.forEach(({ date, amount }) => {
-      barData[date.getMonth()][date.getFullYear()] += amount
+    const invWithDate = dividends.map((div) => {
+      return { ...div, date: new Date(div.date) }
     })
 
-    return barData
-  }, [investments, currency, investmentLoading])
+    const currDiv = invWithDate.filter((inv) => inv.currency === currency)
+    const years = invWithDate.map(({ date }) => date.getFullYear())
+    const startingYear = Math.min(...years)
+    const nYears = new Set(years).size
+    const data = new Array(nYears).fill(undefined).map((_, i) => {
+      return {
+        date: startingYear + i,
+        "Dividend Earnings": 0,
+      }
+    })
+    console.log({ data, years, nYears })
+    currDiv.forEach(({ date, amount }) => {
+      data[date.getFullYear() - startingYear]["Dividend Earnings"] += amount
+    })
 
-  if (investmentLoading) {
+    return data
+  }, [dividends, currency, dividendsLoading])
+
+  if (dividendsLoading) {
     return (
       <div className="flex flex-row justify-center align-middle">
         <Icon icon={RiTimeLine} />
@@ -47,18 +51,18 @@ const BarChartInvestments = ({ currency }: BarChartProps) => {
 
   return (
     <BarChart
+      colors={["emerald"]}
+      categories={["Dividend Earnings"]}
       className="mt-6"
       data={data}
       index="date"
-      categories={[(year - 1).toString(), year.toString()]}
-      colors={["gray", "blue"]}
       yAxisWidth={30}
       valueFormatter={(val) => currencyFormatter(val, currency, privateMode)}
     />
   )
 }
 
-export default function InvestmentPerMonth() {
+export default function DividendsPerYear() {
   return (
     <Card decoration="top">
       <h3 className="text-tremor-title font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
@@ -72,10 +76,10 @@ export default function InvestmentPerMonth() {
 
         <TabPanels>
           <TabPanel>
-            <BarChartInvestments currency="€" />
+            <BarChartDividends currency="€" />
           </TabPanel>
           <TabPanel>
-            <BarChartInvestments currency="$" />
+            <BarChartDividends currency="$" />
           </TabPanel>
         </TabPanels>
       </TabGroup>

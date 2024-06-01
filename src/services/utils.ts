@@ -38,7 +38,7 @@ export const showErrorToast = (message: string, onClose: () => void) => {
   })
 }
 
-export const currencyFormatter = (number: number, currency: "$" | "€"): string => {
-  if (currency === "$") return "$" + Intl.NumberFormat("us").format(number).toString()
-  return Intl.NumberFormat("eu").format(number).toString() + "€"
+export const currencyFormatter = (number: number, currency: "$" | "€", privateMode: boolean): string => {
+  if (currency === "$") return "$" + (privateMode ? "***" : Intl.NumberFormat("us").format(number).toString())
+  return (privateMode ? "***" : Intl.NumberFormat("eu").format(number).toString()) + "€"
 }

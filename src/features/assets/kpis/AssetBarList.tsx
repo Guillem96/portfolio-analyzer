@@ -9,11 +9,11 @@ interface Props {
 }
 
 export default function AssetBarList({ className = "" }: Props) {
-  const assets = useBoundStore((state) => state.assets)
+  const [assets, privateMode] = useBoundStore((state) => [state.assets, state.privateMode])
   const data = useMemo(
     () =>
       assets.map(({ name, value, currency, isFixIncome }) => ({
-        name: `${name} (${currencyFormatter(value, currency)})`,
+        name: `${name} (${currencyFormatter(value, currency, privateMode)})`,
         value: value,
         icon: () => <Icon className="mr-2" icon={isFixIncome ? RiBarChartHorizontalLine : RiLineChartLine} />,
       })),
@@ -28,7 +28,7 @@ export default function AssetBarList({ className = "" }: Props) {
         <span>Source</span>
         <span>Value</span>
       </p>
-      <BarList data={data} className="mt-2" />
+      <BarList valueFormatter={(val: number) => (privateMode ? "***" : val)} data={data} className="mt-2" />
     </Card>
   )
 }

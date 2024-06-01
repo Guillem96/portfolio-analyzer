@@ -11,10 +11,11 @@ interface Props {
   colorMapping?: Record<string, string> | null
 }
 
-const currFmt = (currency: "$" | "€") => (num: number) => currencyFormatter(num, currency)
+const currFmt = (currency: "$" | "€", privateMode: boolean) => (num: number) =>
+  currencyFormatter(num, currency, privateMode)
 
 export default function AssetDonut({ by, currency, colorMapping = null }: Props) {
-  const assets = useBoundStore((state) => state.assets)
+  const [assets, privateMode] = useBoundStore((state) => [state.assets, state.privateMode])
   const currencyAssets = useMemo(() => assets.filter((asset) => asset.currency === currency), [assets, currency])
   const uniqueBys = useMemo(() => [...new Set(currencyAssets.map((asset) => asset[by]))], [currencyAssets, by])
 
@@ -48,7 +49,7 @@ export default function AssetDonut({ by, currency, colorMapping = null }: Props)
         data={data}
         category="amount"
         index="name"
-        valueFormatter={currFmt(currency)}
+        valueFormatter={currFmt(currency, privateMode)}
         showTooltip={false}
         colors={data.map(({ color }) => color.replace(/^bg-\[?/, "").replace(/\]$/, ""))}
       />
@@ -65,7 +66,7 @@ export default function AssetDonut({ by, currency, colorMapping = null }: Props)
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-medium tabular-nums text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                {currencyFormatter(item.amount, currency)}
+                {currencyFormatter(item.amount, currency, privateMode)}
               </span>
               <span className="rounded-tremor-small bg-tremor-background-subtle px-1.5 py-0.5 text-tremor-label font-medium tabular-nums text-tremor-content-emphasis dark:bg-dark-tremor-background-subtle dark:text-dark-tremor-content-emphasis">
                 {item.share}
