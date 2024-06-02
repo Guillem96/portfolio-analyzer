@@ -147,7 +147,7 @@ export default function DividendForm() {
             <label htmlFor="country" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
               Country
             </label>
-            <Select id="country" name="country" defaultValue={Country.ES} disabled={loading} className="mt-2">
+            <Select id="country" name="country" defaultValue={Country.ES} disabled={loading}>
               {Object.entries(COUNTRY_EMOJI).map(([country, emoji]) => (
                 <SelectItem key={country} value={country}>
                   {emoji} {country}

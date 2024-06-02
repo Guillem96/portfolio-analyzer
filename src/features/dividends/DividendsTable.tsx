@@ -82,7 +82,7 @@ export default function DividendTable() {
                   }) => (
                     <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
                       <TableCell>{company}</TableCell>
-                      <TableCell>{COUNTRY_EMOJI[country]}</TableCell>
+                      <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
                       <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
                       <TableCell>
                         {doubleTaxationOrigin} % - {doubleTaxationDestination} %
