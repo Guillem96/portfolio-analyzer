@@ -41,9 +41,9 @@ export default function Control() {
       />
       <Button
         variant="light"
-        tooltip="Toggle dark mode"
+        tooltip="Toggle private mode"
         size="lg"
-        icon={privateMode ? RiEyeLine : RiEyeOffLine}
+        icon={privateMode ? RiEyeOffLine : RiEyeLine}
         onClick={togglePrivateMode}
       />
     </div>
