@@ -36,14 +36,20 @@ const BarChartInvestments = ({ currency }: BarChartProps) => {
     return barData
   }, [investments, currency, investmentLoading])
 
-  if (investmentLoading) {
+  if (investmentLoading)
     return (
       <div className="flex flex-row justify-center align-middle">
         <Icon icon={RiTimeLine} />
         <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
       </div>
     )
-  }
+
+  if (investments.length === 0)
+    return (
+      <div className="flex flex-row justify-center align-middle">
+        <p className="text-tremor-content dark:text-dark-tremor-content">No investments registered</p>
+      </div>
+    )
 
   return (
     <BarChart

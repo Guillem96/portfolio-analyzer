@@ -1,6 +1,6 @@
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
-import { RiBarChartHorizontalLine, RiLineChartLine } from "@remixicon/react"
+import { RiBarChartHorizontalLine, RiLineChartLine, RiTimeLine } from "@remixicon/react"
 import { BarList, Card, Icon } from "@tremor/react"
 import { useMemo } from "react"
 
@@ -9,15 +9,37 @@ interface Props {
 }
 
 export default function AssetBarList({ className = "" }: Props) {
-  const [assets, privateMode] = useBoundStore((state) => [state.assets, state.privateMode])
+  const [assets, privateMode, assetsLoading] = useBoundStore((state) => [
+    state.assets,
+    state.privateMode,
+    state.assetsLoading,
+  ])
+
   const data = useMemo(() => {
+    if (assetsLoading || assets.length === 0) return []
     const totalAmount = assets.map(({ value }) => value).reduce((a, b) => a + b)
     return assets.map(({ name, value, currency, isFixIncome }) => ({
       name: `${name} (${currencyFormatter(value, currency, privateMode)})`,
       value: value / totalAmount,
       icon: () => <Icon className="mr-2" icon={isFixIncome ? RiBarChartHorizontalLine : RiLineChartLine} />,
     }))
-  }, [assets])
+  }, [assets, assetsLoading])
+
+  if (assetsLoading)
+    return (
+      <div className="flex flex-row justify-center align-middle">
+        <Icon icon={RiTimeLine} />
+        <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
+      </div>
+    )
+
+  if (assets.length === 0)
+    return (
+      <div className="flex flex-row justify-center align-middle">
+        <p className="text-tremor-content dark:text-dark-tremor-content">No assets registered</p>
+      </div>
+    )
+
   return (
     <Card className={className}>
       <h3 className="text-tremor-title font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">

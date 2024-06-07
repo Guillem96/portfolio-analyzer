@@ -16,7 +16,7 @@ const BarChartDividends = ({ currency }: BarChartProps) => {
   ])
 
   const data = useMemo(() => {
-    if (dividendsLoading) return []
+    if (dividendsLoading || dividends.length === 0) return []
 
     const invWithDate = dividends.map((div) => {
       return { ...div, date: new Date(div.date) }
@@ -40,14 +40,20 @@ const BarChartDividends = ({ currency }: BarChartProps) => {
     return data
   }, [dividends, currency, dividendsLoading])
 
-  if (dividendsLoading) {
+  if (dividendsLoading)
     return (
       <div className="flex flex-row justify-center align-middle">
         <Icon icon={RiTimeLine} />
         <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
       </div>
     )
-  }
+
+  if (dividends.length === 0)
+    return (
+      <div className="flex flex-row justify-center align-middle">
+        <p className="text-tremor-content dark:text-dark-tremor-content">No dividends registered</p>
+      </div>
+    )
 
   return (
     <BarChart
