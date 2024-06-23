@@ -9,22 +9,19 @@ interface BarChartProps {
   currency: "€" | "$"
 }
 
-const BarChartInvestments = ({ currency }: BarChartProps) => {
-  const [investments, investmentLoading, privateMode] = useBoundStore((state) => [
-    state.investments,
-    state.investmentLoading,
-    state.privateMode,
-  ])
+const BarChartBuys = ({ currency }: BarChartProps) => {
+  const [buys, loading, privateMode] = useBoundStore((state) => [state.buys, state.buysLoading, state.privateMode])
 
   const year = new Date().getFullYear()
   const data = useMemo(() => {
-    if (investmentLoading) return []
+    if (loading) return []
 
-    const invWithDate = investments.map((inv) => {
+    const invWithDate = buys.map((inv) => {
       return { ...inv, date: new Date(inv.date) }
     })
     const currInv = invWithDate
       .filter((inv) => inv.currency === currency)
+      .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
       .filter(({ date }) => date.getFullYear() === year || date.getFullYear() - 1)
 
     const barData = MONTHS.map((month) => ({ date: month, [year]: 0, [year - 1]: 0 }))
@@ -34,9 +31,9 @@ const BarChartInvestments = ({ currency }: BarChartProps) => {
     })
 
     return barData
-  }, [investments, currency, investmentLoading])
+  }, [buys, currency, loading])
 
-  if (investmentLoading)
+  if (loading)
     return (
       <div className="flex flex-row justify-center align-middle">
         <Icon icon={RiTimeLine} />
@@ -44,10 +41,10 @@ const BarChartInvestments = ({ currency }: BarChartProps) => {
       </div>
     )
 
-  if (investments.length === 0)
+  if (buys.length === 0)
     return (
       <div className="flex flex-row justify-center align-middle">
-        <p className="text-tremor-content dark:text-dark-tremor-content">No investments registered</p>
+        <p className="text-tremor-content dark:text-dark-tremor-content">No buys registered</p>
       </div>
     )
 
@@ -64,11 +61,11 @@ const BarChartInvestments = ({ currency }: BarChartProps) => {
   )
 }
 
-export default function InvestmentPerMonth() {
+export default function InvestedPerMonth() {
   return (
     <Card decoration="top">
       <h3 className="text-tremor-title font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-        Investments per month
+        Investment per month
       </h3>
       <TabGroup>
         <TabList variant="line" defaultValue="1">
@@ -78,10 +75,10 @@ export default function InvestmentPerMonth() {
 
         <TabPanels>
           <TabPanel>
-            <BarChartInvestments currency="€" />
+            <BarChartBuys currency="€" />
           </TabPanel>
           <TabPanel>
-            <BarChartInvestments currency="$" />
+            <BarChartBuys currency="$" />
           </TabPanel>
         </TabPanels>
       </TabGroup>

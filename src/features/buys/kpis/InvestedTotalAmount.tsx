@@ -4,14 +4,15 @@ import { useMemo } from "react"
 import { currencyFormatter } from "@/services/utils"
 
 const TotalCardAmount = ({ currency }: { currency: "€" | "$" }) => {
-  const [investments, privateMode] = useBoundStore((state) => [state.investments, state.privateMode])
+  const [buys, privateMode] = useBoundStore((state) => [state.buys, state.privateMode])
   const amount = useMemo(
     () =>
-      investments
+      buys
         .filter((inv) => inv.currency === currency)
+        .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
         .map(({ amount }) => amount)
         .reduce((a, b) => a + b, 0),
-    [investments, currency],
+    [buys, currency],
   )
   return (
     <Card decoration="top">

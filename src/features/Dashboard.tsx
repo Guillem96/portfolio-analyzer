@@ -1,12 +1,6 @@
 import AssetsCard from "@features/assets"
-import InvestmentsCard from "@features/investments"
 import DividendCard from "@features/dividends"
-import {
-  InvestmentEurTotalAmount,
-  InvestmentUsdTotalAmount,
-  InvestmentCount,
-  InvestmentPerMonth,
-} from "@features/investments/kpis"
+import { InvestmentEurTotalAmount, InvestmentUsdTotalAmount, BuysCount, InvestedPerMonth } from "@/features/buys/kpis"
 import {
   TotalAssetEUR,
   TotalAssetUSD,
@@ -18,6 +12,7 @@ import {
 import { DividendsPerYear, TotalDividendEarningsEUR, TotalDividendEarningsUSD } from "@features/dividends/kpis"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
+import BuysCard from "@/features/buys"
 
 export default function Dashboard() {
   return (
@@ -36,18 +31,18 @@ export default function Dashboard() {
         <TabPanels>
           <TabPanel>
             <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-              <InvestmentsCard />
+              <BuysCard />
               <div className="flex flex-col gap-2">
-                <InvestmentPerMonth />
+                <InvestedPerMonth />
                 <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-                  <InvestmentCount />
+                  <BuysCount />
                   <InvestmentEurTotalAmount />
                   <InvestmentUsdTotalAmount />
                 </div>
               </div>
             </div>
           </TabPanel>
-          <TabPanel>
+          {/* <TabPanel>
             <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
               <AssetsCard />
               <div className="flex flex-col gap-2">
@@ -75,7 +70,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          </TabPanel>
+          </TabPanel> */}
         </TabPanels>
       </TabGroup>
     </div>

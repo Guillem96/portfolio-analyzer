@@ -1,11 +1,24 @@
-export interface Investment {
-  amount: number
+export interface TickerInfo {
+  price: number
+  dividendYield: number
+  currency: "EUR" | "USD" | "GBp"
+  exDividendDate: number
+  earningDates: number[]
+  sector: string
+  country: string
+}
+
+export interface Buy {
+  ticker: string
   date: number
   currency: "$" | "€"
+  amount: number
+  units: number
+  isDividendReinvestment: boolean
   preview?: boolean
 }
 
-export interface InvestmentWithId extends Investment {
+export interface BuyWithId extends Buy {
   id: string
 }
 
