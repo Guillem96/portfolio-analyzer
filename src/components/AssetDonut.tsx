@@ -2,8 +2,8 @@ import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Asset, CurrencyType } from "@/types.d"
 import { DonutChart, List, ListItem } from "@tremor/react"
-import randomColor from "randomcolor"
 import { useMemo } from "react"
+import { PASTEL_VIVID_COLORS } from "@/constants"
 
 interface Props {
   by: keyof Asset
@@ -37,7 +37,7 @@ export default function AssetDonut({ by, colorMapping = null }: Props) {
         name: name,
         amount: totalByTag,
         share: ((totalByTag / totalValue) * 100).toFixed(2) + "%",
-        color: colorMapping?.[name as string] ?? `bg-[${randomColor({ seed: index })}]`,
+        color: colorMapping?.[name as string] ?? `bg-[${PASTEL_VIVID_COLORS[index]}]`,
       }
     })
   }, [by, colorMapping, uniqueBys])

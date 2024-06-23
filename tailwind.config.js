@@ -1,5 +1,27 @@
 /** @type {import('tailwindcss').Config} */
 import colors from "tailwindcss/colors"
+const PASTEL_VIVID_COLORS = [
+  "#F08080", // Light Coral
+  "#DB7093", // Pale Violet Red
+  "#9370DB", // Medium Purple
+  "#BA55D3", // Medium Orchid
+  "#D8BFD8", // Thistle
+  "#DDA0DD", // Plum
+  "#FFB6C1", // Light Pink
+  "#FFA07A", // Light Salmon
+  "#FFDAB9", // Peach Puff
+  "#FAFAD2", // Light Goldenrod Yellow
+  "#EEE8AA", // Pale Goldenrod
+  "#90EE90", // Light Green
+  "#66CDAA", // Medium Aquamarine
+  "#7FFFD4", // Aquamarine
+  "#ADD8E6", // Light Blue
+  "#B0E0E6", // Powder Blue
+  "#87CEEB", // Sky Blue
+  "#B0C4DE", // Light Steel Blue
+  "#E6E6FA", // Lavender
+  "#FFE4E1", // Misty Rose
+]
 
 export default {
   content: [
@@ -127,19 +149,19 @@ export default {
       pattern:
         /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
     },
-    ...["[#a9d62c]", "[#8bd343]", "[#7ed65e]", "[#8cfc8a]", "[#a9fcbb]"].flatMap((customColor) => [
-      `bg-${customColor}`,
-      `border-${customColor}`,
-      `hover:bg-${customColor}`,
-      `hover:border-${customColor}`,
-      `hover:text-${customColor}`,
-      `fill-${customColor}`,
-      `ring-${customColor}`,
-      `stroke-${customColor}`,
-      `text-${customColor}`,
-      `ui-selected:bg-${customColor}`,
-      `ui-selected:border-${customColor}`,
-      `ui-selected:text-${customColor}`,
+    ...PASTEL_VIVID_COLORS.flatMap((customColor) => [
+      `bg-[${customColor}]`,
+      `border-[${customColor}]`,
+      `hover:bg-[${customColor}]`,
+      `hover:border-[${customColor}]`,
+      `hover:text-[${customColor}]`,
+      `fill-[${customColor}]`,
+      `ring-[${customColor}]`,
+      `stroke-[${customColor}]`,
+      `text-[${customColor}]`,
+      `ui-selected:bg-[${customColor}]`,
+      `ui-selected:border-[${customColor}]`,
+      `ui-selected:text-[${customColor}]`,
     ]),
   ],
   plugins: [require("@headlessui/tailwindcss"), require("@tailwindcss/forms")],
