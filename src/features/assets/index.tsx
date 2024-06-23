@@ -1,6 +1,5 @@
 import { Card } from "@tremor/react"
 import AssetTable from "./AssetTable"
-import AssetForm from "./AssetForm"
 
 export default function AssetsCard() {
   return (
@@ -9,7 +8,6 @@ export default function AssetsCard() {
       <div className="mb-8">
         <AssetTable />
       </div>
-      <AssetForm />
     </Card>
   )
 }

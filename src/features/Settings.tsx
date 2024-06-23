@@ -1,14 +1,19 @@
 import { useBoundStore } from "@/store"
+import { CurrencyType } from "@/types"
 import { RiDashboard3Line } from "@remixicon/react"
-import { Button, Card, Icon, TextInput } from "@tremor/react"
+import { Badge, Button, Card, Icon, TextInput } from "@tremor/react"
 
 export default function Settings() {
-  const [jsonBinAccessKey, jsonBinId, setJsonBin, setInSettingsScreen] = useBoundStore((state) => [
-    state.jsonBinAccessKey,
-    state.jsonBinId,
-    state.setJsonBin,
-    state.setInSettingsScreen,
-  ])
+  const [jsonBinAccessKey, jsonBinId, mainCurrency, setJsonBin, setInSettingsScreen, setMainCurrency] = useBoundStore(
+    (state) => [
+      state.jsonBinAccessKey,
+      state.jsonBinId,
+      state.mainCurrency,
+      state.setJsonBin,
+      state.setInSettingsScreen,
+      state.setMainCurrency,
+    ],
+  )
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -27,6 +32,25 @@ export default function Settings() {
       <div>
         <Icon size="xl" icon={RiDashboard3Line} className="mb-2 scale-150" />
         <h1 className="text-4xl tracking-tight text-slate-900 dark:text-neutral-300">Portfolio Analyzer</h1>
+      </div>
+
+      <div className="max-w-xs text-tremor-content dark:text-dark-tremor-content">
+        <p>
+          Portfolio Analyzer supports adding buys using different currencies, buassets are all displayed with the{" "}
+          <b>same currency</b>. Select the main currency here:
+        </p>
+        <div className="flex flex-row items-center justify-center gap-x-4">
+          {["€", "$"].map((curr) => (
+            <Badge
+              key={curr}
+              className={`${mainCurrency == curr ? "scale-125 ring-4" : ""} my-4 px-8 py-2 text-center font-bold transition-all hover:cursor-pointer`}
+              color={curr}
+              onClick={() => setMainCurrency(curr as CurrencyType)}
+            >
+              {curr}
+            </Badge>
+          ))}
+        </div>
       </div>
 
       <div className="text-tremor-content dark:text-dark-tremor-content">

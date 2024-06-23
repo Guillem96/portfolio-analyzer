@@ -1,4 +1,4 @@
-import { Risk, Country } from "@/types.d"
+import { Risk, Country, CurrencyType } from "@/types.d"
 
 export const RISK_COLOR = {
   [Risk.LOW_RISK]: "bg-green-400",
@@ -12,4 +12,22 @@ export const COUNTRY_EMOJI = {
   [Country.UK]: "🇬🇧",
   [Country.US]: "🇺🇸",
   [Country.GR]: "🇩🇪",
+}
+
+export const EXCHANGE_RATES: Record<CurrencyType, Record<CurrencyType, number>> = {
+  $: {
+    "€": 0.93,
+    $: 1,
+    "£": 0.79,
+  },
+  "€": {
+    "€": 1,
+    $: 1.07,
+    "£": 0.85,
+  },
+  "£": {
+    "€": 1.18,
+    $: 1.27,
+    "£": 1,
+  },
 }

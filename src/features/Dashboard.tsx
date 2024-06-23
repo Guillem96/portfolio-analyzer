@@ -1,14 +1,7 @@
 import AssetsCard from "@features/assets"
 import DividendCard from "@features/dividends"
 import { InvestmentEurTotalAmount, InvestmentUsdTotalAmount, BuysCount, InvestedPerMonth } from "@/features/buys/kpis"
-import {
-  TotalAssetEUR,
-  TotalAssetUSD,
-  VariableFixDonut,
-  AssetBarList,
-  RiskDonut,
-  TagDonut,
-} from "@features/assets/kpis"
+import { TotalAssetValue, AssetBarList, CountryDonut, SectorDonut, AssetsCount } from "@features/assets/kpis"
 import { DividendsPerYear, TotalDividendEarningsEUR, TotalDividendEarningsUSD } from "@features/dividends/kpis"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
@@ -42,21 +35,20 @@ export default function Dashboard() {
               </div>
             </div>
           </TabPanel>
-          {/* <TabPanel>
+          <TabPanel>
             <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
               <AssetsCard />
               <div className="flex flex-col gap-2">
                 <AssetBarList />
                 <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-                  <TotalAssetEUR />
-                  <TotalAssetUSD />
+                  <TotalAssetValue />
+                  <AssetsCount />
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
-              <VariableFixDonut />
-              <RiskDonut />
-              <TagDonut />
+              <CountryDonut />
+              <SectorDonut />
             </div>
           </TabPanel>
           <TabPanel>
@@ -70,7 +62,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          </TabPanel> */}
+          </TabPanel>
         </TabPanels>
       </TabGroup>
     </div>

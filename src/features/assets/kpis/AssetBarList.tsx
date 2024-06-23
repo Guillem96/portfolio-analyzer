@@ -1,6 +1,6 @@
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
-import { RiBarChartHorizontalLine, RiLineChartLine, RiTimeLine } from "@remixicon/react"
+import { RiLineChartLine, RiTimeLine } from "@remixicon/react"
 import { BarList, Card, Icon } from "@tremor/react"
 import { useMemo } from "react"
 
@@ -18,10 +18,10 @@ export default function AssetBarList({ className = "" }: Props) {
   const data = useMemo(() => {
     if (assetsLoading || assets.length === 0) return []
     const totalAmount = assets.map(({ value }) => value).reduce((a, b) => a + b)
-    return assets.map(({ name, value, currency, isFixIncome }) => ({
-      name: `${name} (${currencyFormatter(value, currency, privateMode)})`,
+    return assets.map(({ ticker, value, currency }) => ({
+      name: `${ticker} (${currencyFormatter(value, currency, privateMode)})`,
       value: value / totalAmount,
-      icon: () => <Icon className="mr-2" icon={isFixIncome ? RiBarChartHorizontalLine : RiLineChartLine} />,
+      icon: () => <Icon className="mr-2" icon={RiLineChartLine} />,
     }))
   }, [assets, assetsLoading])
 

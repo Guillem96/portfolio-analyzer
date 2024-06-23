@@ -1,3 +1,4 @@
+import { CurrencyType } from "@/types"
 import { toast } from "react-toastify"
 
 type ErrorWithMessage = {
@@ -38,9 +39,15 @@ export const showErrorToast = (message: string, onClose: () => void) => {
   })
 }
 
-export const currencyFormatter = (number: number, currency: "$" | "€", privateMode: boolean): string => {
-  if (privateMode) return currency === "$" ? "$***" : "***€"
+export const currencyFormatter = (number: number, currency: CurrencyType, privateMode: boolean): string => {
+  if (privateMode) {
+    if (currency === "£") return "***£"
+    if (currency === "€") return "***€"
+    return "$***"
+  }
+
   const numberOptions = { maximumFractionDigits: 2, minimumFractionDigits: 2 }
-  if (currency === "$") return "$" + Intl.NumberFormat("us", numberOptions).format(number).toString()
+  if (currency === "£") return Intl.NumberFormat("en-UK", numberOptions).format(number).toString() + "£"
+  if (currency === "$") return "$" + Intl.NumberFormat("en-US", numberOptions).format(number).toString()
   return Intl.NumberFormat("eu", numberOptions).format(number).toString() + "€"
 }

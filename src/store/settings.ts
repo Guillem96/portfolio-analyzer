@@ -1,4 +1,4 @@
-import { JSONBinSettings } from "@/types"
+import { CurrencyType, JSONBinSettings } from "@/types"
 import { StateCreator } from "zustand"
 
 interface State {
@@ -7,6 +7,7 @@ interface State {
   privateMode: boolean
   jsonBinAccessKey: string | null
   jsonBinId: string | null
+  mainCurrency: CurrencyType
 }
 
 interface Actions {
@@ -15,6 +16,7 @@ interface Actions {
   setInSettingsScreen: (em: boolean) => void
   toggleDarkMode: () => void
   togglePrivateMode: () => void
+  setMainCurrency: (mainCurrency: CurrencyType) => void
 }
 
 export type SettingSlice = State & Actions
@@ -24,10 +26,12 @@ export const createSettingsSlice: StateCreator<State, [], [], SettingSlice> = (s
   jsonBinId: null,
   inSettingsScreen: false,
   privateMode: false,
+  mainCurrency: "€",
   darkMode: document.querySelector("body")?.classList.contains("dark") ?? false,
   setJsonBin: (accessKey, jsonBinId) => {
     set({ jsonBinAccessKey: accessKey, jsonBinId })
   },
+  setMainCurrency: (mainCurrency) => set({ mainCurrency }),
   getJsonBinSettings: () => {
     const { jsonBinAccessKey, jsonBinId } = get()
     if (jsonBinAccessKey == null || jsonBinId == null) {

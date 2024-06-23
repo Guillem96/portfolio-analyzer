@@ -1,126 +1,40 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-import {
-  Badge,
-  Button,
-  Icon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-  TextInput,
-} from "@tremor/react"
-import { RiTimeLine, RiLineChartLine, RiDeleteBin2Line, RiBarChartHorizontalLine } from "@remixicon/react"
+import { useEffect, useMemo, useState } from "react"
+import { Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react"
+import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { useBoundStore } from "@/store"
-import { AssetWithId } from "@/types"
-import RiskBadge from "@/components/Risk"
+import type { Asset } from "@/types.d"
 import { currencyFormatter } from "@/services/utils"
+import { COUNTRY_EMOJI } from "@/constants"
 
 interface RowProps {
-  asset: AssetWithId
-  onDelete: (id: string) => void
-  onEdit: (asset: AssetWithId) => void
+  asset: Asset
 }
 
-const MAX_ITEMS_PER_PAGE = 6
+const MAX_ITEMS_PER_PAGE = 10
 
-const extractValueAndCurrency: (text: string) => { value: number; currency: "$" | "€" } | null = (text) => {
-  const pattern = /(\d+(?:\.\d+)?)([$€])/
-  const match = text.match(pattern)
-
-  if (match) {
-    const value = match[1]
-    const currency = match[2] as "$" | "€"
-    return { value: Number(value), currency }
-  }
-  return null
-}
-
-const AssetTableRow = ({ asset, onDelete, onEdit }: RowProps) => {
+const AssetTableRow = ({ asset }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)
-  const [editMode, setEditMode] = useState(false)
-  const [editError, setEditError] = useState<string | null>(null)
 
-  const inputRef = useRef<HTMLInputElement | null>(null)
-
-  const { preview, name, id, value, currency, risk, isFixIncome, tag } = asset
-  const handleDeleteAsset = (id: string) => () => onDelete(id)
-
-  const stopEditing = () => {
-    const newValue = inputRef.current?.value.toString()
-    if (newValue === undefined || newValue === "") {
-      setEditError("Value cannot be empty")
-      return
-    }
-
-    const extractedValue = extractValueAndCurrency(newValue)
-    if (extractedValue == null) {
-      setEditError("Invalid value expression")
-      return
-    }
-
-    setEditMode(false)
-    if (asset.value !== extractedValue.value || asset.currency !== extractedValue.currency)
-      onEdit({ ...asset, value: extractedValue.value, currency: extractedValue.currency })
-  }
-
-  useEffect(() => {
-    if (inputRef == null) return
-    inputRef.current?.focus()
-  }, [inputRef, editMode])
+  const { ticker, value, units, sector, country, currency } = asset
 
   return (
-    <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-      <TableCell>{name}</TableCell>
-      <TableCell onDoubleClick={() => setEditMode(true)}>
-        {editMode ? (
-          <TextInput
-            ref={inputRef}
-            error={editError != null}
-            errorMessage={editError ?? ""}
-            onBlur={stopEditing}
-            defaultValue={`${value}${currency}`}
-          />
-        ) : (
-          currencyFormatter(value, currency, privateMode)
-        )}
-      </TableCell>
-      <TableCell>
-        {isFixIncome ? (
-          <Badge icon={RiBarChartHorizontalLine}>Fixed</Badge>
-        ) : (
-          <Badge icon={RiLineChartLine}>Variable</Badge>
-        )}
-      </TableCell>
-      <TableCell>
-        <RiskBadge risk={risk} />
-      </TableCell>
-      <TableCell>{tag ? <Badge size="sm">{tag}</Badge> : "-"}</TableCell>
-      <TableCell className="flex flex-row justify-end gap-x-4">
-        <Button
-          size="xs"
-          disabled={preview}
-          color="red"
-          className="hover:cursor-pointer"
-          icon={RiDeleteBin2Line}
-          onClick={handleDeleteAsset(id)}
-        >
-          Delete
-        </Button>
-      </TableCell>
+    <TableRow>
+      <TableCell>{ticker}</TableCell>
+      <TableCell>{sector}</TableCell>
+      <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
+      <TableCell>{units.toFixed(3)}</TableCell>
+      <TableCell>{currencyFormatter(value, currency, privateMode)}</TableCell>
     </TableRow>
   )
 }
 
 export default function AssetTable() {
-  const [assets, loading, fetchAssets, editAsset, deleteAsset] = useBoundStore((state) => [
+  const [assets, buys, loading, fetchAssets] = useBoundStore((state) => [
     state.assets,
+    state.buys,
     state.assetsLoading,
     state.fetchAssets,
-    state.editAsset,
-    state.deleteAsset,
   ])
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -128,7 +42,7 @@ export default function AssetTable() {
 
   useEffect(() => {
     fetchAssets()
-  }, [fetchAssets])
+  }, [fetchAssets, buys])
 
   useEffect(() => {
     setNPages(Math.ceil(assets.length / MAX_ITEMS_PER_PAGE))
@@ -154,25 +68,21 @@ export default function AssetTable() {
 
       {assetsToRender.length > 0 ? (
         <>
-          <small className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
-            Double click the value to edit it
-          </small>
-          <div className="mb-4 lg:max-h-[30em] lg:overflow-y-scroll">
+          <div className="mb-4">
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableHeaderCell>Name</TableHeaderCell>
+                  <TableHeaderCell>Ticker</TableHeaderCell>
+                  <TableHeaderCell>Sector</TableHeaderCell>
+                  <TableHeaderCell>Country</TableHeaderCell>
+                  <TableHeaderCell># Shares</TableHeaderCell>
                   <TableHeaderCell>Amount</TableHeaderCell>
-                  <TableHeaderCell>Income Type</TableHeaderCell>
-                  <TableHeaderCell>Risk</TableHeaderCell>
-                  <TableHeaderCell>Tag</TableHeaderCell>
-                  <TableHeaderCell className="text-right">Actions</TableHeaderCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
                 {assetsToRender.map((asset) => (
-                  <AssetTableRow key={asset.id} asset={asset} onDelete={deleteAsset} onEdit={editAsset} />
+                  <AssetTableRow key={`${asset.ticker}-${asset.currency}`} asset={asset} />
                 ))}
               </TableBody>
             </Table>

@@ -70,7 +70,7 @@ export default function BuyTable() {
                   <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
                     <TableCell>{ticker}</TableCell>
                     <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
-                    <TableCell>{units}</TableCell>
+                    <TableCell>{units.toFixed(3)}</TableCell>
                     <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>
                     <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
                     <TableCell className="flex flex-row justify-end gap-x-4">

@@ -1,17 +1,22 @@
+type CurrencyType = "$" | "€" | "£"
+
 export interface TickerInfo {
+  ticker: string
+  name: string
   price: number
   dividendYield: number
-  currency: "EUR" | "USD" | "GBp"
+  currency: CurrencyType
   exDividendDate: number
   earningDates: number[]
   sector: string
   country: string
+  isEtf: boolean
 }
 
 export interface Buy {
   ticker: string
   date: number
-  currency: "$" | "€"
+  currency: CurrencyType
   amount: number
   units: number
   isDividendReinvestment: boolean
@@ -37,7 +42,7 @@ export interface Dividend {
   country: Country
   doubleTaxationOrigin: number
   doubleTaxationDestination: number
-  currency: "$" | "€"
+  currency: CurrencyType
   preview?: boolean
 }
 
@@ -52,25 +57,25 @@ export enum Risk {
 }
 
 export interface Asset {
-  name: string
+  ticker: string
   value: number
-  currency: "$" | "€"
-  isFixIncome: boolean
-  risk: Risk
-  tag?: string
-  preview?: boolean
-}
-
-export interface AssetWithId extends Asset {
-  id: string
+  units: number
+  country: Country
+  sector: string
+  currency: CurrencyType
 }
 
 export interface JSONBin {
   investments?: InvestmentWithId[]
-  assets?: AssetWithId[]
 }
 
 export interface JSONBinSettings {
   accessKey: string
   binId: string
+}
+
+declare global {
+  interface ObjectConstructor {
+    groupBy<T, K extends string | number | symbol>(array: T[], callback: (item: T) => K): Record<K, T[]>
+  }
 }
