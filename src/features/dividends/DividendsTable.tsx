@@ -10,20 +10,15 @@ import { COUNTRY_EMOJI } from "@/constants"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function DividendTable() {
-  const [investments, loading, fetchDividends, deleteDividend, privateMode] = useBoundStore((state) => [
+  const [investments, loading, deleteDividend, privateMode] = useBoundStore((state) => [
     state.dividends,
     state.dividendLoading,
-    state.fetchDividends,
     state.deleteDividend,
     state.privateMode,
   ])
 
   const [currentPage, setCurrentPage] = useState(1)
   const [nPages, setNPages] = useState(Math.ceil(investments.length / MAX_ITEMS_PER_PAGE))
-
-  useEffect(() => {
-    fetchDividends()
-  }, [fetchDividends])
 
   useEffect(() => {
     setNPages(Math.ceil(investments.length / MAX_ITEMS_PER_PAGE))

@@ -1,12 +1,10 @@
-import { EXCHANGE_RATES } from "@/constants"
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Card } from "@tremor/react"
 import { useMemo, useState } from "react"
 
 export default function TotalAssetValue() {
-  const [buys, assets, privateMode, mainCurrency] = useBoundStore((state) => [
-    state.buys,
+  const [assets, privateMode, mainCurrency] = useBoundStore((state) => [
     state.assets,
     state.privateMode,
     state.mainCurrency,
@@ -14,16 +12,11 @@ export default function TotalAssetValue() {
   const [showAbsolute, setShowAbsolute] = useState(false)
 
   const investmentAmount = useMemo(
-    () =>
-      buys
-        .filter((inv) => !inv.isDividendReinvestment)
-        .map(({ amount, currency }) => amount * EXCHANGE_RATES[currency][mainCurrency])
-        .reduce((a, b) => a + b, 0),
-    [buys, mainCurrency],
+    () => assets.map(({ buyValue }) => buyValue).reduce((a, b) => a + b, 0),
+    [assets, mainCurrency],
   )
 
   const assetAmount = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets, mainCurrency])
-
   const rate = (assetAmount / investmentAmount - 1) * 100
   const absolute = assetAmount - investmentAmount
   const changeType = rate > 0 ? "positive" : "negative"

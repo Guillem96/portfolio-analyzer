@@ -20,31 +20,6 @@ export type DividendSlice = State & Actions
 
 export const createDividendSlice: StateCreator<State & SettingSlice, [], [], DividendSlice> = (set, get) => ({
   dividends: [],
-  //   {
-  //     amount: 1000,
-  //     currency: "$",
-  //     date: 1711523689429,
-  //     id: "8e868b82-e2c7-46e2-b677-644cd2ce0ba2",
-  //   },
-  //   {
-  //     amount: 1000,
-  //     currency: "$",
-  //     date: 1711523689429,
-  //     id: "47eda030-4d27-425a-a79e-8fa6d89bf58f",
-  //   },
-  //   {
-  //     amount: 1000,
-  //     currency: "$",
-  //     date: 1711523689429,
-  //     id: "9d96f2a6-ef3b-4473-bac5-6d42150006e5",
-  //   },
-  //   {
-  //     amount: 400,
-  //     currency: "€",
-  //     date: 1709593200000,
-  //     id: "3a23da9c-137c-42c2-b685-4e03675fefb3",
-  //   },
-  // ],
   dividendLoading: false,
   dividendError: null,
   fetchDividends: async () => {

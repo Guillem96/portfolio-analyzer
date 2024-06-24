@@ -32,7 +32,6 @@ const BarChartDividends = ({ currency }: BarChartProps) => {
         "Dividend Earnings": 0,
       }
     })
-    console.log({ data, years, nYears })
     currDiv.forEach(({ date, amount }) => {
       data[date.getFullYear() - startingYear]["Dividend Earnings"] += amount
     })

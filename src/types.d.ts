@@ -1,15 +1,30 @@
 type CurrencyType = "$" | "€" | "£"
 
+export enum Country {
+  ES = "Spain",
+  FR = "France",
+  US = "US",
+  GR = "Germany",
+  UK = "United Kingdom",
+}
+
+export enum Risk {
+  LOW_RISK = "low",
+  MEDIUM_RISK = "medium",
+  HIGH_RISK = "high",
+}
+
 export interface TickerInfo {
   ticker: string
   name: string
   price: number
-  dividendYield: number
+  yearlyDividendYield: number | null
+  nextDividendYield: number
   currency: CurrencyType
-  exDividendDate: number
-  earningDates: number[]
+  exDividendDate: Date
+  earningDates: Date[]
   sector: string
-  country: string
+  country: Country
   isEtf: boolean
 }
 
@@ -27,14 +42,6 @@ export interface BuyWithId extends Buy {
   id: string
 }
 
-export enum Country {
-  ES = "Spain",
-  FR = "France",
-  US = "US",
-  GR = "Germany",
-  UK = "United Kingdom",
-}
-
 export interface Dividend {
   company: string
   amount: number
@@ -50,14 +57,10 @@ export interface DividendWithId extends Dividend {
   id: string
 }
 
-export enum Risk {
-  LOW_RISK = "low",
-  MEDIUM_RISK = "medium",
-  HIGH_RISK = "high",
-}
-
 export interface Asset {
+  name: stirng
   ticker: string
+  buyValue: number
   value: number
   units: number
   country: Country

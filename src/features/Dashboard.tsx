@@ -1,8 +1,20 @@
 import AssetsCard from "@features/assets"
 import DividendCard from "@features/dividends"
 import { InvestmentEurTotalAmount, InvestmentUsdTotalAmount, BuysCount, InvestedPerMonth } from "@/features/buys/kpis"
-import { TotalAssetValue, AssetBarList, CountryDonut, SectorDonut, AssetsCount } from "@features/assets/kpis"
-import { DividendsPerYear, TotalDividendEarningsEUR, TotalDividendEarningsUSD } from "@features/dividends/kpis"
+import {
+  TotalAssetValue,
+  AssetBarList,
+  CountryDonut,
+  SectorDonut,
+  AssetsCount,
+  UpcomingEarningCalls,
+} from "@features/assets/kpis"
+import {
+  DividendsPerYear,
+  TotalDividendEarningsEUR,
+  TotalDividendEarningsUSD,
+  UpcomingDividends,
+} from "@features/dividends/kpis"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
 import BuysCard from "@/features/buys"
@@ -49,6 +61,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
               <CountryDonut />
               <SectorDonut />
+              <UpcomingEarningCalls />
             </div>
           </TabPanel>
           <TabPanel>
@@ -61,6 +74,7 @@ export default function Dashboard() {
                   <TotalDividendEarningsUSD />
                 </div>
               </div>
+              <UpcomingDividends />
             </div>
           </TabPanel>
         </TabPanels>

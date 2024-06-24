@@ -9,20 +9,15 @@ import { currencyFormatter } from "@/services/utils"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function BuyTable() {
-  const [buys, loading, fetchBuys, deleteBuy, privateMode] = useBoundStore((state) => [
+  const [buys, loading, deleteBuy, privateMode] = useBoundStore((state) => [
     state.buys,
     state.buysLoading,
-    state.fetchBuys,
     state.deleteBuy,
     state.privateMode,
   ])
 
   const [currentPage, setCurrentPage] = useState(1)
   const [nPages, setNPages] = useState(Math.ceil(buys.length / MAX_ITEMS_PER_PAGE))
-
-  useEffect(() => {
-    fetchBuys()
-  }, [fetchBuys])
 
   useEffect(() => {
     setNPages(Math.ceil(buys.length / MAX_ITEMS_PER_PAGE))

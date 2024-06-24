@@ -10,17 +10,40 @@ import { COUNTRY_EMOJI } from "@/constants"
 interface RowProps {
   asset: Asset
 }
+type SortKeys = "gain" | "name" | "country" | "num-shares" | "sector" | "amount"
 
 const MAX_ITEMS_PER_PAGE = 10
 
 const AssetTableRow = ({ asset }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)
+  const mainCurrency = useBoundStore((state) => state.mainCurrency)
 
-  const { ticker, value, units, sector, country, currency } = asset
+  const [showAbsolute, setShowAbsolute] = useState(false)
+
+  const { name, ticker, value, buyValue, units, sector, country, currency } = asset
+  const rate = (value / buyValue - 1) * 100
+  const absolute = value - buyValue
+  const changeType = rate > 0 ? "positive" : "negative"
 
   return (
     <TableRow>
-      <TableCell>{ticker}</TableCell>
+      <TableCell>
+        <div className="flex items-center space-x-2.5">
+          <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">{ticker}</p>
+          <span className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">{name}</span>
+        </div>
+      </TableCell>
+      <TableCell onClick={() => setShowAbsolute(!showAbsolute)}>
+        <span
+          className={` ${
+            changeType === "positive"
+              ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
+              : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
+          } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+        >
+          {showAbsolute ? currencyFormatter(absolute, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
+        </span>
+      </TableCell>
       <TableCell>{sector}</TableCell>
       <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
       <TableCell>{units.toFixed(3)}</TableCell>
@@ -30,19 +53,31 @@ const AssetTableRow = ({ asset }: RowProps) => {
 }
 
 export default function AssetTable() {
-  const [assets, buys, loading, fetchAssets] = useBoundStore((state) => [
-    state.assets,
-    state.buys,
-    state.assetsLoading,
-    state.fetchAssets,
-  ])
+  const [assets, loading] = useBoundStore((state) => [state.assets, state.assetsLoading])
 
   const [currentPage, setCurrentPage] = useState(1)
   const [nPages, setNPages] = useState(Math.ceil(assets.length / MAX_ITEMS_PER_PAGE))
+  const [sortBy, setSortBy] = useState<SortKeys>("name")
+  const [sortAsc, setSortAsc] = useState(false)
 
-  useEffect(() => {
-    fetchAssets()
-  }, [fetchAssets, buys])
+  const sortFunction = (a: Asset, b: Asset) => {
+    if (sortAsc) {
+      const tmp = b
+      b = a
+      a = tmp
+    }
+
+    if (sortBy === "gain") return b.value / b.buyValue - a.value / a.buyValue
+    if (sortBy === "amount") return b.value - a.value
+    if (sortBy === "num-shares") return b.units - a.units
+    if (sortBy === "country" || sortBy === "name" || sortBy === "sector") return a[sortBy].localeCompare(b[sortBy])
+    return a.ticker.localeCompare(b.ticker)
+  }
+
+  const onClickSortHandler = (sb: SortKeys) => () => {
+    setSortBy(sb)
+    setSortAsc(!sortAsc)
+  }
 
   useEffect(() => {
     setNPages(Math.ceil(assets.length / MAX_ITEMS_PER_PAGE))
@@ -50,8 +85,8 @@ export default function AssetTable() {
 
   const assetsToRender = useMemo(() => {
     const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
-    return assets.slice(start, start + MAX_ITEMS_PER_PAGE)
-  }, [assets, currentPage])
+    return assets.sort(sortFunction).slice(start, start + MAX_ITEMS_PER_PAGE)
+  }, [assets, sortBy, sortAsc, currentPage])
 
   return (
     <>
@@ -72,11 +107,12 @@ export default function AssetTable() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableHeaderCell>Ticker</TableHeaderCell>
-                  <TableHeaderCell>Sector</TableHeaderCell>
-                  <TableHeaderCell>Country</TableHeaderCell>
-                  <TableHeaderCell># Shares</TableHeaderCell>
-                  <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("name")}>Name</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("gain")}>Gain</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("sector")}>Sector</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("country")}>Country</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
                 </TableRow>
               </TableHead>
 
