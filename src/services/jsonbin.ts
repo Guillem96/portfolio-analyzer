@@ -35,7 +35,7 @@ export const fetchList = async <T>(listName: string, settings: JSONBinSettings):
   }
 
   const json = await response.json()
-  return json?.record[0] as T[]
+  return (json?.record[0] || []) as T[]
 }
 
 export const updateList = async (listName: string, elements: unknown[], settings: JSONBinSettings) => {
