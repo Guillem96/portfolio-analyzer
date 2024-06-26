@@ -22,7 +22,7 @@ export default function ExpectedDividendsEarningsNextYear() {
     () =>
       Object.values(tickerToInfo)
         .map(({ ticker, yearlyDividendYield }) => tickerToAssetValue[ticker] * (yearlyDividendYield || 0))
-        .reduce((a, b) => a + b),
+        .reduce((a, b) => a + b, 0),
     [tickerToAssetValue],
   )
 
