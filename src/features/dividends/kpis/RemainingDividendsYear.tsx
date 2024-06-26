@@ -25,7 +25,7 @@ export default function RemainingDividendsYear() {
         }))
         .filter(({ exDividendDate }) => exDividendDate >= new Date())
         .map(({ expectedAmount }) => expectedAmount)
-        .reduce((a, b) => a + b),
+        .reduce((a, b) => a + b, 0),
     [tickerToAssetValue],
   )
 

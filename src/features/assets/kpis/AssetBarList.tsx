@@ -12,7 +12,7 @@ export default function AssetBarList({ className = "" }: Props) {
 
   const data = useMemo(() => {
     if (assetsLoading || assets.length === 0) return []
-    const totalAmount = assets.map(({ value }) => value).reduce((a, b) => a + b)
+    const totalAmount = assets.map(({ value }) => value).reduce((a, b) => a + b, 0)
     return assets.map(({ name, ticker, value }) => ({
       name: `${name} (${ticker})`,
       value: value / totalAmount,

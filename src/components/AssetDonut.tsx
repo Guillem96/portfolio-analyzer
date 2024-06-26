@@ -40,7 +40,7 @@ export default function AssetDonut({ by, colorMapping = null }: Props) {
         color: colorMapping?.[name as string] ?? `bg-[${PASTEL_VIVID_COLORS[index]}]`,
       }
     })
-  }, [by, colorMapping, uniqueBys])
+  }, [assets, by, colorMapping, uniqueBys])
 
   return (
     <>

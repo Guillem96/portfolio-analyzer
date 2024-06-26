@@ -11,7 +11,7 @@ export default function ExpectedDividendsEarningsNextYear() {
     state.privateMode,
   ])
 
-  const totalInvested = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b), [assets])
+  const totalInvested = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])
 
   const tickerToAssetValue = useMemo(
     () => Object.fromEntries(assets.map(({ ticker, value }) => [ticker, value])),
