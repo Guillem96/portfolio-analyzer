@@ -11,6 +11,8 @@ import {
 } from "@features/assets/kpis"
 import {
   DividendsPerYear,
+  ExpectedDividendsEarningsNextYear,
+  RemainingDividendsYear,
   TotalDividendEarningsEUR,
   TotalDividendEarningsUSD,
   UpcomingDividends,
@@ -72,6 +74,8 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
                   <TotalDividendEarningsEUR />
                   <TotalDividendEarningsUSD />
+                  <RemainingDividendsYear />
+                  <ExpectedDividendsEarningsNextYear />
                 </div>
               </div>
               <UpcomingDividends />

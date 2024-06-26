@@ -13,7 +13,7 @@ interface State {
 }
 
 interface Actions {
-  fetchAssets: () => Promise<void>
+  fetchAssets: () => void
 }
 
 export type AssetSlice = State & Actions
@@ -23,7 +23,7 @@ export const createAssetsSlice: StateCreator<State & RequestedSlices, [], [], As
   assets: [],
   assetsLoading: false,
   assetsError: null,
-  fetchAssets: async () => {
+  fetchAssets: () => {
     const { buys, mainCurrency, tickerToInfo } = get()
     set({ assetsLoading: true })
     const groupedBuys = Object.groupBy(buys, ({ ticker }) => ticker)

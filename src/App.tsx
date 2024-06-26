@@ -28,12 +28,10 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       await fetchBuys()
-      await fetchTickers()
-      await fetchAssets()
       await fetchDividends()
     }
     fetchData().then(() => setAppLoading(false))
-  }, [])
+  }, [jsonBinAccessKey, jsonBinId])
 
   useEffect(() => {
     fetchTickers().then(fetchAssets)
