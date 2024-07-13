@@ -12,6 +12,8 @@ import {
 import {
   DividendsPerYear,
   ExpectedDividendsEarningsNextYear,
+  PctDividendsOverAssetValue,
+  PctDividendsOverBuys,
   RemainingDividendsYear,
   TotalDividendEarningsEUR,
   TotalDividendEarningsUSD,
@@ -20,6 +22,58 @@ import {
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
 import BuysCard from "@/features/buys"
+
+const DividendsTab = () => (
+  <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <DividendCard />
+    <div className="flex flex-col gap-2">
+      <DividendsPerYear />
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+        <TotalDividendEarningsEUR />
+        <TotalDividendEarningsUSD />
+        <RemainingDividendsYear />
+        <ExpectedDividendsEarningsNextYear />
+        <PctDividendsOverAssetValue />
+        <PctDividendsOverBuys />
+      </div>
+    </div>
+    <UpcomingDividends />
+  </div>
+)
+
+const AssetsTab = () => (
+  <>
+    <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+      <AssetsCard />
+      <div className="flex flex-col gap-2">
+        <AssetBarList />
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+          <TotalAssetValue />
+          <AssetsCount />
+        </div>
+      </div>
+    </div>
+    <div className="grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
+      <CountryDonut />
+      <SectorDonut />
+      <UpcomingEarningCalls />
+    </div>
+  </>
+)
+
+const BuysTab = () => (
+  <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <BuysCard />
+    <div className="flex flex-col gap-2">
+      <InvestedPerMonth />
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
+        <BuysCount />
+        <InvestmentEurTotalAmount />
+        <InvestmentUsdTotalAmount />
+      </div>
+    </div>
+  </div>
+)
 
 export default function Dashboard() {
   return (
@@ -37,49 +91,13 @@ export default function Dashboard() {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-              <BuysCard />
-              <div className="flex flex-col gap-2">
-                <InvestedPerMonth />
-                <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-                  <BuysCount />
-                  <InvestmentEurTotalAmount />
-                  <InvestmentUsdTotalAmount />
-                </div>
-              </div>
-            </div>
+            <BuysTab />
           </TabPanel>
           <TabPanel>
-            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-              <AssetsCard />
-              <div className="flex flex-col gap-2">
-                <AssetBarList />
-                <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-                  <TotalAssetValue />
-                  <AssetsCount />
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
-              <CountryDonut />
-              <SectorDonut />
-              <UpcomingEarningCalls />
-            </div>
+            <AssetsTab />
           </TabPanel>
           <TabPanel>
-            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-              <DividendCard />
-              <div className="flex flex-col gap-2">
-                <DividendsPerYear />
-                <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-                  <TotalDividendEarningsEUR />
-                  <TotalDividendEarningsUSD />
-                  <RemainingDividendsYear />
-                  <ExpectedDividendsEarningsNextYear />
-                </div>
-              </div>
-              <UpcomingDividends />
-            </div>
+            <DividendsTab />
           </TabPanel>
         </TabPanels>
       </TabGroup>
