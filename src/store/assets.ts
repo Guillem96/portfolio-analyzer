@@ -3,7 +3,6 @@ import type { Asset } from "@/types.d"
 
 import { SettingSlice } from "./settings"
 import { BuySlice } from "./buys"
-import { EXCHANGE_RATES } from "@/constants"
 import { TickerSlice } from "./tickers"
 
 interface State {
@@ -24,14 +23,14 @@ export const createAssetsSlice: StateCreator<State & RequestedSlices, [], [], As
   assetsLoading: false,
   assetsError: null,
   fetchAssets: () => {
-    const { buys, mainCurrency, tickerToInfo } = get()
+    const { buys, mainCurrency, tickerToInfo, exchangeRates } = get()
     set({ assetsLoading: true })
     const groupedBuys = Object.groupBy(buys, ({ ticker }) => ticker)
     const assets = Object.entries(groupedBuys).map(([ticker, buys]) => {
       const units = buys.map(({ units }) => units).reduce((a, b) => a + b, 0)
       const buyValue = buys
         .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
-        .map(({ amount, currency: buyCurr }) => amount * EXCHANGE_RATES[buyCurr][mainCurrency])
+        .map(({ amount, currency: buyCurr }) => amount * exchangeRates[buyCurr][mainCurrency])
         .reduce((a, b) => a + b, 0)
       const { price, currency: fromCurrency, country, sector } = tickerToInfo[ticker]
       const value = units * price
@@ -40,7 +39,7 @@ export const createAssetsSlice: StateCreator<State & RequestedSlices, [], [], As
         name: tickerToInfo[ticker].name,
         ticker,
         units,
-        value: value * EXCHANGE_RATES[fromCurrency][mainCurrency],
+        value: value * exchangeRates[fromCurrency][mainCurrency],
         currency: mainCurrency,
         country,
         sector,

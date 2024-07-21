@@ -14,7 +14,7 @@ export const COUNTRY_EMOJI = {
   [Country.GR]: "🇩🇪",
 }
 
-export const EXCHANGE_RATES: Record<CurrencyType, Record<CurrencyType, number>> = {
+export const DEFAULT_EXCHANGE_RATES: Record<CurrencyType, Record<CurrencyType, number>> = {
   $: {
     "€": 0.93,
     $: 1,

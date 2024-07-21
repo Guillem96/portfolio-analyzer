@@ -17,10 +17,11 @@ function App() {
     state.darkMode,
   ])
 
-  const [buys, fetchAssets, fetchBuys, fetchTickers, fetchDividends] = useBoundStore((state) => [
+  const [buys, fetchAssets, fetchBuys, fetchExhangeRates, fetchTickers, fetchDividends] = useBoundStore((state) => [
     state.buys,
     state.fetchAssets,
     state.fetchBuys,
+    state.fetchExhangeRates,
     state.fetchTickers,
     state.fetchDividends,
   ])
@@ -29,6 +30,7 @@ function App() {
     if (jsonBinAccessKey == null || jsonBinId == null) return
     setAppLoading(true)
     const fetchData = async () => {
+      await fetchExhangeRates()
       await fetchBuys()
       await fetchDividends()
     }
