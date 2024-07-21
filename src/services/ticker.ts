@@ -32,6 +32,7 @@ export const fetchTicker = async (ticker: string): Promise<TickerInfo | null> =>
     exDividendDate: new Date(Date.parse(json.ex_dividend_date)),
     earningDates: json.earning_dates.map(Date.parse).map((d: number) => new Date(d)),
     sector: json.sector,
+    website: json.website,
     country,
   }
 }

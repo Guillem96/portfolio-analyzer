@@ -26,15 +26,24 @@ function App() {
   ])
 
   useEffect(() => {
+    if (jsonBinAccessKey == null || jsonBinId == null) return
+    setAppLoading(true)
     const fetchData = async () => {
       await fetchBuys()
       await fetchDividends()
     }
-    fetchData().then(() => setAppLoading(false))
+
+    fetchData().catch((error) => {
+      setAppLoading(false)
+      console.error(error)
+    })
   }, [jsonBinAccessKey, jsonBinId])
 
   useEffect(() => {
-    fetchTickers().then(fetchAssets)
+    setAppLoading(false)
+    fetchTickers()
+      .then(fetchAssets)
+      .finally(() => setAppLoading(false))
   }, [buys])
 
   useEffect(() => {

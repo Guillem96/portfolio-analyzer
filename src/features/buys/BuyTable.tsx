@@ -4,14 +4,15 @@ import { Button, Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, 
 import { RiDeleteBin2Line } from "@remixicon/react"
 import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
-import { currencyFormatter } from "@/services/utils"
+import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function BuyTable() {
-  const [buys, loading, deleteBuy, privateMode] = useBoundStore((state) => [
+  const [buys, loading, tickerToInfo, deleteBuy, privateMode] = useBoundStore((state) => [
     state.buys,
     state.buysLoading,
+    state.tickerToInfo,
     state.deleteBuy,
     state.privateMode,
   ])
@@ -34,7 +35,7 @@ export default function BuyTable() {
 
   return (
     <>
-      {buysToRender.length === 0 && loading ? (
+      {(buysToRender.length === 0 && loading) || Object.keys(tickerToInfo).length === 0 ? (
         <div className="flex flex-row justify-center align-middle">
           <Icon icon={RiTimeLine} />
           <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
@@ -45,7 +46,7 @@ export default function BuyTable() {
         <p className="text-tremor-content dark:text-dark-tremor-content">No buys yet available</p>
       ) : null}
 
-      {buysToRender.length > 0 ? (
+      {buysToRender.length > 0 && Object.keys(tickerToInfo).length > 0 ? (
         <>
           <div className="mb-4 min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll">
             <Table>
@@ -63,7 +64,16 @@ export default function BuyTable() {
               <TableBody>
                 {buysToRender.map(({ id, ticker, amount, units, currency, date, isDividendReinvestment, preview }) => (
                   <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                    <TableCell>{ticker}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-row items-center gap-x-2 align-middle">
+                        <img
+                          className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+                          src={getWebsiteLogo(tickerToInfo[ticker].website)}
+                          alt={`${ticker} company logo`}
+                        />
+                        <p>{ticker}</p>
+                      </div>
+                    </TableCell>
                     <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
                     <TableCell>{units.toFixed(3)}</TableCell>
                     <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>

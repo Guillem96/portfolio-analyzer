@@ -24,6 +24,7 @@ export interface TickerInfo {
   exDividendDate: Date
   earningDates: Date[]
   sector: string
+  website: string
   country: Country
   isEtf: boolean
 }

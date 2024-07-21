@@ -51,3 +51,14 @@ export const currencyFormatter = (number: number, currency: CurrencyType, privat
   if (currency === "$") return "$" + Intl.NumberFormat("en-US", numberOptions).format(number).toString()
   return Intl.NumberFormat("eu", numberOptions).format(number).toString() + "€"
 }
+
+export const getWebsiteLogo = (website: string | null) => {
+  if (website == null) return "https://img.logo.dev/img.logo.dev/?token=pk_IwxdehLNSrC8oUQwnLTYjw"
+
+  const noSchemaWebsite = website.replace("https://", "")
+  const slashIdx = noSchemaWebsite.indexOf("/")
+  if (slashIdx === -1) return `https://img.logo.dev/${noSchemaWebsite}?token=pk_IwxdehLNSrC8oUQwnLTYjw`
+
+  const noPathWebsite = noSchemaWebsite.substring(0, noSchemaWebsite.indexOf("/") + 1)
+  return `https://img.logo.dev/${noPathWebsite}?token=pk_IwxdehLNSrC8oUQwnLTYjw`
+}

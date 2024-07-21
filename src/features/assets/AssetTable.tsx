@@ -4,7 +4,7 @@ import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { useBoundStore } from "@/store"
 import type { Asset } from "@/types.d"
-import { currencyFormatter } from "@/services/utils"
+import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
 
 interface RowProps {
@@ -17,6 +17,7 @@ const MAX_ITEMS_PER_PAGE = 10
 const AssetTableRow = ({ asset }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)
   const mainCurrency = useBoundStore((state) => state.mainCurrency)
+  const tickerToInfo = useBoundStore((state) => state.tickerToInfo)
 
   const [showAbsolute, setShowAbsolute] = useState(false)
 
@@ -29,6 +30,14 @@ const AssetTableRow = ({ asset }: RowProps) => {
     <TableRow>
       <TableCell>
         <div className="flex items-center space-x-2.5">
+          {Object.keys(tickerToInfo).length > 0 && (
+            <img
+              className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+              src={getWebsiteLogo(tickerToInfo[ticker].website)}
+              alt={`${ticker} company logo`}
+            />
+          )}
+          <p>{ticker}</p>
           <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">{ticker}</p>
           <span className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">{name}</span>
         </div>
