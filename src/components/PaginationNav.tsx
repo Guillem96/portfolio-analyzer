@@ -13,6 +13,10 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
   const pageButtons = useMemo(() => {
     if (nPages <= 1) return []
 
+    if (currentPage < 0) {
+      currentPage = nPages + currentPage + 1
+    }
+
     const pagesToShow = [currentPage]
     for (let left = 1; left < maxPagesToShow && pagesToShow.length < maxPagesToShow; left++) {
       if (currentPage - left > 0) pagesToShow.push(currentPage - left)

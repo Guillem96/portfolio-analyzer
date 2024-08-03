@@ -17,7 +17,7 @@ export default function DividendTable() {
     state.privateMode,
   ])
 
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(-1)
   const [nPages, setNPages] = useState(Math.ceil(investments.length / MAX_ITEMS_PER_PAGE))
 
   useEffect(() => {

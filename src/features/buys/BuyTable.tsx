@@ -17,7 +17,7 @@ export default function BuyTable() {
     state.privateMode,
   ])
 
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(-1)
   const [nPages, setNPages] = useState(Math.ceil(buys.length / MAX_ITEMS_PER_PAGE))
 
   useEffect(() => {
