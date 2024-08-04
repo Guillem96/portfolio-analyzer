@@ -1,5 +1,5 @@
 import { Card } from "@tremor/react"
-import { ReactNode } from "react"
+import { ReactNode, useEffect } from "react"
 
 interface ModalProps {
   show: boolean
@@ -8,6 +8,11 @@ interface ModalProps {
 }
 
 const Modal = ({ show, handleClose, children }: ModalProps) => {
+  useEffect(() => {
+    if (show) document.body.style.overflow = "hidden"
+    else document.body.style.overflow = "auto"
+  }, [show])
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-75 p-8 ${show ? "" : "hidden"}`}

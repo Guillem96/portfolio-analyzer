@@ -3,7 +3,7 @@ import { COUNTRY_EMOJI } from "@/constants"
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Country, type CurrencyType, type Dividend } from "@/types.d"
-import { RiSaveLine } from "@remixicon/react"
+import { RiFileChart2Line, RiSaveLine } from "@remixicon/react"
 import { Button, Select, SelectItem } from "@tremor/react"
 import { useMemo, useState } from "react"
 import { usePDF } from "react-to-pdf"
@@ -97,7 +97,7 @@ export default function DividendsTaxReport() {
 
   return (
     <>
-      <Button size="xs" color="red" className="hover:cursor-pointer" icon={RiSaveLine} onClick={toggleModal}>
+      <Button size="md" variant="light" className="hover:cursor-pointer" icon={RiFileChart2Line} onClick={toggleModal}>
         Tax Report
       </Button>
       <div className="fixed top-[10000000px]">
