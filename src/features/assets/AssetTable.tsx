@@ -12,7 +12,7 @@ interface RowProps {
 }
 type SortKeys = "gain" | "name" | "country" | "num-shares" | "sector" | "amount"
 
-const MAX_ITEMS_PER_PAGE = 10
+const MAX_ITEMS_PER_PAGE = 15
 
 const AssetTableRow = ({ asset }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)

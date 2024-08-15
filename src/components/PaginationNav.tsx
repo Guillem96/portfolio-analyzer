@@ -23,7 +23,7 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
 
       if (currentPage + left <= nPages && pagesToShow.length < maxPagesToShow) pagesToShow.push(currentPage + left)
     }
-    pagesToShow.sort()
+    pagesToShow.sort((a, b) => a - b)
 
     const leading = [
       <Button

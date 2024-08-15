@@ -13,6 +13,11 @@
 
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install",
+  // Mount SSH keys from the host machine
+  "mounts": ["source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"],
+
+  // Set the correct permissions for the SSH keys
+  "postCreateCommand": "sudo chown -R node:node /home/node/.ssh && sudo chmod 700 /home/node/.ssh && sudo chmod 600 /home/node/.ssh/* && git config --global user.name 'Guillem96' && git config --global user.email 'guillem.orellana@gmail.com'",
 
   // Configure tool-specific properties.
   "customizations": {
