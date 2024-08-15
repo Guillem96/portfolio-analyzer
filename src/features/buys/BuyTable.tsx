@@ -29,7 +29,11 @@ export default function BuyTable() {
   }
 
   const buysToRender = useMemo(() => {
-    const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
+    let cp = currentPage
+    if (currentPage === -1) {
+      cp = Math.ceil(buys.length / MAX_ITEMS_PER_PAGE)
+    }
+    const start = (cp - 1) * MAX_ITEMS_PER_PAGE
     return buys.slice(start, start + MAX_ITEMS_PER_PAGE)
   }, [buys, currentPage])
 
