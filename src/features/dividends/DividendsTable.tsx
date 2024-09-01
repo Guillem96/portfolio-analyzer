@@ -10,7 +10,7 @@ import { COUNTRY_EMOJI } from "@/constants"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function DividendTable() {
-  const [investments, loading, deleteDividend, privateMode] = useBoundStore((state) => [
+  const [dividends, loading, deleteDividend, privateMode] = useBoundStore((state) => [
     state.dividends,
     state.dividendLoading,
     state.deleteDividend,
@@ -18,20 +18,24 @@ export default function DividendTable() {
   ])
 
   const [currentPage, setCurrentPage] = useState(-1)
-  const [nPages, setNPages] = useState(Math.ceil(investments.length / MAX_ITEMS_PER_PAGE))
+  const [nPages, setNPages] = useState(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
 
   useEffect(() => {
-    setNPages(Math.ceil(investments.length / MAX_ITEMS_PER_PAGE))
-  }, [investments])
+    setNPages(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
+  }, [dividends])
 
   const handleDeleteDividend = (dividendId: string) => () => {
     deleteDividend(dividendId)
   }
 
   const dividendsToRender = useMemo(() => {
-    const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
-    return investments.slice(start, start + MAX_ITEMS_PER_PAGE)
-  }, [investments, currentPage])
+    let cp = currentPage
+    if (currentPage === -1) {
+      cp = Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE)
+    }
+    const start = (cp - 1) * MAX_ITEMS_PER_PAGE
+    return dividends.slice(start, start + MAX_ITEMS_PER_PAGE)
+  }, [dividends, currentPage])
 
   return (
     <>

@@ -1,14 +1,19 @@
 import { Button, DatePicker, DatePickerValue, NumberInput, Select, SelectItem, TextInput } from "@tremor/react"
 import { RiMoneyEuroBoxFill, RiPercentLine } from "@remixicon/react"
 import { useBoundStore } from "@/store"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Country } from "@/types.d"
 import { COUNTRY_EMOJI } from "@/constants"
 
 export default function DividendForm() {
-  const [loading, addDividend] = useBoundStore((state) => [state.dividendLoading, state.addDividend])
+  const [loading, selectedDividend, addDividend] = useBoundStore((state) => [
+    state.dividendLoading,
+    state.selectedDividend,
+    state.addDividend,
+  ])
   const [selectedDate, setSelectedDate] = useState<number>(Date.now())
   const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>()
+  const [country, setCountry] = useState<Country>(Country.ES)
 
   const handleDividendCreation = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -23,8 +28,6 @@ export default function DividendForm() {
 
     const currency = data.get("dividend-currency")?.toString() ?? ""
     if (currency !== "€" && currency !== "$") return
-
-    const country = (data.get("country")?.toString() ?? "") as Country
 
     const amount = Number(data.get("dividend-value")?.toString() ?? "")
     if (isNaN(amount)) {
@@ -55,6 +58,28 @@ export default function DividendForm() {
   const handleDateChange = (value: DatePickerValue) => {
     setSelectedDate(value?.getTime() ?? Date.now())
   }
+
+  useEffect(() => {
+    if (selectedDividend === null) return
+    const $ = (sel: string) => document.querySelector(sel)
+    console.log(selectedDividend)
+    const $companyInp = $("#dividend-from") as HTMLInputElement
+    $companyInp.value = selectedDividend.company
+
+    const $valueInp = $("#dividend-value") as HTMLInputElement
+    $valueInp.value = selectedDividend.amount.toFixed(2)
+
+    const $taxOriginInp = $("#dividend-tax-origin") as HTMLInputElement
+    $taxOriginInp.value = selectedDividend.doubleTaxationOrigin.toString()
+
+    const $taxDestInp = $("#dividend-tax-dest") as HTMLInputElement
+    $taxDestInp.value = selectedDividend.doubleTaxationDestination.toString()
+
+    const $currencySel = $("#dividend-currency") as HTMLSelectElement
+    $currencySel.value = selectedDividend.currency
+
+    setCountry(selectedDividend.country)
+  }, [selectedDividend])
 
   return (
     <>
@@ -147,7 +172,14 @@ export default function DividendForm() {
             <label htmlFor="country" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
               Country
             </label>
-            <Select id="country" name="country" defaultValue={Country.ES} disabled={loading}>
+            <Select
+              id="country"
+              value={country}
+              onValueChange={(c) => setCountry(c as Country)}
+              name="country"
+              defaultValue={Country.ES}
+              disabled={loading}
+            >
               {Object.entries(COUNTRY_EMOJI).map(([country, emoji]) => (
                 <SelectItem key={country} value={country}>
                   {emoji} {country}
@@ -165,6 +197,7 @@ export default function DividendForm() {
             </label>
             <DatePicker
               className="mt-2"
+              id="dividend-date"
               onValueChange={handleDateChange}
               disabled={loading}
               defaultValue={new Date(Date.now())}

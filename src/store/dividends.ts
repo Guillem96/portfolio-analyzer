@@ -6,6 +6,7 @@ import { SettingSlice } from "./settings"
 
 interface State {
   dividends: DividendWithId[]
+  selectedDividend: Dividend | null
   dividendLoading: boolean
   dividendError: string | null
 }
@@ -14,12 +15,14 @@ interface Actions {
   fetchDividends: () => Promise<void>
   addDividend: (inv: Dividend) => Promise<void>
   deleteDividend: (invId: string) => Promise<void>
+  selectDividend: (dividend: Dividend) => void
 }
 
 export type DividendSlice = State & Actions
 
 export const createDividendSlice: StateCreator<State & SettingSlice, [], [], DividendSlice> = (set, get) => ({
   dividends: [],
+  selectedDividend: null,
   dividendLoading: false,
   dividendError: null,
   fetchDividends: async () => {
@@ -78,5 +81,8 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
       set({ dividends: [...prevDividends], dividendLoading: false, dividendError: getErrorMessage(error) })
       showErrorToast("Error deleting dividend...", () => set({ dividendError: null }))
     }
+  },
+  selectDividend: (dividend: Dividend) => {
+    set({ selectedDividend: dividend })
   },
 })
