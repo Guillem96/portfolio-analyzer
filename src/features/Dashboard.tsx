@@ -37,7 +37,9 @@ const DividendsTab = () => (
         <PctDividendsOverBuys />
       </div>
     </div>
-    <UpcomingDividends />
+    <div className="lg:col-span-2">
+      <UpcomingDividends />
+    </div>
   </div>
 )
 

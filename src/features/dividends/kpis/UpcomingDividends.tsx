@@ -40,12 +40,14 @@ export default function UpcomingDividends() {
         {nextExDividends.map(({ ticker, exDividendDate, nextDividendYield, expectedAmount, country }, index) => (
           <Callout
             key={`exdiv-${ticker}-${index}`}
-            title={`${ticker} (${(nextDividendYield * 100).toFixed(2)}%)`}
+            title={`${exDividendDate.toLocaleDateString("es")} - ${ticker} (${(nextDividendYield * 100).toFixed(2)}%)`}
             color={exDividendDate >= new Date() ? "teal" : "red"}
           >
-            {exDividendDate.toLocaleDateString("es")} - Approx. amount:{" "}
+            Approx. amount:{" "}
             <div className="flex justify-between">
-              <span>{currencyFormatter(expectedAmount, mainCurrency, privateMode)}</span>
+              <span>
+                {`${currencyFormatter(tickerToAssetValue[ticker], mainCurrency, privateMode)} x ${(nextDividendYield * 100).toFixed(2)}% = ${currencyFormatter(expectedAmount, mainCurrency, privateMode)}`}
+              </span>
               <Button
                 variant="light"
                 size="sm"
