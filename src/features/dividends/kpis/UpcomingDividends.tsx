@@ -36,7 +36,7 @@ export default function UpcomingDividends() {
       <h1 className="mb-4 max-w-2xl text-3xl tracking-tight text-slate-900 dark:text-neutral-300">
         Upcoming Ex Dividends
       </h1>
-      <div className="flex flex-col gap-2 overflow-scroll md:grid md:grid-cols-2">
+      <div className="flex flex-col gap-2 overflow-scroll md:grid md:grid-cols-4">
         {nextExDividends.map(({ ticker, exDividendDate, nextDividendYield, expectedAmount, country }, index) => (
           <Callout
             key={`exdiv-${ticker}-${index}`}
@@ -46,7 +46,8 @@ export default function UpcomingDividends() {
             Approx. amount:{" "}
             <div className="flex justify-between">
               <span>
-                {`${currencyFormatter(tickerToAssetValue[ticker], mainCurrency, privateMode)} x ${(nextDividendYield * 100).toFixed(2)}% = ${currencyFormatter(expectedAmount, mainCurrency, privateMode)}`}
+                {`${currencyFormatter(tickerToAssetValue[ticker], mainCurrency, privateMode)} x ${(nextDividendYield * 100).toFixed(2)}% = `}
+                <b>{currencyFormatter(expectedAmount, mainCurrency, privateMode)}</b>
               </span>
               <Button
                 variant="light"
