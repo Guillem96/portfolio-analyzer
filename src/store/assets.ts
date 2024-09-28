@@ -28,19 +28,28 @@ export const createAssetsSlice: StateCreator<State & RequestedSlices, [], [], As
     const groupedBuys = Object.groupBy(buys, ({ ticker }) => ticker)
     const assets = Object.entries(groupedBuys).map(([ticker, buys]) => {
       const units = buys.map(({ units }) => units).reduce((a, b) => a + b, 0)
-      const buyValue = buys
+      const buysInMainCurrency = buys
         .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
-        .map(({ amount, currency: buyCurr }) => amount * exchangeRates[buyCurr][mainCurrency])
-        .reduce((a, b) => a + b, 0)
+        .map(({ amount, currency: buyCurr, units }) => ({
+          units,
+          amount: amount * exchangeRates[buyCurr][mainCurrency],
+        }))
+
+      const buyValue = buysInMainCurrency.reduce((a, b) => a + b.amount, 0)
+      const avgPrice =
+        buysInMainCurrency
+          .map(({ amount: currAmount, units: currUnits }) => currAmount * currUnits)
+          .reduce((a, b) => a + b, 0) / units
       const { price, currency: fromCurrency, country, sector } = tickerToInfo[ticker]
-      const value = units * price
+      const value = units * price * exchangeRates[fromCurrency][mainCurrency]
 
       return {
         name: tickerToInfo[ticker].name,
         ticker,
         units,
-        value: value * exchangeRates[fromCurrency][mainCurrency],
+        value,
         currency: mainCurrency,
+        avgPrice,
         country,
         sector,
         buyValue,

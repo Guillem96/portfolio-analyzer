@@ -21,7 +21,7 @@ const AssetTableRow = ({ asset }: RowProps) => {
 
   const [showAbsolute, setShowAbsolute] = useState(false)
 
-  const { name, ticker, value, buyValue, units, sector, country, currency } = asset
+  const { name, ticker, value, buyValue, units, sector, country, currency, avgPrice } = asset
   const rate = (value / buyValue - 1) * 100
   const absolute = value - buyValue
   const changeType = rate > 0 ? "positive" : "negative"
@@ -56,6 +56,8 @@ const AssetTableRow = ({ asset }: RowProps) => {
       <TableCell>{sector}</TableCell>
       <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
       <TableCell>{units.toFixed(3)}</TableCell>
+      <TableCell>{currencyFormatter(avgPrice, currency, privateMode)}</TableCell>
+
       <TableCell>{currencyFormatter(value, currency, privateMode)}</TableCell>
     </TableRow>
   )
@@ -121,6 +123,7 @@ export default function AssetTable() {
                   <TableHeaderCell onClick={onClickSortHandler("sector")}>Sector</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("country")}>Country</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
+                  <TableHeaderCell>Avg. Price</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
                 </TableRow>
               </TableHead>

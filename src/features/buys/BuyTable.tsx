@@ -59,6 +59,7 @@ export default function BuyTable() {
                   <TableHeaderCell>Ticker</TableHeaderCell>
                   <TableHeaderCell>Amount</TableHeaderCell>
                   <TableHeaderCell># Shares</TableHeaderCell>
+                  <TableHeaderCell>Share price</TableHeaderCell>
                   <TableHeaderCell># Is Reinvestment?</TableHeaderCell>
                   <TableHeaderCell>Date</TableHeaderCell>
                   <TableHeaderCell className="text-right">Actions</TableHeaderCell>
@@ -80,6 +81,7 @@ export default function BuyTable() {
                     </TableCell>
                     <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
                     <TableCell>{units.toFixed(3)}</TableCell>
+                    <TableCell>{currencyFormatter(amount / units, currency, privateMode)}</TableCell>
                     <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>
                     <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
                     <TableCell className="flex flex-row justify-end gap-x-4">

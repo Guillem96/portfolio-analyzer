@@ -66,6 +66,7 @@ export interface Asset {
   units: number
   country: Country
   sector: string
+  avgPrice: number
   currency: CurrencyType
 }
 
