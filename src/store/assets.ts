@@ -36,10 +36,7 @@ export const createAssetsSlice: StateCreator<State & RequestedSlices, [], [], As
         }))
 
       const buyValue = buysInMainCurrency.reduce((a, b) => a + b.amount, 0)
-      const avgPrice =
-        buysInMainCurrency
-          .map(({ amount: currAmount, units: currUnits }) => currAmount * currUnits)
-          .reduce((a, b) => a + b, 0) / units
+      const avgPrice = buyValue / units
       const { price, currency: fromCurrency, country, sector } = tickerToInfo[ticker]
       const value = units * price * exchangeRates[fromCurrency][mainCurrency]
 
