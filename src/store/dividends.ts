@@ -26,15 +26,9 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
   dividendLoading: false,
   dividendError: null,
   fetchDividends: async () => {
-    const apiSettings = get().getJsonBinSettings()
-    if (apiSettings == null) {
-      showErrorToast("Invalid API settings...", () => set({ dividendError: null }))
-      set({ dividendError: getErrorMessage("Invalid API settings..."), dividendLoading: false })
-      return
-    }
     set({ dividendLoading: true })
     try {
-      const dividends = await externalFetchDividends(apiSettings)
+      const dividends = await externalFetchDividends()
       set({ dividends, dividendLoading: false })
     } catch (error) {
       console.error(error)
@@ -43,18 +37,12 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
     }
   },
   addDividend: async (inv: Dividend) => {
-    const { dividends: prevDividends, getJsonBinSettings } = get()
-    const apiSettings = getJsonBinSettings()
-    if (apiSettings == null) {
-      showErrorToast("Invalid API settings...", () => set({ dividendError: null }))
-      set({ dividendError: getErrorMessage("Invalid API settings..."), dividendLoading: false })
-      return
-    }
+    const { dividends: prevDividends } = get()
 
     // Optimistic update in preview
     set({ dividends: [...prevDividends, { ...inv, id: "tmp", preview: true }], dividendLoading: true })
     try {
-      const newDividend = await postDividend(inv, apiSettings)
+      const newDividend = await postDividend(inv)
       // Finalize the optimistic update by dropping the preview field
       set({ dividends: [...prevDividends, newDividend], dividendLoading: false })
     } catch (error) {
@@ -65,16 +53,10 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
     }
   },
   deleteDividend: async (invId: string) => {
-    const { dividends: prevDividends, getJsonBinSettings } = get()
-    const apiSettings = getJsonBinSettings()
-    if (apiSettings == null) {
-      showErrorToast("Invalid API settings...", () => set({ dividendError: null }))
-      set({ dividendError: getErrorMessage("Invalid API settings..."), dividendLoading: false })
-      return
-    }
+    const { dividends: prevDividends } = get()
     set({ dividends: prevDividends.filter(({ id }) => id !== invId) })
     try {
-      await deleteDividendById(invId, apiSettings)
+      await deleteDividendById(invId)
     } catch (error) {
       // Rollback
       console.error(error)

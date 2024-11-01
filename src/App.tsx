@@ -10,12 +10,7 @@ import { RiTimeLine } from "@remixicon/react"
 function App() {
   const [appLoading, setAppLoading] = useState(true)
 
-  const [jsonBinAccessKey, jsonBinId, inSettingsScreen, darkMode] = useBoundStore((state) => [
-    state.jsonBinAccessKey,
-    state.jsonBinId,
-    state.inSettingsScreen,
-    state.darkMode,
-  ])
+  const [inSettingsScreen, darkMode] = useBoundStore((state) => [state.inSettingsScreen, state.darkMode])
 
   const [buys, fetchAssets, fetchBuys, fetchExhangeRates, fetchTickers, fetchDividends] = useBoundStore((state) => [
     state.buys,
@@ -27,22 +22,22 @@ function App() {
   ])
 
   useEffect(() => {
-    if (jsonBinAccessKey == null || jsonBinId == null) return
     setAppLoading(true)
     const fetchData = async () => {
       await fetchExhangeRates()
       await fetchBuys()
       await fetchDividends()
+      await fetchTickers()
     }
 
     fetchData().catch((error) => {
       setAppLoading(false)
       console.error(error)
     })
-  }, [jsonBinAccessKey, jsonBinId])
+  }, [])
 
   useEffect(() => {
-    setAppLoading(false)
+    if (buys.length === 0) return
     fetchTickers()
       .then(fetchAssets)
       .finally(() => setAppLoading(false))
@@ -57,7 +52,7 @@ function App() {
     if (!darkMode && $body.classList.contains("bg-gray-950")) $body.classList.remove("bg-gray-950")
   }, [darkMode])
 
-  const inSettings = jsonBinAccessKey == null || jsonBinId == null || inSettingsScreen
+  const inSettings = inSettingsScreen
   return (
     <>
       <Controls />

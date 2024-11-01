@@ -46,6 +46,15 @@ export default function Control() {
         icon={privateMode ? RiEyeOffLine : RiEyeLine}
         onClick={togglePrivateMode}
       />
+      <Button
+        variant="light"
+        tooltip="Login"
+        size="lg"
+        icon={RiSunLine}
+        onClick={() => {
+          window.location.href = "http://localhost:8080/auth/google/login"
+        }}
+      />
     </div>
   )
 }

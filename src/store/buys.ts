@@ -2,7 +2,6 @@ import { StateCreator } from "zustand"
 import type { Buy, BuyWithId } from "@/types.d"
 import { deleteBuyById, fetchBuys as externalFetchBuys, postBuy } from "@services/buys"
 import { getErrorMessage, showErrorToast } from "@services/utils"
-import { SettingSlice } from "./settings"
 
 interface State {
   buys: BuyWithId[]
@@ -19,21 +18,15 @@ interface Actions {
 
 export type BuySlice = State & Actions
 
-export const createBuySlice: StateCreator<State & SettingSlice, [], [], BuySlice> = (set, get) => ({
+export const createBuySlice: StateCreator<State, [], [], BuySlice> = (set, get) => ({
   buys: [],
   buysLoading: false,
   buysError: null,
   forceLoadingBuys: (isLoading) => set({ buysLoading: isLoading }),
   fetchBuys: async () => {
-    const apiSettings = get().getJsonBinSettings()
-    if (apiSettings == null) {
-      showErrorToast("Invalid API settings...", () => set({ buysError: null }))
-      set({ buysError: getErrorMessage("Invalid API settings..."), buysLoading: false })
-      return
-    }
     set({ buysLoading: true })
     try {
-      const buys = await externalFetchBuys(apiSettings)
+      const buys = await externalFetchBuys()
       set({ buys, buysLoading: false })
     } catch (error) {
       console.error(error)
@@ -42,18 +35,12 @@ export const createBuySlice: StateCreator<State & SettingSlice, [], [], BuySlice
     }
   },
   addBuy: async (inv: Buy) => {
-    const { buys: prevInv, getJsonBinSettings } = get()
-    const apiSettings = getJsonBinSettings()
-    if (apiSettings == null) {
-      showErrorToast("Invalid API settings...", () => set({ buysError: null }))
-      set({ buysError: getErrorMessage("Invalid API settings..."), buysLoading: false })
-      return
-    }
+    const { buys: prevInv } = get()
 
     // Optimistic update in preview
     set({ buys: [...prevInv, { ...inv, id: "tmp", preview: true }], buysLoading: true })
     try {
-      const newInv = await postBuy(inv, apiSettings)
+      const newInv = await postBuy(inv)
       // Finalize the optimistic update by dropping the preview field
       set({ buys: [...prevInv, newInv], buysLoading: false })
     } catch (error) {
@@ -64,16 +51,10 @@ export const createBuySlice: StateCreator<State & SettingSlice, [], [], BuySlice
     }
   },
   deleteBuy: async (invId: string) => {
-    const { buys: prevInv, getJsonBinSettings } = get()
-    const apiSettings = getJsonBinSettings()
-    if (apiSettings == null) {
-      showErrorToast("Invalid API settings...", () => set({ buysError: null }))
-      set({ buysError: getErrorMessage("Invalid API settings..."), buysLoading: false })
-      return
-    }
+    const { buys: prevInv } = get()
     set({ buys: prevInv.filter(({ id }) => id !== invId) })
     try {
-      await deleteBuyById(invId, apiSettings)
+      await deleteBuyById(invId)
     } catch (error) {
       // Rollback
       console.error(error)

@@ -18,8 +18,6 @@ export const useBoundStore = create<AssetSlice & BuySlice & SettingSlice & Divid
     {
       name: "json-bin-settings",
       partialize: (state) => ({
-        jsonBinAccessKey: state.jsonBinAccessKey,
-        jsonBinId: state.jsonBinId,
         darkMode: state.darkMode,
         privateMode: state.privateMode,
       }),

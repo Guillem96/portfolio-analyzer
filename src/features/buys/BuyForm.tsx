@@ -4,13 +4,16 @@ import { useState } from "react"
 import { useBoundStore } from "@/store"
 import { fetchTicker } from "@/services/ticker"
 
+const fmtDate = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+
 export default function BuyForm() {
   const [loading, addBuy, forceLoadingBuys] = useBoundStore((state) => [
     state.buysLoading,
     state.addBuy,
     state.forceLoadingBuys,
   ])
-  const [selectedDate, setSelectedDate] = useState<number>(Date.now())
+  const [selectedDate, setSelectedDate] = useState<string>(fmtDate(new Date()))
 
   const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>(null)
   const [unitsErrorMessage, setUnitsErrorMessage] = useState<string | null>(null)
@@ -71,7 +74,7 @@ export default function BuyForm() {
   }
 
   const handleDateChange = (value: DatePickerValue) => {
-    setSelectedDate(value?.getTime() ?? Date.now())
+    setSelectedDate(fmtDate(value ?? new Date()))
   }
 
   return (
