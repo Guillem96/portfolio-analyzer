@@ -1,52 +1,22 @@
 import { ToastContainer } from "react-toastify"
 import { useBoundStore } from "@/store"
-import Settings from "@features/Settings"
-import Dashboard from "@features/Dashboard"
-import Controls from "./components/Controls"
+import Settings from "./pages/Settings"
 import { useEffect, useState } from "react"
+import SignUp from "./pages/SignUp"
+import DashboardPage from "./pages/Dashboard"
 import { Icon } from "@tremor/react"
 import { RiTimeLine } from "@remixicon/react"
+import { AuthProvider } from "./context/auth"
+import Controls from "@components/Controls"
 
 function App() {
   const [appLoading, setAppLoading] = useState(true)
-
-  const [jsonBinAccessKey, jsonBinId, inSettingsScreen, darkMode] = useBoundStore((state) => [
-    state.jsonBinAccessKey,
-    state.jsonBinId,
+  const [inSettingsScreen, darkMode, user, login] = useBoundStore((state) => [
     state.inSettingsScreen,
     state.darkMode,
+    state.user,
+    state.login,
   ])
-
-  const [buys, fetchAssets, fetchBuys, fetchExhangeRates, fetchTickers, fetchDividends] = useBoundStore((state) => [
-    state.buys,
-    state.fetchAssets,
-    state.fetchBuys,
-    state.fetchExhangeRates,
-    state.fetchTickers,
-    state.fetchDividends,
-  ])
-
-  useEffect(() => {
-    if (jsonBinAccessKey == null || jsonBinId == null) return
-    setAppLoading(true)
-    const fetchData = async () => {
-      await fetchExhangeRates()
-      await fetchBuys()
-      await fetchDividends()
-    }
-
-    fetchData().catch((error) => {
-      setAppLoading(false)
-      console.error(error)
-    })
-  }, [jsonBinAccessKey, jsonBinId])
-
-  useEffect(() => {
-    setAppLoading(false)
-    fetchTickers()
-      .then(fetchAssets)
-      .finally(() => setAppLoading(false))
-  }, [buys])
 
   useEffect(() => {
     const $body = document.querySelector("body")
@@ -57,24 +27,44 @@ function App() {
     if (!darkMode && $body.classList.contains("bg-gray-950")) $body.classList.remove("bg-gray-950")
   }, [darkMode])
 
-  const inSettings = jsonBinAccessKey == null || jsonBinId == null || inSettingsScreen
+  useEffect(() => {
+    setAppLoading(true)
+    login()
+      .catch((error) => {
+        setAppLoading(false)
+        console.error(error)
+      })
+      .finally(() => {
+        setAppLoading(false)
+      })
+  }, [])
+
+  if (appLoading) {
+    return (
+      <div className="grid min-h-dvh content-center text-center text-xl">
+        <Icon size="xl" icon={RiTimeLine} />
+        <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <SignUp />
+  }
+
   return (
-    <>
+    <AuthProvider>
       <Controls />
-      {appLoading ? (
-        <div className="grid min-h-dvh content-center text-center text-xl">
-          <Icon size="xl" icon={RiTimeLine} />
-          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-        </div>
-      ) : null}
-      {!appLoading && inSettings ? (
+
+      {inSettingsScreen ? (
         <div className="grid min-h-dvh content-center">
           <Settings />
         </div>
-      ) : null}
-      {!appLoading && !inSettings ? <Dashboard /> : null}
+      ) : (
+        <DashboardPage />
+      )}
       <ToastContainer />
-    </>
+    </AuthProvider>
   )
 }
 

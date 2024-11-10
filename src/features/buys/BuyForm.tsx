@@ -3,6 +3,7 @@ import { RiMoneyEuroBoxFill } from "@remixicon/react"
 import { useState } from "react"
 import { useBoundStore } from "@/store"
 import { fetchTicker } from "@/services/ticker"
+import { format } from "date-fns"
 
 export default function BuyForm() {
   const [loading, addBuy, forceLoadingBuys] = useBoundStore((state) => [
@@ -10,7 +11,7 @@ export default function BuyForm() {
     state.addBuy,
     state.forceLoadingBuys,
   ])
-  const [selectedDate, setSelectedDate] = useState<number>(Date.now())
+  const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"))
 
   const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>(null)
   const [unitsErrorMessage, setUnitsErrorMessage] = useState<string | null>(null)
@@ -71,7 +72,7 @@ export default function BuyForm() {
   }
 
   const handleDateChange = (value: DatePickerValue) => {
-    setSelectedDate(value?.getTime() ?? Date.now())
+    setSelectedDate(format(value ?? new Date(), "yyyy-MM-dd"))
   }
 
   return (

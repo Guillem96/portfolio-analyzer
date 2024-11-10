@@ -2,6 +2,7 @@ import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Country } from "@/types.d"
 import { Button, Callout, Card } from "@tremor/react"
+import { format } from "date-fns/format"
 
 const TAX_RATE: Record<Country, number> = {
   [Country.ES]: 19,
@@ -57,7 +58,7 @@ export default function UpcomingDividends() {
                   selectDividend({
                     company: ticker,
                     amount: expectedAmount,
-                    date: exDividendDate.getTime(),
+                    date: format(exDividendDate, "yyyy-MM-dd"),
                     country,
                     doubleTaxationOrigin: TAX_RATE[country],
                     doubleTaxationDestination: 0,

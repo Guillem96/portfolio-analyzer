@@ -31,7 +31,7 @@ export interface TickerInfo {
 
 export interface Buy {
   ticker: string
-  date: number
+  date: string
   currency: CurrencyType
   amount: number
   units: number
@@ -46,7 +46,7 @@ export interface BuyWithId extends Buy {
 export interface Dividend {
   company: string
   amount: number
-  date: number
+  date: string
   country: Country
   doubleTaxationOrigin: number
   doubleTaxationDestination: number
@@ -70,13 +70,11 @@ export interface Asset {
   currency: CurrencyType
 }
 
-export interface JSONBin {
-  investments?: InvestmentWithId[]
-}
-
-export interface JSONBinSettings {
-  accessKey: string
-  binId: string
+export interface User {
+  email: string
+  name: string
+  picture: string
+  preferredCurrency: CurrencyType
 }
 
 declare global {

@@ -90,7 +90,6 @@ export default function DividendsTaxReport() {
     return [...new Set(dividends.map((div) => new Date(div.date).getFullYear()))]
   }, [dividends])
   const report = useMemo(() => calculateReport(year, dividends, mainCurrency), [year, dividends, mainCurrency])
-  console.log(report)
   const toggleModal = () => {
     setShowModal(!showModal)
   }

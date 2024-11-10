@@ -19,6 +19,7 @@ const BarChartBuys = ({ currency }: BarChartProps) => {
     const invWithDate = buys.map((inv) => {
       return { ...inv, date: new Date(inv.date) }
     })
+
     const currInv = invWithDate
       .filter((inv) => inv.currency === currency)
       .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
