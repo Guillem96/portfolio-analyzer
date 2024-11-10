@@ -22,6 +22,8 @@ func SetupRouter(
 	assetsHandler *assets.Handler,
 ) http.Handler {
 	router := mux.NewRouter()
+	router.StrictSlash(true)
+
 	authRounter := router.PathPrefix("/auth").Subrouter()
 	authRounter.HandleFunc("/google/login", authHandler.HandleGoogleLogin).Methods("GET")
 	authRounter.HandleFunc("/google/callback", authHandler.HandleGoogleCallback).Methods("GET")
@@ -49,6 +51,7 @@ func SetupRouter(
 	// Serve static files
 	staticDir := "./static/dist"
 	router.PathPrefix("/portfolio-analyzer/").Handler(http.StripPrefix("/portfolio-analyzer/", http.FileServer(http.Dir(staticDir))))
+	router.PathPrefix("/").Handler(http.RedirectHandler("/portfolio-analyzer/", http.StatusMovedPermanently))
 
 	// Apply CORS if needed
 	c := cors.New(cors.Options{
