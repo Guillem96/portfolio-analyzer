@@ -1,12 +1,13 @@
-const BASE_URL = "http://localhost:8080/"
+const BASE_URL = import.meta.env.VITE_SERVER_URL
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const request = async (url: string, method: string, body?: any) => {
-  const res = await fetch(`${BASE_URL}${url}`, {
+  const res = await fetch(`${BASE_URL}/${url}`, {
     method,
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(body),
   })
   if (!res.ok) {
@@ -17,4 +18,15 @@ export const request = async (url: string, method: string, body?: any) => {
   }
 
   return await res.json()
+}
+
+export const rawRequest = async (url: string, method: string, body?: string) => {
+  return await fetch(`${BASE_URL}/${url}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body,
+  })
 }

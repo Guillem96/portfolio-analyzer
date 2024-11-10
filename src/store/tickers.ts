@@ -40,6 +40,7 @@ export const createTickerSlice: StateCreator<State & BuySlice & SettingSlice, []
       }
       set({ tickerToInfo, tickersLoading: false })
     } catch (error) {
+      console.error(error)
       showErrorToast("Error fetching tickers...", () => set({ tickerError: null }))
       set({ tickerError: getErrorMessage("Error fetching  tickers..."), tickersLoading: false })
       return

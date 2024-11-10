@@ -1,6 +1,3 @@
-import { DEFAULT_EXCHANGE_RATES } from "@/constants"
-import { fetchAllRates } from "@/services/rates"
-import { showErrorToast } from "@/services/utils"
 import { CurrencyType } from "@/types"
 import { StateCreator } from "zustand"
 
@@ -9,7 +6,6 @@ interface State {
   darkMode: boolean
   privateMode: boolean
   mainCurrency: CurrencyType
-  exchangeRates: Record<CurrencyType, Record<CurrencyType, number>>
 }
 
 interface Actions {
@@ -17,7 +13,6 @@ interface Actions {
   toggleDarkMode: () => void
   togglePrivateMode: () => void
   setMainCurrency: (mainCurrency: CurrencyType) => void
-  fetchExhangeRates: () => Promise<void>
 }
 
 export type SettingSlice = State & Actions
@@ -26,7 +21,6 @@ export const createSettingsSlice: StateCreator<State, [], [], SettingSlice> = (s
   inSettingsScreen: false,
   privateMode: false,
   mainCurrency: "€",
-  exchangeRates: DEFAULT_EXCHANGE_RATES,
   darkMode: document.querySelector("body")?.classList.contains("dark") ?? false,
   setMainCurrency: (mainCurrency) => set({ mainCurrency }),
   setInSettingsScreen: (em: boolean) => set({ inSettingsScreen: em }),
@@ -35,14 +29,5 @@ export const createSettingsSlice: StateCreator<State, [], [], SettingSlice> = (s
   },
   togglePrivateMode: () => {
     set({ privateMode: !get().privateMode })
-  },
-  fetchExhangeRates: async () => {
-    try {
-      const exchangeRates = await fetchAllRates()
-      set({ exchangeRates })
-    } catch (error) {
-      console.error(error)
-      showErrorToast("Error retriving exchange rates, using default ones...", () => {})
-    }
   },
 })

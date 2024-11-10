@@ -1,9 +1,8 @@
 import { StateCreator } from "zustand"
 import type { Asset } from "@/types.d"
 
-import { SettingSlice } from "./settings"
-import { BuySlice } from "./buys"
-import { TickerSlice } from "./tickers"
+import { fetchAssets } from "@/services/assets"
+import { getErrorMessage, showErrorToast } from "@/services/utils"
 
 interface State {
   assets: Asset[]
@@ -12,46 +11,24 @@ interface State {
 }
 
 interface Actions {
-  fetchAssets: () => void
+  fetchAssets: () => Promise<void>
 }
 
 export type AssetSlice = State & Actions
-type RequestedSlices = BuySlice & SettingSlice & TickerSlice
 
-export const createAssetsSlice: StateCreator<State & RequestedSlices, [], [], AssetSlice> = (set, get) => ({
+export const createAssetsSlice: StateCreator<AssetSlice, [], [], AssetSlice> = (set) => ({
   assets: [],
   assetsLoading: false,
   assetsError: null,
-  fetchAssets: () => {
-    const { buys, mainCurrency, tickerToInfo, exchangeRates } = get()
+  fetchAssets: async () => {
     set({ assetsLoading: true })
-    const groupedBuys = Object.groupBy(buys, ({ ticker }) => ticker)
-    const assets = Object.entries(groupedBuys).map(([ticker, buys]) => {
-      const units = buys.map(({ units }) => units).reduce((a, b) => a + b, 0)
-      const buysInMainCurrency = buys
-        .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
-        .map(({ amount, currency: buyCurr, units }) => ({
-          units,
-          amount: amount * exchangeRates[buyCurr][mainCurrency],
-        }))
-
-      const buyValue = buysInMainCurrency.reduce((a, b) => a + b.amount, 0)
-      const avgPrice = buyValue / units
-      const { price, currency: fromCurrency, country, sector } = tickerToInfo[ticker]
-      const value = units * price * exchangeRates[fromCurrency][mainCurrency]
-
-      return {
-        name: tickerToInfo[ticker].name,
-        ticker,
-        units,
-        value,
-        currency: mainCurrency,
-        avgPrice,
-        country,
-        sector,
-        buyValue,
-      } as Asset
-    })
-    set({ assets, assetsLoading: false })
+    try {
+      const assets = await fetchAssets()
+      set({ assets, assetsLoading: false })
+    } catch (error) {
+      console.error(error)
+      showErrorToast("Error fetching the assets...", () => set({ assetsError: null }))
+      set({ assetsError: getErrorMessage(error), assetsLoading: false })
+    }
   },
 })

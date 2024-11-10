@@ -4,9 +4,7 @@ import { useBoundStore } from "@/store"
 import { useEffect, useState } from "react"
 import { Country } from "@/types.d"
 import { COUNTRY_EMOJI } from "@/constants"
-
-const fmtDate = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+import { format } from "date-fns"
 
 export default function DividendForm() {
   const [loading, selectedDividend, addDividend] = useBoundStore((state) => [
@@ -14,7 +12,7 @@ export default function DividendForm() {
     state.selectedDividend,
     state.addDividend,
   ])
-  const [selectedDate, setSelectedDate] = useState<string>(fmtDate(new Date()))
+  const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"))
   const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>()
   const [country, setCountry] = useState<Country>(Country.ES)
 
@@ -59,13 +57,13 @@ export default function DividendForm() {
   }
 
   const handleDateChange = (value: DatePickerValue) => {
-    setSelectedDate(fmtDate(value ?? new Date()))
+    setSelectedDate(format(value ?? new Date(), "yyyy-MM-dd"))
   }
 
   useEffect(() => {
     if (selectedDividend === null) return
     const $ = (sel: string) => document.querySelector(sel)
-    console.log(selectedDividend)
+
     const $companyInp = $("#dividend-from") as HTMLInputElement
     $companyInp.value = selectedDividend.company
 

@@ -23,15 +23,14 @@ const BarChartDividends = ({ currency }: BarChartProps) => {
     })
 
     const currDiv = invWithDate.filter((inv) => inv.currency === currency)
-    const years = invWithDate.map(({ date }) => date.getFullYear())
-    const startingYear = Math.min(...years)
-    const nYears = new Set(years).size
-    const data = new Array(nYears).fill(undefined).map((_, i) => {
+    const startingYear = new Date().getFullYear() - 4
+    const data = new Array(5).fill(undefined).map((_, i) => {
       return {
-        date: startingYear + i,
+        date: startingYear + i + 1,
         "Dividend Earnings": 0,
       }
     })
+
     currDiv.forEach(({ date, amount }) => {
       data[date.getFullYear() - startingYear]["Dividend Earnings"] += amount
     })

@@ -1,6 +1,6 @@
 import { type TickerInfo, Country, CurrencyType } from "@/types.d"
 
-const BASE_URL = "https://wcou3sszabchl2bemt7sxwbjey0cbkmx.lambda-url.eu-west-2.on.aws"
+const BASE_URL = import.meta.env.VITE_TICKER_URL
 const CURRENCY_MAPPER: Record<string, CurrencyType> = {
   EUR: "€",
   USD: "$",
@@ -8,10 +8,11 @@ const CURRENCY_MAPPER: Record<string, CurrencyType> = {
 }
 
 export const fetchTicker = async (ticker: string): Promise<TickerInfo | null> => {
-  const response = await fetch(`${BASE_URL}/${ticker}`, {
+  const response = await fetch(`${BASE_URL}/${ticker}/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
     },
   })
 
@@ -24,11 +25,11 @@ export const fetchTicker = async (ticker: string): Promise<TickerInfo | null> =>
 }
 
 export const fetchMultipleTickers = async (...tickers: string[]): Promise<Record<string, TickerInfo> | null> => {
-  console.log("fetchMultipleTickers", tickers)
-  const response = await fetch(`${BASE_URL}/${tickers.join(",")}`, {
+  const response = await fetch(`${BASE_URL}/${tickers.join(",")}/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
     },
   })
 

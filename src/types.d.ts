@@ -70,6 +70,13 @@ export interface Asset {
   currency: CurrencyType
 }
 
+export interface User {
+  email: string
+  name: string
+  picture: string
+  preferredCurrency: CurrencyType
+}
+
 declare global {
   interface ObjectConstructor {
     groupBy<T, K extends string | number | symbol>(array: T[], callback: (item: T) => K): Record<K, T[]>
