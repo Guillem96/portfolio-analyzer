@@ -1,0 +1,31 @@
+# Terraform
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# Builds
+bin/
+
+# Database
+db/
+
+# Visual Studio code
+.vscode/
+
+# Golang
+
+# Environment
+.env
+
+# Secrets
+secrets/
+
+# Scripts
+scripts/
+
+# Smoke testing
+smoke-test/
+
+# MacOS
+.DS_Store

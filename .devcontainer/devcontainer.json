@@ -6,7 +6,21 @@
   "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
-  // "features": {},
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/terraform:1": {},
+		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1.0.2": {
+			"packages": [
+				"python3-requests",
+				"curl",
+				"sqlite3",
+				"pipx"
+			]
+		},
+		"ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/go:1": {}
+  },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
@@ -14,10 +28,13 @@
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install",
   // Mount SSH keys from the host machine
-  "mounts": ["source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"],
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/node/.aws,type=bind,consistency=cached"
+  ],
 
   // Set the correct permissions for the SSH keys
-  "postCreateCommand": "sudo chown -R node:node /home/node/.ssh && sudo chmod 700 /home/node/.ssh && sudo chmod 600 /home/node/.ssh/* && git config --global user.name 'Guillem96' && git config --global user.email 'guillem.orellana@gmail.com'",
+  "postCreateCommand": "sudo chown -R node:node /home/node/.ssh && sudo chmod 700 /home/node/.ssh && sudo chmod 600 /home/node/.ssh/* && git config --global user.name 'Guillem96' && git config --global user.email 'guillem.orellana@gmail.com' && pipx install sqlfluff && curl -sSfL https://get.tur.so/install.sh | bash",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -27,7 +44,9 @@
         "ms-vscode.vscode-typescript-next",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "naumovs.color-highlight"
+        "naumovs.color-highlight",
+        "humao.rest-client",
+				"dorzey.vscode-sqlfluff"
       ],
       "settings": {
         "extensions.verifySignature": false

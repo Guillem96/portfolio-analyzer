@@ -3,8 +3,6 @@ name: Deploy static content to Pages
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 permissions:
   contents: read
@@ -17,35 +15,117 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-web-app:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web-app
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: latest
-      - name: Install dependencies
-        run: npm install
+          version: 9
+          run_install:
+            cwd: ./web-app
       - name: Run linting
-        run: npm run lint
+        run: pnpm run lint
       - name: Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        run: pnpm run build
+      - name: Export artifact in dist
+        uses: actions/upload-artifact@v2
         with:
-          path: dist/
+          name: web-app
+          path: ./dist
+
+  build-image:
+    runs-on: ubuntu-latest
+    needs: build-web-app
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v4
+      - name: Download web-app artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: web-app
+          path: ./static/dist
+      - name: Build Docker image
+        run: docker build -t portfolio-analyzer .
+      - name: Export image
+        run: docker save portfolio-analyzer > portfolio-analyzer.tar
+      - name: Export artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: image
+          path: ./portfolio-analyzer.tar
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+    needs: [build-web-app, build-image]
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+      - name: Download image artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: image
+          path: portfolio-analyzer.tar
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Push image
+        run: |
+          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
+          docker load < portfolio-analyzer.tar
+          docker tag portfolio-analyzer:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/portfolio-analyzer:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/portfolio-analyzer:latest
+      - name: Deploy terraform
+        working-directory: ./infrastructure
+        run: |
+          TF_VAR_jwt_secret=${{ secrets.JWT_SECRET }} \
+          TF_VAR_google_auth_client_id=${{ secrets.GOOGLE_AUTH_CLIENT_ID }} \
+          TF_VAR_google_auth_client_secret=${{ secrets.GOOGLE_AUTH_CLIENT_SECRET }} \
+          TF_VAR_database_url=${{ secrets.DATABASE_URL }} \
+          terraform apply -auto-approve
+
+  # build-landing-page:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./landing-page
+  #   steps:
+  #     - name: Checkout your repository using git
+  #       uses: actions/checkout@v4
+  #     - uses: pnpm/action-setup@v4
+  #       with:
+  #         version: 9
+  #         run_install:
+  #           cwd: ./landing-page
+  #     - name: Build
+  #       run: pnpm run build
+  #     - name: Setup Pages
+  #       uses: actions/configure-pages@v4
+  #     - name: Upload Pages artifact
+  #       uses: actions/upload-pages-artifact@v3
+  #       with:
+  #         path: dist/
+
+  # deploy-landing-page:
+  #   runs-on: ubuntu-latest
+  #   needs: build-landing-page
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v4
