@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: web-app
-          path: ./dist
+          path: ./web-app/dist
 
   build-image:
     runs-on: ubuntu-latest
