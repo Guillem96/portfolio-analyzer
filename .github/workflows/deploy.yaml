@@ -97,6 +97,7 @@ jobs:
       - name: Deploy terraform
         working-directory: ./server/infrastructure
         run: |
+          terraform init && \
           TF_VAR_jwt_secret=${{ secrets.JWT_SECRET }} \
           TF_VAR_google_auth_client_id=${{ secrets.GOOGLE_AUTH_CLIENT_ID }} \
           TF_VAR_google_auth_client_secret=${{ secrets.GOOGLE_AUTH_CLIENT_SECRET }} \
