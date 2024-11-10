@@ -91,7 +91,7 @@ jobs:
           REPOSITORY: portfolio-analyzer
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker load < portfolio-analyzer.tar
+          docker load --input portfolio-analyzer.tar
           docker tag portfolio-analyzer:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
       - name: Deploy terraform
