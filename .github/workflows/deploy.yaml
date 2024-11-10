@@ -26,8 +26,7 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 9
-          run_install:
-            cwd: ./web-app
+          run_install: true
       - name: Run linting
         run: pnpm run lint
       - name: Build
