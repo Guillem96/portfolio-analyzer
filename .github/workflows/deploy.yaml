@@ -32,7 +32,7 @@ jobs:
       - name: Build
         run: pnpm run build
       - name: Export artifact in dist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: web-app
           path: ./dist
@@ -56,7 +56,7 @@ jobs:
       - name: Export image
         run: docker save portfolio-analyzer > portfolio-analyzer.tar
       - name: Export artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: image
           path: ./portfolio-analyzer.tar
