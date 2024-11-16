@@ -4,7 +4,11 @@ import { Card } from "@tremor/react"
 import { useMemo } from "react"
 
 export default function TotalDividendEarnings() {
-  const [dividends, mainCurrency, privateMode] = useBoundStore((state) => [state.dividendsPreferredCurrency, state.mainCurrency, state.privateMode])
+  const [dividends, mainCurrency, privateMode] = useBoundStore((state) => [
+    state.dividendsPreferredCurrency,
+    state.mainCurrency,
+    state.privateMode,
+  ])
 
   const dividendsEarnings = useMemo(
     () =>
@@ -30,4 +34,3 @@ export default function TotalDividendEarnings() {
     </Card>
   )
 }
-

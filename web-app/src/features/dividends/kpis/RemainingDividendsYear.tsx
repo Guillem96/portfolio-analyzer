@@ -10,15 +10,17 @@ export default function RemainingDividendsYear() {
     state.privateMode,
   ])
 
-
   const leftDividendsYear = useMemo(
     () =>
       assets
         .map(({ ticker, units }) => ({
           exDividendDate: ticker.exDividendDate,
-          expectedAmount: (ticker.nextDividendValue || 0) * units
+          expectedAmount: (ticker.nextDividendValue || 0) * units,
         }))
-        .filter(({ exDividendDate }) => exDividendDate >= new Date() && exDividendDate.getFullYear() === new Date().getFullYear())
+        .filter(
+          ({ exDividendDate }) =>
+            exDividendDate >= new Date() && exDividendDate.getFullYear() === new Date().getFullYear(),
+        )
         .map(({ expectedAmount }) => expectedAmount)
         .reduce((a, b) => a + b, 0),
     [assets],

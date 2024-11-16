@@ -1,13 +1,7 @@
 import AssetsCard from "@features/assets"
 import DividendCard from "@features/dividends"
 import { InvestmentEurTotalAmount, InvestmentUsdTotalAmount, BuysCount, InvestedPerMonth } from "@/features/buys/kpis"
-import {
-  TotalAssetValue,
-  AssetBarList,
-  CountryDonut,
-  SectorDonut,
-  AssetsCount,
-} from "@features/assets/kpis"
+import { TotalAssetValue, AssetBarList, CountryDonut, SectorDonut, AssetsCount } from "@features/assets/kpis"
 import {
   DividendsPerYear,
   ExpectedDividendsEarningsNextYear,

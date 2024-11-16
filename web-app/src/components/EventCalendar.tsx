@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react"
 import { format, subDays, getDay, lastDayOfMonth, differenceInDays, subMonths, addMonths } from "date-fns"
 import { Button, Card, Divider, Icon } from "@tremor/react"
-import { Drawer, DrawerBody, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/Drawer"
+import {
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./ui/Drawer"
 import { currencyFormatter, getWebsiteLogo, showErrorToast } from "@/services/utils"
 import { RiArrowLeftSLine, RiArrowRightSLine, RiInformation2Line, RiTimeLine } from "@remixicon/react"
 import { fetchEvents } from "@/services/assets"
@@ -33,14 +43,16 @@ export default function EventCalendar() {
 
   useEffect(() => {
     setLoading(true)
-    fetchEvents().then((events) => {
-      setEvents(events)
-      setLoading(false)
-    }).catch((error) => {
-      console.error(error)
-      showErrorToast("Error fetching events...", () => setLoading(false))
-      setLoading(false)
-    })
+    fetchEvents()
+      .then((events) => {
+        setEvents(events)
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error(error)
+        showErrorToast("Error fetching events...", () => setLoading(false))
+        setLoading(false)
+      })
   }, [])
 
   if (loading) {
@@ -55,15 +67,21 @@ export default function EventCalendar() {
   return (
     <article>
       <header className="flex flex-row items-center justify-between gap-4">
-        <Button variant="light" icon={RiArrowLeftSLine} onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
-        </Button>
+        <Button
+          variant="light"
+          icon={RiArrowLeftSLine}
+          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+        ></Button>
         <h2 className="text-center text-3xl text-slate-900 dark:text-neutral-300">
           {format(currentMonth, "LLLL, yyyy")}
         </h2>
-        <Button variant="light" icon={RiArrowRightSLine} onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-        </Button>
+        <Button
+          variant="light"
+          icon={RiArrowRightSLine}
+          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+        ></Button>
       </header>
-      <span className="hidden lg:d-block">
+      <span className="lg:d-block hidden">
         <DesktopEventCalendar currentMonth={currentMonth} events={events} />
       </span>
       <span className="lg:hidden">
@@ -71,7 +89,6 @@ export default function EventCalendar() {
       </span>
     </article>
   )
-
 }
 
 const MobileEventCalendar = ({ currentMonth, events }: Props) => {
@@ -89,18 +106,21 @@ const MobileEventCalendar = ({ currentMonth, events }: Props) => {
 
   const lastDay = lastDayOfMonth(currentMonth).getDate()
   return (
-    <ul className="p-4 flex flex-col gap-y-4 pb-12" >
-      {
-        range(lastDay).map((day) => {
-          return (
-            <MobileDay key={day} events={events} date={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day + 1)} />
-          )
-        })
-      }
-    </ul >)
+    <ul className="flex flex-col gap-y-4 p-4 pb-12">
+      {range(lastDay).map((day) => {
+        return (
+          <MobileDay
+            key={day}
+            events={events}
+            date={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day + 1)}
+          />
+        )
+      })}
+    </ul>
+  )
 }
 
-const MobileDay = ({ date, events }: { date: Date, events: Record<string, Event[]> }) => {
+const MobileDay = ({ date, events }: { date: Date; events: Record<string, Event[]> }) => {
   const dayEvents = events[format(date, "yyyy-MM-dd")] || []
   if (dayEvents.length === 0) {
     return null
@@ -108,9 +128,11 @@ const MobileDay = ({ date, events }: { date: Date, events: Record<string, Event[
 
   return (
     <article>
-      <div className="flex flex-row justify-between items-center">
-        <h3 className="text-tremor-content dark:text-white font-bold underline text-left py-2">{format(date, "EEEE, dd")}</h3>
-        <InfoDrawer date={date} events={dayEvents} >
+      <div className="flex flex-row items-center justify-between">
+        <h3 className="py-2 text-left font-bold text-tremor-content underline dark:text-white">
+          {format(date, "EEEE, dd")}
+        </h3>
+        <InfoDrawer date={date} events={dayEvents}>
           <Button variant="light" size="sm" icon={RiInformation2Line} />
         </InfoDrawer>
       </div>
@@ -118,7 +140,7 @@ const MobileDay = ({ date, events }: { date: Date, events: Record<string, Event[
         {dayEvents.map((event) => (
           <li key={event.ticker.ticker}>
             <div
-              className={`mb-2 rounded-sm border-l-4 border-solid ${COLORS_MAPPING[event.eventType]} ${BG_COLORS_MAPPING[event.eventType]} flex items-center flex-row gap-x-2 p-1 pl-2`}
+              className={`mb-2 rounded-sm border-l-4 border-solid ${COLORS_MAPPING[event.eventType]} ${BG_COLORS_MAPPING[event.eventType]} flex flex-row items-center gap-x-2 p-1 pl-2`}
             >
               <img
                 className="d-block h-6 w-6 rounded-full bg-transparent bg-white"
@@ -148,7 +170,7 @@ const DesktopEventCalendar = ({ currentMonth, events }: Props) => {
   const nextMonthDaysToRender = 7 - lastDay.getDay()
 
   return (
-    <main className="grid grid-cols-7 gap-2 m-auto">
+    <main className="m-auto grid grid-cols-7 gap-2">
       {weekdays.map((weekday) => (
         <div key={weekday} className="p-2">
           <p className="text-center text-sm">{weekday}</p>
@@ -171,12 +193,21 @@ const DesktopEventCalendar = ({ currentMonth, events }: Props) => {
 
       {/* Current month days */}
       {range(lastDay.getDate()).map((day) => (
-        <Day key={day} events={events} date={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day + 1)} isCurrentMonth />
+        <Day
+          key={day}
+          events={events}
+          date={new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day + 1)}
+          isCurrentMonth
+        />
       ))}
 
       {/* Next month days */}
       {range(nextMonthDaysToRender).map((day) => (
-        <Day key={`next-${day}`} events={events} date={new Date(nextMonth.getFullYear(), nextMonth.getMonth(), day + 1)} />
+        <Day
+          key={`next-${day}`}
+          events={events}
+          date={new Date(nextMonth.getFullYear(), nextMonth.getMonth(), day + 1)}
+        />
       ))}
     </main>
   )
@@ -184,20 +215,28 @@ const DesktopEventCalendar = ({ currentMonth, events }: Props) => {
 
 const range = (length: number) => Array.from({ length }, (_, i) => i)
 
-const Day = ({ date, events, isCurrentMonth }: { date: Date; events: Record<string, Event[]>, isCurrentMonth?: boolean }) => {
+const Day = ({
+  date,
+  events,
+  isCurrentMonth,
+}: {
+  date: Date
+  events: Record<string, Event[]>
+  isCurrentMonth?: boolean
+}) => {
   const dayEvents = events[format(date, "yyyy-MM-dd")] || []
   const eventsToShow = dayEvents.length > MAX_EVENTS_TO_SHOW ? dayEvents.slice(0, MAX_EVENTS_TO_SHOW - 1) : dayEvents
   const nMore = dayEvents.length - eventsToShow.length
 
   const dayContent = (
     <article className={`${!isCurrentMonth ? "opacity-60" : ""} ${dayEvents.length > 0 ? "hover:cursor-pointer" : ""}`}>
-      <Card className={`flex aspect-square flex-col gap-y-2 p-1 overflow-hidden ${dayEvents.length > 0 ? "" : ""} `}>
+      <Card className={`flex aspect-square flex-col gap-y-2 overflow-hidden p-1 ${dayEvents.length > 0 ? "" : ""} `}>
         <h3 className="text-lg text-tremor-content dark:text-dark-tremor-content">{date.getDate()}</h3>
         <ul>
           {eventsToShow.map((event) => (
             <li key={event.ticker.ticker}>
               <div
-                className={`mb-2 rounded-sm border-l-4 border-solid ${COLORS_MAPPING[event.eventType]} ${BG_COLORS_MAPPING[event.eventType]} flex items-center flex-row gap-x-2 p-1 pl-2`}
+                className={`mb-2 rounded-sm border-l-4 border-solid ${COLORS_MAPPING[event.eventType]} ${BG_COLORS_MAPPING[event.eventType]} flex flex-row items-center gap-x-2 p-1 pl-2`}
               >
                 <img
                   className="d-block h-6 w-6 rounded-full bg-transparent bg-white"
@@ -214,7 +253,6 @@ const Day = ({ date, events, isCurrentMonth }: { date: Date; events: Record<stri
             </div>
           )}
         </ul>
-
       </Card>
     </article>
   )
@@ -224,19 +262,24 @@ const Day = ({ date, events, isCurrentMonth }: { date: Date; events: Record<stri
   }
 
   return (
-    <InfoDrawer date={date} events={dayEvents} >
+    <InfoDrawer date={date} events={dayEvents}>
       {dayContent}
     </InfoDrawer>
-  );
+  )
 }
 
-
-const InfoDrawer = ({ events, date, children }: { date: Date, events: Event[], children: any }) => {
+const InfoDrawer = ({
+  events,
+  date,
+  children,
+}: {
+  date: Date
+  events: Event[]
+  children: string | JSX.Element | JSX.Element[]
+}) => {
   return (
     <Drawer>
-      <DrawerTrigger asChild>
-        {children}
-      </DrawerTrigger>
+      <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent className="sm:max-w-lg">
         <DrawerHeader>
           <DrawerTitle className="pt-2">Financial events for {format(date, "dd-MM-yyyy")}</DrawerTitle>
@@ -248,50 +291,53 @@ const InfoDrawer = ({ events, date, children }: { date: Date, events: Event[], c
           <ul className="max-h-[96em] overflow-y-scroll">
             {events.map((event) => (
               <li key={`drawer-${event.ticker.ticker}`} className="pb-8">
-                <header
-                  className="flex flex-row items-center gap-x-4"
-                >
+                <header className="flex flex-row items-center gap-x-4">
                   <img
                     className="d-block h-12 w-12 rounded-full bg-transparent bg-white"
                     src={getWebsiteLogo(event.ticker.website)}
                     alt={`${event.ticker.ticker} company logo`}
                   />
-                  <h3 className="text-tremor-content-strong dark:text-dark-tremor-brand-emphasis font-bold text-lg">{event.ticker.name}</h3>
+                  <h3 className="text-lg font-bold text-tremor-content-strong dark:text-dark-tremor-brand-emphasis">
+                    {event.ticker.name}
+                  </h3>
                 </header>
                 {event.eventType === "Ex-Dividend" ? (
-                  <main className="flex flex-row gap-y-2 items-center justify-center gap-x-8 mt-2 text-tremor-content dark:text-dark-tremor-content">
+                  <main className="mt-2 flex flex-row items-center justify-center gap-x-8 gap-y-2 text-tremor-content dark:text-dark-tremor-content">
                     <div className="flex flex-col items-center justify-center">
                       <h4 className="text-tremor-content-subtle dark:text-dark-tremor-brand-subtle">Dividend value</h4>
-                      <p className="text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis">{currencyFormatter(event.extraData.dividendValue, event.ticker.currency, false)}</p>
+                      <p className="text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis">
+                        {currencyFormatter(event.extraData.dividendValue, event.ticker.currency, false)}
+                      </p>
                     </div>
-                    <div className="flex flex-col gap-y-2 items-center justify-center">
+                    <div className="flex flex-col items-center justify-center gap-y-2">
                       <h4 className="text-tremor-content-subtle dark:text-dark-tremor-brand-subtle">Dividend yield</h4>
-                      <p className="text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis">{(event.extraData.dividendYield * 100).toFixed(2)}%</p>
+                      <p className="text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis">
+                        {(event.extraData.dividendYield * 100).toFixed(2)}%
+                      </p>
                     </div>
-                    <div className="flex flex-col gap-y-2 items-center justify-center">
+                    <div className="flex flex-col items-center justify-center gap-y-2">
                       <h4 className="text-tremor-content-subtle dark:text-dark-tremor-brand-subtle">Expected amount</h4>
-                      <p className="text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis">{currencyFormatter(event.extraData.expectedAmount, event.ticker.currency, false)}</p>
+                      <p className="text-tremor-content-emphasis dark:text-dark-tremor-content-emphasis">
+                        {currencyFormatter(event.extraData.expectedAmount, event.ticker.currency, false)}
+                      </p>
                     </div>
                   </main>
-                ) : <main className="p-4">
-                  <p className="text-tremor-content dark:text-dark-tremor-content">Earnings report</p>
-
-                </main>}
+                ) : (
+                  <main className="p-4">
+                    <p className="text-tremor-content dark:text-dark-tremor-content">Earnings report</p>
+                  </main>
+                )}
 
                 <footer>
                   <Divider />
                 </footer>
               </li>
-            ))
-            }
+            ))}
           </ul>
         </DrawerBody>
         <DrawerFooter className="mt-6">
           <DrawerClose asChild>
-            <Button
-              className="mt-2 w-full sm:mt-0 sm:w-fit"
-              variant="secondary"
-            >
+            <Button className="mt-2 w-full sm:mt-0 sm:w-fit" variant="secondary">
               Go back
             </Button>
           </DrawerClose>
@@ -300,6 +346,6 @@ const InfoDrawer = ({ events, date, children }: { date: Date, events: Event[], c
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
-    </Drawer >
+    </Drawer>
   )
 }

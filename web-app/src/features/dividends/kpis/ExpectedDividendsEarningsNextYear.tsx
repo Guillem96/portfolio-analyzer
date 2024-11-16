@@ -11,10 +11,7 @@ export default function ExpectedDividendsEarningsNextYear() {
   ])
 
   const nextYearDividends = useMemo(
-    () =>
-      assets
-        .map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units)
-        .reduce((a, b) => a + b, 0),
+    () => assets.map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units).reduce((a, b) => a + b, 0),
     [assets],
   )
 

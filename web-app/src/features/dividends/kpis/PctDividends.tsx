@@ -9,10 +9,7 @@ const PctDividends = (withRespectBuys: boolean) => {
   const totalAssetValue = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])
 
   const nextYearDividends = useMemo(
-    () =>
-      assets
-        .map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units)
-        .reduce((a, b) => a + b, 0),
+    () => assets.map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units).reduce((a, b) => a + b, 0),
     [assets],
   )
 

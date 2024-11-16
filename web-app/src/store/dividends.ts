@@ -1,6 +1,11 @@
 import { StateCreator } from "zustand"
 import type { Dividend, DividendWithId } from "@/types.d"
-import { deleteDividendById, fetchDividends as externalFetchDividends, fetchDividendsPreferredCurrency, postDividend } from "@services/dividends"
+import {
+  deleteDividendById,
+  fetchDividends as externalFetchDividends,
+  fetchDividendsPreferredCurrency,
+  postDividend,
+} from "@services/dividends"
 import { getErrorMessage, showErrorToast } from "@services/utils"
 import { SettingSlice } from "./settings"
 

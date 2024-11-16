@@ -63,7 +63,6 @@ const BarChartDividendsPerYear = () => {
   )
 }
 
-
 const BarChartDividendsPerMonth = () => {
   const [dividends, mainCurrency, dividendsLoading, privateMode] = useBoundStore((state) => [
     state.dividendsPreferredCurrency,
@@ -79,8 +78,7 @@ const BarChartDividendsPerMonth = () => {
       return { ...div, date: new Date(div.date) }
     })
 
-    const currInv = invWithDate
-      .filter(({ date }) => date.getFullYear() === year || date.getFullYear() - 1)
+    const currInv = invWithDate.filter(({ date }) => date.getFullYear() === year || date.getFullYear() - 1)
 
     const barData = MONTHS.map((month) => ({ date: month, [year]: 0, [year - 1]: 0 }))
 
