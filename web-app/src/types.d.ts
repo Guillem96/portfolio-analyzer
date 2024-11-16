@@ -19,7 +19,9 @@ export interface TickerInfo {
   name: string
   price: number
   yearlyDividendYield: number | null
+  yearlyDividendValue: number | null
   nextDividendYield: number
+  nextDividendValue: number | null
   currency: CurrencyType
   exDividendDate: Date
   earningDates: Date[]
@@ -28,6 +30,23 @@ export interface TickerInfo {
   country: Country
   isEtf: boolean
 }
+
+type ExDividendEvent = {
+  eventType: "Ex-Dividend"
+  ticker: TickerInfo
+  extraData: {
+    dividendValue: number
+    dividendYield: number
+    expectedAmount: number
+  }
+}
+
+type EarningEvent = {
+  eventType: "Earning"
+  ticker: TickerInfo
+}
+
+export type Event = ExDividendEvent | EarningEvent
 
 export interface Buy {
   ticker: string
@@ -60,7 +79,7 @@ export interface DividendWithId extends Dividend {
 
 export interface Asset {
   name: stirng
-  ticker: string
+  ticker: TickerInfo
   buyValue: number
   value: number
   units: number

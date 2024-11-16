@@ -1,11 +1,12 @@
 import { StateCreator } from "zustand"
 import type { Dividend, DividendWithId } from "@/types.d"
-import { deleteDividendById, fetchDividends as externalFetchDividends, postDividend } from "@services/dividends"
+import { deleteDividendById, fetchDividends as externalFetchDividends, fetchDividendsPreferredCurrency, postDividend } from "@services/dividends"
 import { getErrorMessage, showErrorToast } from "@services/utils"
 import { SettingSlice } from "./settings"
 
 interface State {
   dividends: DividendWithId[]
+  dividendsPreferredCurrency: DividendWithId[]
   selectedDividend: Dividend | null
   dividendLoading: boolean
   dividendError: string | null
@@ -13,6 +14,7 @@ interface State {
 
 interface Actions {
   fetchDividends: () => Promise<void>
+  fetchDividendsPreferredCurrency: () => Promise<void>
   addDividend: (inv: Dividend) => Promise<void>
   deleteDividend: (invId: string) => Promise<void>
   selectDividend: (dividend: Dividend) => void
@@ -22,6 +24,7 @@ export type DividendSlice = State & Actions
 
 export const createDividendSlice: StateCreator<State & SettingSlice, [], [], DividendSlice> = (set, get) => ({
   dividends: [],
+  dividendsPreferredCurrency: [],
   selectedDividend: null,
   dividendLoading: false,
   dividendError: null,
@@ -30,6 +33,17 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
     try {
       const dividends = await externalFetchDividends()
       set({ dividends, dividendLoading: false })
+    } catch (error) {
+      console.error(error)
+      showErrorToast("Error fetching the dividends...", () => set({ dividendError: null }))
+      set({ dividendError: getErrorMessage(error), dividendLoading: false })
+    }
+  },
+  fetchDividendsPreferredCurrency: async () => {
+    set({ dividendLoading: true })
+    try {
+      const dividendsPreferredCurrency = await fetchDividendsPreferredCurrency()
+      set({ dividendsPreferredCurrency, dividendLoading: false })
     } catch (error) {
       console.error(error)
       showErrorToast("Error fetching the dividends...", () => set({ dividendError: null }))

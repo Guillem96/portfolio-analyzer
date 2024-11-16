@@ -4,24 +4,18 @@ import { Card } from "@tremor/react"
 import { useMemo } from "react"
 
 export default function ExpectedDividendsEarningsNextYear() {
-  const [tickerToInfo, assets, mainCurrency, privateMode] = useBoundStore((state) => [
-    state.tickerToInfo,
+  const [assets, mainCurrency, privateMode] = useBoundStore((state) => [
     state.assets,
     state.mainCurrency,
     state.privateMode,
   ])
 
-  const tickerToAssetValue = useMemo(
-    () => Object.fromEntries(assets.map(({ ticker, value }) => [ticker, value])),
-    [assets],
-  )
-
   const nextYearDividends = useMemo(
     () =>
-      Object.values(tickerToInfo)
-        .map(({ ticker, yearlyDividendYield }) => tickerToAssetValue[ticker] * (yearlyDividendYield || 0))
+      assets
+        .map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units)
         .reduce((a, b) => a + b, 0),
-    [tickerToAssetValue],
+    [assets],
   )
 
   return (

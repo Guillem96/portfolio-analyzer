@@ -5,6 +5,10 @@ export const fetchDividends = async (): Promise<DividendWithId[]> => {
   return await request("dividends/", "GET")
 }
 
+export const fetchDividendsPreferredCurrency = async (): Promise<DividendWithId[]> => {
+  return await request("dividends/preferred-currency", "GET")
+}
+
 export const postDividend = async (dividend: Dividend): Promise<DividendWithId> => {
   return await request("dividends/", "POST", dividend)
 }

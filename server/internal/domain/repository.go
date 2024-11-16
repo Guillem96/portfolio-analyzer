@@ -9,6 +9,7 @@ type BuysRepository interface {
 type DividendsRepository interface {
 	Create(dividend Dividend, userEmail string) (*DividendWithId, error)
 	FindAll(userEmail string) (Dividends, error)
+	FindAllPreferredCurrency(userEmail string) (Dividends, error)
 	Delete(id string, userEmail string) error
 }
 

@@ -1,5 +1,5 @@
-export { TotalDividendEarningsEUR, TotalDividendEarningsUSD } from "./TotalDividendEarnings"
-export { default as DividendsPerYear } from "./DividendsPerYear"
+export { default as TotalDividendEarnings } from "./TotalDividendEarnings"
+export { default as DividendsPerYear } from "./DividendsPerTime"
 export { default as UpcomingDividends } from "./UpcomingDividends"
 export { default as RemainingDividendsYear } from "./RemainingDividendsYear"
 export { default as ExpectedDividendsEarningsNextYear } from "./ExpectedDividendsEarningsNextYear"

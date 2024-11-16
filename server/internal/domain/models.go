@@ -156,6 +156,7 @@ type Ticker struct {
 	NextDividendValue   float32        `json:"next_dividend_value"`
 	Currency            string         `json:"currency" validate:"required,eq=EUR|eq=USD|eq=GBp"`
 	Sector              string         `json:"sector"`
+	Website             string         `json:"website"`
 	Country             string         `json:"country"`
 	Industry            string         `json:"industry"`
 	IsEtf               bool           `json:"is_etf"`
@@ -181,9 +182,9 @@ func (ts *Tickers) FromJSON(r io.Reader) error {
 }
 
 type FinancialEvent struct {
-	Ticker    Ticker `json:"ticker"`
-	EventType string `json:"eventType"`
-	ExtraData map[string]interface{}
+	Ticker    Ticker                 `json:"ticker"`
+	EventType string                 `json:"eventType"`
+	ExtraData map[string]interface{} `json:"extraData"`
 }
 
 type EventCalendar map[Date][]FinancialEvent

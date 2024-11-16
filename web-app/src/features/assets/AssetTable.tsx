@@ -17,7 +17,6 @@ const MAX_ITEMS_PER_PAGE = 15
 const AssetTableRow = ({ asset }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)
   const mainCurrency = useBoundStore((state) => state.mainCurrency)
-  const tickerToInfo = useBoundStore((state) => state.tickerToInfo)
 
   const [showAbsolute, setShowAbsolute] = useState(false)
 
@@ -30,25 +29,21 @@ const AssetTableRow = ({ asset }: RowProps) => {
     <TableRow>
       <TableCell>
         <div className="flex items-center space-x-2.5">
-          {Object.keys(tickerToInfo).length > 0 && (
-            <img
-              className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
-              src={getWebsiteLogo(tickerToInfo[ticker].website)}
-              alt={`${ticker} company logo`}
-            />
-          )}
-          <p>{ticker}</p>
-          <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">{ticker}</p>
+          <img
+            className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+            src={getWebsiteLogo(ticker.website)}
+            alt={`${ticker.ticker} company logo`}
+          />
+          <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">{ticker.ticker}</p>
           <span className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">{name}</span>
         </div>
       </TableCell>
       <TableCell onClick={() => setShowAbsolute(!showAbsolute)}>
         <span
-          className={` ${
-            changeType === "positive"
-              ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
-              : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
-          } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+          className={` ${changeType === "positive"
+            ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
+            : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
+            } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
           {showAbsolute ? currencyFormatter(absolute, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
         </span>
@@ -82,7 +77,7 @@ export default function AssetTable() {
     if (sortBy === "amount") return b.value - a.value
     if (sortBy === "num-shares") return b.units - a.units
     if (sortBy === "country" || sortBy === "name" || sortBy === "sector") return a[sortBy].localeCompare(b[sortBy])
-    return a.ticker.localeCompare(b.ticker)
+    return a.ticker.ticker.localeCompare(b.ticker.ticker)
   }
 
   const onClickSortHandler = (sb: SortKeys) => () => {
@@ -130,7 +125,7 @@ export default function AssetTable() {
 
               <TableBody>
                 {assetsToRender.map((asset) => (
-                  <AssetTableRow key={`${asset.ticker}-${asset.currency}`} asset={asset} />
+                  <AssetTableRow key={`${asset.ticker.ticker}-${asset.currency}`} asset={asset} />
                 ))}
               </TableBody>
             </Table>

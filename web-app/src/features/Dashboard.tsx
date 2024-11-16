@@ -7,7 +7,6 @@ import {
   CountryDonut,
   SectorDonut,
   AssetsCount,
-  UpcomingEarningCalls,
 } from "@features/assets/kpis"
 import {
   DividendsPerYear,
@@ -15,13 +14,13 @@ import {
   PctDividendsOverAssetValue,
   PctDividendsOverBuys,
   RemainingDividendsYear,
-  TotalDividendEarningsEUR,
-  TotalDividendEarningsUSD,
+  TotalDividendEarnings,
   UpcomingDividends,
 } from "@features/dividends/kpis"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
 import BuysCard from "@/features/buys"
+import EventCalendar from "@/components/EventCalendar"
 
 const DividendsTab = () => (
   <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -29,8 +28,7 @@ const DividendsTab = () => (
     <div className="flex flex-col gap-2">
       <DividendsPerYear />
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-        <TotalDividendEarningsEUR />
-        <TotalDividendEarningsUSD />
+        <TotalDividendEarnings />
         <RemainingDividendsYear />
         <ExpectedDividendsEarningsNextYear />
         <PctDividendsOverAssetValue />
@@ -58,7 +56,6 @@ const AssetsTab = () => (
     <div className="grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
       <CountryDonut />
       <SectorDonut />
-      <UpcomingEarningCalls />
     </div>
   </>
 )
@@ -90,6 +87,7 @@ export default function Dashboard() {
           <Tab value="1">Investements</Tab>
           <Tab value="2">Assets</Tab>
           <Tab value="3">Dividends</Tab>
+          <Tab value="4">Events</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -100,6 +98,9 @@ export default function Dashboard() {
           </TabPanel>
           <TabPanel>
             <DividendsTab />
+          </TabPanel>
+          <TabPanel>
+            <EventCalendar />
           </TabPanel>
         </TabPanels>
       </TabGroup>

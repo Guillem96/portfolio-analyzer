@@ -126,6 +126,54 @@ func (r *DividendsRepository) FindAll(userEmail string) (domain.Dividends, error
 	return dividends, nil
 }
 
+func (r *DividendsRepository) FindAllPreferredCurrency(userEmail string) (domain.Dividends, error) {
+	dbDividends := []Dividend{}
+	err := r.db.Raw(`
+	WITH _USER AS (
+		SELECT
+			PREFERRED_CURRENCY
+		FROM USERS
+		WHERE EMAIL = ?
+	),
+	
+	_RATES AS (
+		SELECT
+			SOURCE_CURRENCY,
+			RATE
+		FROM EXCHANGE_RATES
+		WHERE TARGET_CURRENCY = (SELECT PREFERRED_CURRENCY FROM _USER)
+	)
+	SELECT
+		DIVIDENDS.*,
+		AMOUNT * _RATES.RATE AS TOTAL_AMOUNT
+	FROM DIVIDENDS
+	INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = DIVIDENDS.CURRENCY
+	WHERE USER_EMAIL = ? AND DIVIDENDS.DELETED_AT IS NULL
+	`, userEmail, userEmail).Scan(&dbDividends).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	dividends := make([]domain.DividendWithId, len(dbDividends))
+	for i, dbDividend := range dbDividends {
+		dividends[i] = domain.DividendWithId{
+			Id: dbDividend.ID,
+			Dividend: domain.Dividend{
+				Company:                   dbDividend.Company,
+				Amount:                    dbDividend.Amount,
+				Country:                   dbDividend.Country,
+				Currency:                  dbDividend.Currency,
+				DoubleTaxationOrigin:      dbDividend.DoubleTaxationOrigin,
+				DoubleTaxationDestination: dbDividend.DoubleTaxationDestination,
+				Date:                      domain.Date(dbDividend.Date),
+			},
+		}
+	}
+
+	return dividends, nil
+}
+
 func (r *DividendsRepository) Delete(id string, userEmail string) error {
 	return r.db.Where("id = ? AND user_email = ?", id, userEmail).Delete(&Dividend{}).Error
 }

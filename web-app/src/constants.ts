@@ -1,5 +1,7 @@
 import { Risk, Country } from "@/types.d"
 
+export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
 export const RISK_COLOR = {
   [Risk.LOW_RISK]: "bg-green-400",
   [Risk.MEDIUM_RISK]: "bg-yellow-400",

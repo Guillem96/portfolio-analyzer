@@ -40,6 +40,7 @@ func SetupRouter(
 	dividendsRouter := router.PathPrefix("/dividends").Subrouter()
 	dividendsRouter.Use(auth.JwtMiddleware)
 	dividendsRouter.HandleFunc("/", dividendsHandler.ListDividendsHandler).Methods("GET")
+	dividendsRouter.HandleFunc("/preferred-currency", dividendsHandler.ListPreferredCurrencyDividendsHandler).Methods("GET")
 	dividendsRouter.HandleFunc("/", dividendsHandler.CreateDividendHandler).Methods("POST")
 	dividendsRouter.HandleFunc("/{id}", dividendsHandler.DeleteDividendHandler).Methods("DELETE")
 

@@ -4,29 +4,24 @@ import { Card } from "@tremor/react"
 import { useMemo } from "react"
 
 export default function RemainingDividendsYear() {
-  const [tickerToInfo, assets, mainCurrency, privateMode] = useBoundStore((state) => [
-    state.tickerToInfo,
+  const [assets, mainCurrency, privateMode] = useBoundStore((state) => [
     state.assets,
     state.mainCurrency,
     state.privateMode,
   ])
 
-  const tickerToAssetValue = useMemo(
-    () => Object.fromEntries(assets.map(({ ticker, value }) => [ticker, value])),
-    [assets],
-  )
 
   const leftDividendsYear = useMemo(
     () =>
-      Object.values(tickerToInfo)
-        .map(({ ticker, exDividendDate, nextDividendYield }) => ({
-          exDividendDate,
-          expectedAmount: tickerToAssetValue[ticker] * nextDividendYield,
+      assets
+        .map(({ ticker, units }) => ({
+          exDividendDate: ticker.exDividendDate,
+          expectedAmount: (ticker.nextDividendValue || 0) * units
         }))
-        .filter(({ exDividendDate }) => exDividendDate >= new Date())
+        .filter(({ exDividendDate }) => exDividendDate >= new Date() && exDividendDate.getFullYear() === new Date().getFullYear())
         .map(({ expectedAmount }) => expectedAmount)
         .reduce((a, b) => a + b, 0),
-    [tickerToAssetValue],
+    [assets],
   )
 
   return (

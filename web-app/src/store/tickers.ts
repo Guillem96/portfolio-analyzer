@@ -3,8 +3,7 @@ import type { TickerInfo } from "@/types.d"
 
 import { getErrorMessage, showErrorToast } from "@services/utils"
 import { SettingSlice } from "./settings"
-import { BuySlice } from "./buys"
-import { fetchMultipleTickers } from "@/services/ticker"
+import { AssetSlice } from "./assets"
 
 interface State {
   tickerToInfo: Record<string, TickerInfo>
@@ -18,26 +17,16 @@ interface Actions {
 
 export type TickerSlice = State & Actions
 
-export const createTickerSlice: StateCreator<State & BuySlice & SettingSlice, [], [], TickerSlice> = (set, get) => ({
+export const createTickerSlice: StateCreator<State & AssetSlice & SettingSlice, [], [], TickerSlice> = (set, get) => ({
   tickerToInfo: {},
   tickersLoading: false,
   tickerError: null,
   fetchTickers: async () => {
-    const { buys } = get()
+    const { assets } = get()
     set({ tickersLoading: true })
 
-    const uniqueTickers = new Set(buys.map(({ ticker }) => ticker))
-    if (uniqueTickers.size === 0) {
-      set({ tickersLoading: false })
-      return
-    }
-
     try {
-      const tickerToInfo = await fetchMultipleTickers(...uniqueTickers)
-      if (tickerToInfo === null) {
-        showErrorToast("Error fetching tickers...", () => set({ tickerError: null }))
-        return
-      }
+      const tickerToInfo = Object.fromEntries(assets.map(({ ticker }) => [ticker.ticker, ticker]))
       set({ tickerToInfo, tickersLoading: false })
     } catch (error) {
       console.error(error)

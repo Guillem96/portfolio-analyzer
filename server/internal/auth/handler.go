@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
@@ -120,12 +121,16 @@ func (ah *Handler) HandleGoogleCallback(w http.ResponseWriter, r *http.Request) 
 		HttpOnly: true,
 		Secure:   utils.IsProdEnvironment(),
 		Path:     "/",
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 
 	// Redirect to a frontend page or return the token as JSON
-	http.Redirect(w, r, "/portfolio-analyzer/", http.StatusTemporaryRedirect)
-
+	frontendUrl, present := os.LookupEnv("FRONTEND_URL")
+	if !present {
+		http.Redirect(w, r, "/portfolio-analyzer/", http.StatusTemporaryRedirect)
+	} else {
+		http.Redirect(w, r, frontendUrl, http.StatusTemporaryRedirect)
+	}
 	// w.Header().Set("Content-Type", "application/json")
 	// json.NewEncoder(w).Encode(map[string]string{
 	// 	"token": tokenString,

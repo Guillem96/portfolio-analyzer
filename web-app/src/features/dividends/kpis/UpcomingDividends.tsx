@@ -13,22 +13,21 @@ const TAX_RATE: Record<Country, number> = {
 }
 
 export default function UpcomingDividends() {
-  const [tickerToInfo, assets, mainCurrency, privateMode, selectDividend] = useBoundStore((state) => [
-    state.tickerToInfo,
+  const [assets, mainCurrency, privateMode, selectDividend] = useBoundStore((state) => [
     state.assets,
     state.mainCurrency,
     state.privateMode,
     state.selectDividend,
   ])
-  const tickerToAssetValue = Object.fromEntries(assets.map(({ ticker, value }) => [ticker, value]))
 
-  const nextExDividends = Object.values(tickerToInfo)
-    .map(({ ticker, exDividendDate, nextDividendYield, country }) => ({
-      ticker,
+  const nextExDividends = assets
+    .map(({ ticker, country, units }) => ({
+      ticker: ticker.ticker,
+      exDividendDate: ticker.exDividendDate,
+      nextDividendValue: ticker.nextDividendValue || 0,
       country,
-      exDividendDate,
-      nextDividendYield,
-      expectedAmount: tickerToAssetValue[ticker] * nextDividendYield,
+      units,
+      expectedAmount: (ticker.nextDividendYield || 0) * units,
     }))
     .sort((a, b) => a.exDividendDate.getTime() - b.exDividendDate.getTime())
 
@@ -38,16 +37,16 @@ export default function UpcomingDividends() {
         Upcoming Ex Dividends
       </h1>
       <div className="flex flex-col gap-2 overflow-scroll md:grid md:grid-cols-4">
-        {nextExDividends.map(({ ticker, exDividendDate, nextDividendYield, expectedAmount, country }, index) => (
+        {nextExDividends.map(({ ticker, exDividendDate, units, nextDividendValue, expectedAmount, country }, index) => (
           <Callout
             key={`exdiv-${ticker}-${index}`}
-            title={`${exDividendDate.toLocaleDateString("es")} - ${ticker} (${(nextDividendYield * 100).toFixed(2)}%)`}
+            title={`${exDividendDate.toLocaleDateString("es")} - ${ticker} (${currencyFormatter(nextDividendValue, mainCurrency, privateMode)})`}
             color={exDividendDate >= new Date() ? "teal" : "red"}
           >
             Approx. amount:{" "}
             <div className="flex justify-between">
               <span>
-                {`${currencyFormatter(tickerToAssetValue[ticker], mainCurrency, privateMode)} x ${(nextDividendYield * 100).toFixed(2)}% = `}
+                {`${units} shares x ${currencyFormatter(nextDividendValue, mainCurrency, privateMode)} = `}
                 <b>{currencyFormatter(expectedAmount, mainCurrency, privateMode)}</b>
               </span>
               <Button

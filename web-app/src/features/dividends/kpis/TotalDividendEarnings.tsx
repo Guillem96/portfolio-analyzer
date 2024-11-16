@@ -3,17 +3,12 @@ import { useBoundStore } from "@/store"
 import { Card } from "@tremor/react"
 import { useMemo } from "react"
 
-interface Props {
-  currency: "$" | "€"
-}
-
-export default function TotalDividendEarnings({ currency }: Props) {
-  const [dividends, privateMode] = useBoundStore((state) => [state.dividends, state.privateMode])
+export default function TotalDividendEarnings() {
+  const [dividends, mainCurrency, privateMode] = useBoundStore((state) => [state.dividendsPreferredCurrency, state.mainCurrency, state.privateMode])
 
   const dividendsEarnings = useMemo(
     () =>
       dividends
-        .filter((inv) => inv.currency === currency)
         .map(
           ({ amount, doubleTaxationDestination, doubleTaxationOrigin }) =>
             amount * (1 - doubleTaxationOrigin / 100) * (1 - doubleTaxationDestination / 100),
@@ -25,16 +20,14 @@ export default function TotalDividendEarnings({ currency }: Props) {
   return (
     <Card decoration="top">
       <p className="text-tremor-default font-medium text-tremor-content dark:text-dark-tremor-content">
-        Net Dividend Earnings {currency}
+        Net Dividend Earnings
       </p>
       <div className="mt-2 flex items-baseline space-x-2.5">
         <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-          {currencyFormatter(dividendsEarnings, currency, privateMode)}
+          {currencyFormatter(dividendsEarnings, mainCurrency, privateMode)}
         </p>
       </div>
     </Card>
   )
 }
 
-export const TotalDividendEarningsUSD = () => <TotalDividendEarnings currency="$" />
-export const TotalDividendEarningsEUR = () => <TotalDividendEarnings currency="€" />

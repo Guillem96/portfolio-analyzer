@@ -79,6 +79,27 @@ func (dh *Handler) ListDividendsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 }
 
+// ListPreferredCurrencyDividendsHandler returns all the dividends of the user in the preferred currency
+func (dh *Handler) ListPreferredCurrencyDividendsHandler(w http.ResponseWriter, r *http.Request) {
+	claims := r.Context().Value(auth.UserKeyContext).(*auth.Claims)
+	user := claims.User
+
+	dividends, err := dh.repository.FindAllPreferredCurrency(user.Email)
+	if err != nil {
+		dh.l.Error("Failed to get dividends", "error", err.Error())
+		utils.SendHTTPMessage(w, http.StatusInternalServerError, "Failed to get dividends")
+		return
+	}
+
+	if err := dividends.ToJSON(w); err != nil {
+		dh.l.Error("Failed to serialize dividends", "error", err.Error())
+		utils.SendHTTPMessage(w, http.StatusInternalServerError, "Failed to serialize dividends")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+}
+
 // DeleteDividendHandler deletes a dividend
 func (dh *Handler) DeleteDividendHandler(w http.ResponseWriter, r *http.Request) {
 	claims := r.Context().Value(auth.UserKeyContext).(*auth.Claims)

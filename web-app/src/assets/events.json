@@ -3,14 +3,15 @@
         {
             "ticker": {
                 "ticker": "SIE.F",
-                "price": 186.48,
+                "price": 191.24,
                 "name": "SIEMENS AG                    N",
-                "yearly_dividend_yield": 0.0254,
+                "yearly_dividend_yield": 0.026199998,
                 "next_dividend_yield": 0.025,
                 "yearly_dividend_value": 4.7,
                 "next_dividend_value": 4.7,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.siemens.com",
                 "country": "Germany",
                 "industry": "Specialty Industrial Machinery",
                 "is_etf": false,
@@ -31,14 +32,15 @@
         {
             "ticker": {
                 "ticker": "BAS.DE",
-                "price": 45.865,
+                "price": 42.51,
                 "name": "BASF SE                       N",
-                "yearly_dividend_yield": 0.077199996,
-                "next_dividend_yield": 0.074,
+                "yearly_dividend_yield": 0.0805,
+                "next_dividend_yield": 0.08,
                 "yearly_dividend_value": 3.4,
                 "next_dividend_value": 3.4,
                 "currency": "€",
                 "sector": "Basic Materials",
+                "website": "https://www.basf.com",
                 "country": "Germany",
                 "industry": "Chemicals",
                 "is_etf": false,
@@ -50,7 +52,7 @@
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 3.4,
-                "dividendYield": 0.074,
+                "dividendYield": 0.08,
                 "expectedAmount": 69.326
             }
         }
@@ -59,14 +61,15 @@
         {
             "ticker": {
                 "ticker": "MBG.DE",
-                "price": 53.86,
+                "price": 52.48,
                 "name": "Mercedes-Benz Group AG        N",
-                "yearly_dividend_yield": 0.1013,
-                "next_dividend_yield": 0.098,
+                "yearly_dividend_yield": 0.103,
+                "next_dividend_yield": 0.101,
                 "yearly_dividend_value": 5.3,
                 "next_dividend_value": 5.3,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://group.mercedes-benz.com",
                 "country": "Germany",
                 "industry": "Auto Manufacturers",
                 "is_etf": false,
@@ -78,7 +81,7 @@
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 5.3,
-                "dividendYield": 0.098,
+                "dividendYield": 0.101,
                 "expectedAmount": 65.04998
             }
         }
@@ -87,81 +90,56 @@
         {
             "ticker": {
                 "ticker": "UL.VI",
-                "price": 72.38,
+                "price": 73.84,
                 "name": "UNIBAIL RODAMCO WESTFIELD SE",
-                "yearly_dividend_yield": 0.0342,
-                "next_dividend_yield": 0.035,
+                "yearly_dividend_yield": 0.0346,
+                "next_dividend_yield": 0.034,
                 "yearly_dividend_value": 2.5,
                 "next_dividend_value": 2.5,
                 "currency": "€",
                 "sector": "Real Estate",
+                "website": "https://www.urw.com",
                 "country": "France",
                 "industry": "REIT - Retail",
                 "is_etf": false,
                 "ex_dividend_date": "2024-05-14",
                 "earning_dates": [
-                    "2024-10-24T00:00:00"
+                    "2025-02-13T00:00:00"
                 ]
             },
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 2.5,
-                "dividendYield": 0.035,
+                "dividendYield": 0.034,
                 "expectedAmount": 28.175001
             }
         },
         {
             "ticker": {
                 "ticker": "VRLA.PA",
-                "price": 28,
+                "price": 26.94,
                 "name": "VERALLIA",
-                "yearly_dividend_yield": 0.0793,
-                "next_dividend_yield": 0.077,
+                "yearly_dividend_yield": 0.082100004,
+                "next_dividend_yield": 0.08,
                 "yearly_dividend_value": 2.15,
                 "next_dividend_value": 2.15,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.verallia.com",
                 "country": "France",
                 "industry": "Packaging \u0026 Containers",
                 "is_etf": false,
                 "ex_dividend_date": "2024-05-14",
                 "earning_dates": [
-                    "2024-10-22T00:00:00"
+                    "2025-02-12T00:00:00",
+                    "2025-02-17T00:00:00"
                 ]
             },
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 2.15,
-                "dividendYield": 0.077,
+                "dividendYield": 0.08,
                 "expectedAmount": 43
-            }
-        }
-    ],
-    "2024-06-06": [
-        {
-            "ticker": {
-                "ticker": "VOD.L",
-                "price": 0.86616117,
-                "name": "VODAFONE GROUP PLC ORD USD0.20 ",
-                "yearly_dividend_yield": 0.105399996,
-                "next_dividend_yield": 0.062,
-                "yearly_dividend_value": 0.09616,
-                "next_dividend_value": 5.409,
-                "currency": "€",
-                "sector": "Communication Services",
-                "country": "United Kingdom",
-                "industry": "Telecom Services",
-                "is_etf": false,
-                "ex_dividend_date": "2024-06-06",
-                "earning_dates": [
-                    "2024-11-12T00:00:00"
-                ]
-            },
-            "eventType": "Ex-Dividend",
-            "extraData": {
-                "dividendValue": 5.409,
-                "dividendYield": 0.062,
-                "expectedAmount": 2704.5
             }
         }
     ],
@@ -169,14 +147,15 @@
         {
             "ticker": {
                 "ticker": "COL.MC",
-                "price": 5.425,
+                "price": 5.485,
                 "name": "INMOBILIARIA COLONIAL, SOCIMI S",
-                "yearly_dividend_yield": 0.0498,
-                "next_dividend_yield": 0.05,
+                "yearly_dividend_yield": 0.0512,
+                "next_dividend_yield": 0.049,
                 "yearly_dividend_value": 0.27,
                 "next_dividend_value": 0.27,
                 "currency": "€",
                 "sector": "Real Estate",
+                "website": "https://www.inmocolonial.com",
                 "country": "Spain",
                 "industry": "REIT - Office",
                 "is_etf": false,
@@ -188,7 +167,7 @@
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 0.27,
-                "dividendYield": 0.05,
+                "dividendYield": 0.049,
                 "expectedAmount": 27.000002
             }
         }
@@ -197,14 +176,15 @@
         {
             "ticker": {
                 "ticker": "BRBY.L",
-                "price": 10.479035,
+                "price": 10.458934,
                 "name": "BURBERRY GROUP PLC ORD 0.05P",
                 "yearly_dividend_yield": 0.0688,
                 "next_dividend_yield": 0.049,
-                "yearly_dividend_value": 0.73322004,
-                "next_dividend_value": 51.3254,
+                "yearly_dividend_value": 0.733159,
+                "next_dividend_value": 51.321133,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.burberryplc.com",
                 "country": "United Kingdom",
                 "industry": "Luxury Goods",
                 "is_etf": false,
@@ -215,22 +195,23 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 51.3254,
+                "dividendValue": 51.321133,
                 "dividendYield": 0.049,
-                "expectedAmount": 5389.167
+                "expectedAmount": 5388.7188
             }
         },
         {
             "ticker": {
                 "ticker": "ELE.MC",
-                "price": 19.43,
+                "price": 19.605,
                 "name": "ENDESA,S.A.",
-                "yearly_dividend_yield": 0.13430001,
+                "yearly_dividend_yield": 0.13319999,
                 "next_dividend_yield": 0.026,
                 "yearly_dividend_value": 2.59,
                 "next_dividend_value": 0.5,
                 "currency": "€",
                 "sector": "Utilities",
+                "website": "https://www.endesa.com",
                 "country": "Spain",
                 "industry": "Utilities - Regulated Electric",
                 "is_etf": false,
@@ -251,14 +232,15 @@
         {
             "ticker": {
                 "ticker": "GEST.MC",
-                "price": 2.59,
+                "price": 2.565,
                 "name": "GESTAMP AUTOMOCION, S.A.",
-                "yearly_dividend_yield": 0.0615,
+                "yearly_dividend_yield": 0.0631,
                 "next_dividend_yield": 0.03,
                 "yearly_dividend_value": 0.15,
                 "next_dividend_value": 0.0773,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.gestamp.com",
                 "country": "Spain",
                 "industry": "Auto Parts",
                 "is_etf": false,
@@ -271,7 +253,7 @@
             "extraData": {
                 "dividendValue": 0.0773,
                 "dividendYield": 0.03,
-                "expectedAmount": 36.330997
+                "expectedAmount": 44.060997
             }
         }
     ],
@@ -279,14 +261,15 @@
         {
             "ticker": {
                 "ticker": "ANA.MC",
-                "price": 113.3,
+                "price": 113.7,
                 "name": "ACCIONA, S.A.",
-                "yearly_dividend_yield": 0.044099998,
+                "yearly_dividend_yield": 0.0446,
                 "next_dividend_yield": 0.043,
                 "yearly_dividend_value": 4.89,
                 "next_dividend_value": 4.8884,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.acciona.com",
                 "country": "Spain",
                 "industry": "Engineering \u0026 Construction",
                 "is_etf": false,
@@ -297,20 +280,21 @@
             "extraData": {
                 "dividendValue": 4.8884,
                 "dividendYield": 0.043,
-                "expectedAmount": 33.961185
+                "expectedAmount": 43.737988
             }
         },
         {
             "ticker": {
                 "ticker": "ENG.MC",
-                "price": 12.64,
+                "price": 12.63,
                 "name": "ENAGAS,S.A.",
-                "yearly_dividend_yield": 0.16510001,
+                "yearly_dividend_yield": 0.1672,
                 "next_dividend_yield": 0.083,
                 "yearly_dividend_value": 2.09,
                 "next_dividend_value": 1.044,
                 "currency": "€",
                 "sector": "Utilities",
+                "website": "https://www.enagas.es/es/",
                 "country": "Spain",
                 "industry": "Utilities - Regulated Gas",
                 "is_etf": false,
@@ -332,14 +316,15 @@
         {
             "ticker": {
                 "ticker": "LDA.MC",
-                "price": 1.122,
+                "price": 1.106,
                 "name": "LINEA DIRECTA ASEGURADORA, S.A.",
-                "yearly_dividend_yield": 0.049200002,
+                "yearly_dividend_yield": 0.0505,
                 "next_dividend_yield": 0.012,
                 "yearly_dividend_value": 0.06,
                 "next_dividend_value": 0.013783,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.lineadirectaaseguradora.com",
                 "country": "Spain",
                 "industry": "Insurance - Property \u0026 Casualty",
                 "is_etf": false,
@@ -358,14 +343,15 @@
         {
             "ticker": {
                 "ticker": "INTC",
-                "price": 23.558352,
+                "price": 23.95734,
                 "name": "Intel Corporation",
                 "yearly_dividend_yield": 0.0224,
                 "next_dividend_yield": 0.005,
-                "yearly_dividend_value": 0.4632,
-                "next_dividend_value": 0.1158,
+                "yearly_dividend_value": 0.47255,
+                "next_dividend_value": 0.1181375,
                 "currency": "€",
                 "sector": "Technology",
+                "website": "https://www.intel.com",
                 "country": "US",
                 "industry": "Semiconductors",
                 "is_etf": false,
@@ -377,90 +363,9 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 0.1158,
+                "dividendValue": 0.1181375,
                 "dividendYield": 0.005,
-                "expectedAmount": 2.8853896
-            }
-        }
-    ],
-    "2024-08-14": [
-        {
-            "ticker": {
-                "ticker": "AV.L",
-                "price": 5.49915,
-                "name": "AVIVA PLC ORD 32 17/19P",
-                "yearly_dividend_yield": 0.0747,
-                "next_dividend_yield": 0.026,
-                "yearly_dividend_value": 0.40868002,
-                "next_dividend_value": 14.3038,
-                "currency": "€",
-                "sector": "Financial Services",
-                "country": "United Kingdom",
-                "industry": "Insurance - Diversified",
-                "is_etf": false,
-                "ex_dividend_date": "2024-09-05",
-                "earning_dates": [
-                    "2024-08-14T00:00:00"
-                ]
-            },
-            "eventType": "Earning",
-            "extraData": {}
-        }
-    ],
-    "2024-08-16": [
-        {
-            "ticker": {
-                "ticker": "HSY",
-                "price": 162.97693,
-                "name": "The Hershey Company",
-                "yearly_dividend_yield": 0.031,
-                "next_dividend_yield": 0.008,
-                "yearly_dividend_value": 5.076672,
-                "next_dividend_value": 1.269168,
-                "currency": "€",
-                "sector": "Consumer Defensive",
-                "country": "US",
-                "industry": "Confectioners",
-                "is_etf": false,
-                "ex_dividend_date": "2024-08-16",
-                "earning_dates": [
-                    "2024-11-07T00:00:00"
-                ]
-            },
-            "eventType": "Ex-Dividend",
-            "extraData": {
-                "dividendValue": 1.269168,
-                "dividendYield": 0.008,
-                "expectedAmount": 3.7835915
-            }
-        }
-    ],
-    "2024-08-19": [
-        {
-            "ticker": {
-                "ticker": "UPS",
-                "price": 125.23908,
-                "name": "United Parcel Service, Inc.",
-                "yearly_dividend_yield": 0.048699997,
-                "next_dividend_yield": 0.012,
-                "yearly_dividend_value": 6.040128,
-                "next_dividend_value": 1.510032,
-                "currency": "€",
-                "sector": "Industrials",
-                "country": "US",
-                "industry": "Integrated Freight \u0026 Logistics",
-                "is_etf": false,
-                "ex_dividend_date": "2024-08-19",
-                "earning_dates": [
-                    "2025-01-28T00:00:00",
-                    "2025-02-03T00:00:00"
-                ]
-            },
-            "eventType": "Ex-Dividend",
-            "extraData": {
-                "dividendValue": 1.510032,
-                "dividendYield": 0.012,
-                "expectedAmount": 12.167509
+                "expectedAmount": 2.943633
             }
         }
     ],
@@ -468,27 +373,26 @@
         {
             "ticker": {
                 "ticker": "AV.L",
-                "price": 5.49915,
+                "price": 5.697364,
                 "name": "AVIVA PLC ORD 32 17/19P",
-                "yearly_dividend_yield": 0.0747,
-                "next_dividend_yield": 0.026,
-                "yearly_dividend_value": 0.40868002,
-                "next_dividend_value": 14.3038,
+                "yearly_dividend_yield": 0.0752,
+                "next_dividend_yield": 0.025,
+                "yearly_dividend_value": 0.40864602,
+                "next_dividend_value": 14.302609,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.aviva.com",
                 "country": "United Kingdom",
                 "industry": "Insurance - Diversified",
                 "is_etf": false,
                 "ex_dividend_date": "2024-09-05",
-                "earning_dates": [
-                    "2024-08-14T00:00:00"
-                ]
+                "earning_dates": []
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 14.3038,
-                "dividendYield": 0.026,
-                "expectedAmount": 1318.6079
+                "dividendValue": 14.302609,
+                "dividendYield": 0.025,
+                "expectedAmount": 1318.4983
             }
         }
     ],
@@ -496,14 +400,15 @@
         {
             "ticker": {
                 "ticker": "PEP",
-                "price": 152.28625,
+                "price": 155.13817,
                 "name": "Pepsico, Inc.",
                 "yearly_dividend_yield": 0.032899998,
                 "next_dividend_yield": 0.008,
-                "yearly_dividend_value": 5.021088,
-                "next_dividend_value": 1.255272,
+                "yearly_dividend_value": 5.1224422,
+                "next_dividend_value": 1.2806106,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.pepsico.com",
                 "country": "US",
                 "industry": "Beverages - Non - Alcoholic",
                 "is_etf": false,
@@ -515,9 +420,9 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 1.255272,
+                "dividendValue": 1.2806106,
                 "dividendYield": 0.008,
-                "expectedAmount": 4.468768
+                "expectedAmount": 4.5589733
             }
         }
     ],
@@ -525,14 +430,15 @@
         {
             "ticker": {
                 "ticker": "SAB.MC",
-                "price": 1.8125,
+                "price": 1.782,
                 "name": "BANCO DE SABADELL",
-                "yearly_dividend_yield": 0.0913,
-                "next_dividend_yield": 0.044,
+                "yearly_dividend_yield": 0.091800004,
+                "next_dividend_yield": 0.045,
                 "yearly_dividend_value": 0.16,
                 "next_dividend_value": 0.08,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.grupbancsabadell.com",
                 "country": "Spain",
                 "industry": "Banks - Diversified",
                 "is_etf": false,
@@ -545,7 +451,7 @@
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 0.08,
-                "dividendYield": 0.044,
+                "dividendYield": 0.045,
                 "expectedAmount": 55.024673
             }
         }
@@ -554,14 +460,15 @@
         {
             "ticker": {
                 "ticker": "GCO.MC",
-                "price": 37.9,
+                "price": 37,
                 "name": "GRUPO CATALANA OCCIDENTE, S.A.",
-                "yearly_dividend_yield": 0.0219,
-                "next_dividend_yield": 0.005,
+                "yearly_dividend_yield": 0.0223,
+                "next_dividend_yield": 0.006,
                 "yearly_dividend_value": 0.83,
                 "next_dividend_value": 0.207,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.grupocatalanaoccidente.com",
                 "country": "Spain",
                 "industry": "Insurance - Diversified",
                 "is_etf": false,
@@ -573,7 +480,7 @@
             "eventType": "Ex-Dividend",
             "extraData": {
                 "dividendValue": 0.207,
-                "dividendYield": 0.005,
+                "dividendYield": 0.006,
                 "expectedAmount": 3.105
             }
         }
@@ -582,14 +489,15 @@
         {
             "ticker": {
                 "ticker": "GIS",
-                "price": 61.1424,
+                "price": 62.03929,
                 "name": "General Mills, Inc.",
-                "yearly_dividend_yield": 0.0364,
+                "yearly_dividend_yield": 0.0368,
                 "next_dividend_yield": 0.009,
-                "yearly_dividend_value": 2.22336,
-                "next_dividend_value": 0.55584,
+                "yearly_dividend_value": 2.2682402,
+                "next_dividend_value": 0.56706005,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.generalmills.com",
                 "country": "US",
                 "industry": "Packaged Foods",
                 "is_etf": false,
@@ -601,22 +509,23 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 0.55584,
+                "dividendValue": 0.56706005,
                 "dividendYield": 0.009,
-                "expectedAmount": 5.5584
+                "expectedAmount": 5.6706004
             }
         },
         {
             "ticker": {
                 "ticker": "VZ",
-                "price": 37.746166,
+                "price": 38.75855,
                 "name": "Verizon Communications Inc.",
-                "yearly_dividend_yield": 0.065799996,
+                "yearly_dividend_yield": 0.0659,
                 "next_dividend_yield": 0.017,
-                "yearly_dividend_value": 2.510544,
-                "next_dividend_value": 0.6280992,
+                "yearly_dividend_value": 2.5612211,
+                "next_dividend_value": 0.64077777,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://www.verizon.com",
                 "country": "US",
                 "industry": "Telecom Services",
                 "is_etf": false,
@@ -627,72 +536,25 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 0.6280992,
+                "dividendValue": 0.64077777,
                 "dividendYield": 0.017,
-                "expectedAmount": 6.280992
+                "expectedAmount": 6.407778
             }
-        }
-    ],
-    "2024-10-22": [
-        {
-            "ticker": {
-                "ticker": "VRLA.PA",
-                "price": 28,
-                "name": "VERALLIA",
-                "yearly_dividend_yield": 0.0793,
-                "next_dividend_yield": 0.077,
-                "yearly_dividend_value": 2.15,
-                "next_dividend_value": 2.15,
-                "currency": "€",
-                "sector": "Consumer Cyclical",
-                "country": "France",
-                "industry": "Packaging \u0026 Containers",
-                "is_etf": false,
-                "ex_dividend_date": "2024-05-14",
-                "earning_dates": [
-                    "2024-10-22T00:00:00"
-                ]
-            },
-            "eventType": "Earning",
-            "extraData": {}
-        }
-    ],
-    "2024-10-24": [
-        {
-            "ticker": {
-                "ticker": "UL.VI",
-                "price": 72.38,
-                "name": "UNIBAIL RODAMCO WESTFIELD SE",
-                "yearly_dividend_yield": 0.0342,
-                "next_dividend_yield": 0.035,
-                "yearly_dividend_value": 2.5,
-                "next_dividend_value": 2.5,
-                "currency": "€",
-                "sector": "Real Estate",
-                "country": "France",
-                "industry": "REIT - Retail",
-                "is_etf": false,
-                "ex_dividend_date": "2024-05-14",
-                "earning_dates": [
-                    "2024-10-24T00:00:00"
-                ]
-            },
-            "eventType": "Earning",
-            "extraData": {}
         }
     ],
     "2024-10-25": [
         {
             "ticker": {
                 "ticker": "MBG.DE",
-                "price": 53.86,
+                "price": 52.48,
                 "name": "Mercedes-Benz Group AG        N",
-                "yearly_dividend_yield": 0.1013,
-                "next_dividend_yield": 0.098,
+                "yearly_dividend_yield": 0.103,
+                "next_dividend_yield": 0.101,
                 "yearly_dividend_value": 5.3,
                 "next_dividend_value": 5.3,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://group.mercedes-benz.com",
                 "country": "Germany",
                 "industry": "Auto Manufacturers",
                 "is_etf": false,
@@ -709,14 +571,15 @@
         {
             "ticker": {
                 "ticker": "BAS.DE",
-                "price": 45.865,
+                "price": 42.51,
                 "name": "BASF SE                       N",
-                "yearly_dividend_yield": 0.077199996,
-                "next_dividend_yield": 0.074,
+                "yearly_dividend_yield": 0.0805,
+                "next_dividend_yield": 0.08,
                 "yearly_dividend_value": 3.4,
                 "next_dividend_value": 3.4,
                 "currency": "€",
                 "sector": "Basic Materials",
+                "website": "https://www.basf.com",
                 "country": "Germany",
                 "industry": "Chemicals",
                 "is_etf": false,
@@ -731,14 +594,15 @@
         {
             "ticker": {
                 "ticker": "ELE.MC",
-                "price": 19.43,
+                "price": 19.605,
                 "name": "ENDESA,S.A.",
-                "yearly_dividend_yield": 0.13430001,
+                "yearly_dividend_yield": 0.13319999,
                 "next_dividend_yield": 0.026,
                 "yearly_dividend_value": 2.59,
                 "next_dividend_value": 0.5,
                 "currency": "€",
                 "sector": "Utilities",
+                "website": "https://www.endesa.com",
                 "country": "Spain",
                 "industry": "Utilities - Regulated Electric",
                 "is_etf": false,
@@ -752,30 +616,8 @@
         },
         {
             "ticker": {
-                "ticker": "KHC",
-                "price": 30.858385,
-                "name": "The Kraft Heinz Company",
-                "yearly_dividend_yield": 0.0479,
-                "next_dividend_yield": 0.012,
-                "yearly_dividend_value": 1.4822401,
-                "next_dividend_value": 0.37056002,
-                "currency": "€",
-                "sector": "Consumer Defensive",
-                "country": "US",
-                "industry": "Packaged Foods",
-                "is_etf": false,
-                "ex_dividend_date": "2024-11-29",
-                "earning_dates": [
-                    "2024-10-30T00:00:00"
-                ]
-            },
-            "eventType": "Earning",
-            "extraData": {}
-        },
-        {
-            "ticker": {
                 "ticker": "SAN.MC",
-                "price": 4.533,
+                "price": 4.4935,
                 "name": "BANCO SANTANDER S.A.",
                 "yearly_dividend_yield": 0.0454,
                 "next_dividend_yield": 0.022,
@@ -783,6 +625,7 @@
                 "next_dividend_value": 0.1,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.santander.com",
                 "country": "Spain",
                 "industry": "Banks - Diversified",
                 "is_etf": false,
@@ -804,14 +647,15 @@
         {
             "ticker": {
                 "ticker": "GCO.MC",
-                "price": 37.9,
+                "price": 37,
                 "name": "GRUPO CATALANA OCCIDENTE, S.A.",
-                "yearly_dividend_yield": 0.0219,
-                "next_dividend_yield": 0.005,
+                "yearly_dividend_yield": 0.0223,
+                "next_dividend_yield": 0.006,
                 "yearly_dividend_value": 0.83,
                 "next_dividend_value": 0.207,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.grupocatalanaoccidente.com",
                 "country": "Spain",
                 "industry": "Insurance - Diversified",
                 "is_etf": false,
@@ -828,14 +672,15 @@
         {
             "ticker": {
                 "ticker": "NTGY.MC",
-                "price": 22.1,
+                "price": 22.12,
                 "name": "NATURGY ENERGY GROUP, S.A.",
-                "yearly_dividend_yield": 0.0643,
+                "yearly_dividend_yield": 0.0647,
                 "next_dividend_yield": 0.023,
                 "yearly_dividend_value": 1.4,
                 "next_dividend_value": 0.5,
                 "currency": "€",
                 "sector": "Utilities",
+                "website": "https://www.naturgy.com",
                 "country": "Spain",
                 "industry": "Utilities - Regulated Gas",
                 "is_etf": false,
@@ -854,14 +699,15 @@
         {
             "ticker": {
                 "ticker": "GEST.MC",
-                "price": 2.59,
+                "price": 2.565,
                 "name": "GESTAMP AUTOMOCION, S.A.",
-                "yearly_dividend_yield": 0.0615,
+                "yearly_dividend_yield": 0.0631,
                 "next_dividend_yield": 0.03,
                 "yearly_dividend_value": 0.15,
                 "next_dividend_value": 0.0773,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.gestamp.com",
                 "country": "Spain",
                 "industry": "Auto Parts",
                 "is_etf": false,
@@ -877,37 +723,16 @@
     "2024-11-07": [
         {
             "ticker": {
-                "ticker": "HSY",
-                "price": 162.97693,
-                "name": "The Hershey Company",
-                "yearly_dividend_yield": 0.031,
-                "next_dividend_yield": 0.008,
-                "yearly_dividend_value": 5.076672,
-                "next_dividend_value": 1.269168,
-                "currency": "€",
-                "sector": "Consumer Defensive",
-                "country": "US",
-                "industry": "Confectioners",
-                "is_etf": false,
-                "ex_dividend_date": "2024-08-16",
-                "earning_dates": [
-                    "2024-11-07T00:00:00"
-                ]
-            },
-            "eventType": "Earning",
-            "extraData": {}
-        },
-        {
-            "ticker": {
                 "ticker": "TEF.MC",
-                "price": 4.188,
+                "price": 4.125,
                 "name": "TELEFONICA,S.A.",
-                "yearly_dividend_yield": 0.07,
+                "yearly_dividend_yield": 0.0735,
                 "next_dividend_yield": 0.036,
                 "yearly_dividend_value": 0.3,
                 "next_dividend_value": 0.15,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://www.telefonica.com",
                 "country": "Spain",
                 "industry": "Telecom Services",
                 "is_etf": false,
@@ -924,18 +749,19 @@
         {
             "ticker": {
                 "ticker": "VOD.L",
-                "price": 0.86616117,
+                "price": 0.8307533,
                 "name": "VODAFONE GROUP PLC ORD USD0.20 ",
-                "yearly_dividend_yield": 0.105399996,
-                "next_dividend_yield": 0.062,
-                "yearly_dividend_value": 0.09616,
-                "next_dividend_value": 5.409,
+                "yearly_dividend_yield": 0.08189999,
+                "next_dividend_yield": 0.033,
+                "yearly_dividend_value": 0.072114,
+                "next_dividend_value": 2.7042751,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://www.vodafone.com",
                 "country": "United Kingdom",
                 "industry": "Telecom Services",
                 "is_etf": false,
-                "ex_dividend_date": "2024-06-06",
+                "ex_dividend_date": "2024-11-21",
                 "earning_dates": [
                     "2024-11-12T00:00:00"
                 ]
@@ -948,14 +774,15 @@
         {
             "ticker": {
                 "ticker": "BRBY.L",
-                "price": 10.479035,
+                "price": 10.458934,
                 "name": "BURBERRY GROUP PLC ORD 0.05P",
                 "yearly_dividend_yield": 0.0688,
                 "next_dividend_yield": 0.049,
-                "yearly_dividend_value": 0.73322004,
-                "next_dividend_value": 51.3254,
+                "yearly_dividend_value": 0.733159,
+                "next_dividend_value": 51.321133,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.burberryplc.com",
                 "country": "United Kingdom",
                 "industry": "Luxury Goods",
                 "is_etf": false,
@@ -970,14 +797,15 @@
         {
             "ticker": {
                 "ticker": "COL.MC",
-                "price": 5.425,
+                "price": 5.485,
                 "name": "INMOBILIARIA COLONIAL, SOCIMI S",
-                "yearly_dividend_yield": 0.0498,
-                "next_dividend_yield": 0.05,
+                "yearly_dividend_yield": 0.0512,
+                "next_dividend_yield": 0.049,
                 "yearly_dividend_value": 0.27,
                 "next_dividend_value": 0.27,
                 "currency": "€",
                 "sector": "Real Estate",
+                "website": "https://www.inmocolonial.com",
                 "country": "Spain",
                 "industry": "REIT - Office",
                 "is_etf": false,
@@ -992,14 +820,15 @@
         {
             "ticker": {
                 "ticker": "SIE.F",
-                "price": 186.48,
+                "price": 191.24,
                 "name": "SIEMENS AG                    N",
-                "yearly_dividend_yield": 0.0254,
+                "yearly_dividend_yield": 0.026199998,
                 "next_dividend_yield": 0.025,
                 "yearly_dividend_value": 4.7,
                 "next_dividend_value": 4.7,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.siemens.com",
                 "country": "Germany",
                 "industry": "Specialty Industrial Machinery",
                 "is_etf": false,
@@ -1016,14 +845,15 @@
         {
             "ticker": {
                 "ticker": "MMM",
-                "price": 124.14686,
+                "price": 125.169044,
                 "name": "3M Company",
-                "yearly_dividend_yield": 0.0209,
+                "yearly_dividend_yield": 0.021300001,
                 "next_dividend_yield": 0.005,
-                "yearly_dividend_value": 2.59392,
-                "next_dividend_value": 0.64848,
+                "yearly_dividend_value": 2.64628,
+                "next_dividend_value": 0.66157,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.3m.com",
                 "country": "US",
                 "industry": "Conglomerates",
                 "is_etf": false,
@@ -1035,9 +865,96 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 0.64848,
+                "dividendValue": 0.66157,
                 "dividendYield": 0.005,
-                "expectedAmount": 17.18472
+                "expectedAmount": 17.531605
+            }
+        }
+    ],
+    "2024-11-18": [
+        {
+            "ticker": {
+                "ticker": "HSY",
+                "price": 173.69757,
+                "name": "The Hershey Company",
+                "yearly_dividend_yield": 0.0297,
+                "next_dividend_yield": 0.007,
+                "yearly_dividend_value": 5.179148,
+                "next_dividend_value": 1.294787,
+                "currency": "€",
+                "sector": "Consumer Defensive",
+                "website": "https://www.thehersheycompany.com",
+                "country": "US",
+                "industry": "Confectioners",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-18",
+                "earning_dates": [
+                    "2025-02-06T00:00:00",
+                    "2025-02-10T00:00:00"
+                ]
+            },
+            "eventType": "Ex-Dividend",
+            "extraData": {
+                "dividendValue": 1.294787,
+                "dividendYield": 0.007,
+                "expectedAmount": 3.859966
+            }
+        },
+        {
+            "ticker": {
+                "ticker": "UPS",
+                "price": 126.255905,
+                "name": "United Parcel Service, Inc.",
+                "yearly_dividend_yield": 0.048800003,
+                "next_dividend_yield": 0.012,
+                "yearly_dividend_value": 6.162052,
+                "next_dividend_value": 1.540513,
+                "currency": "€",
+                "sector": "Industrials",
+                "website": "https://www.ups.com",
+                "country": "US",
+                "industry": "Integrated Freight \u0026 Logistics",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-18",
+                "earning_dates": [
+                    "2025-01-28T00:00:00",
+                    "2025-02-03T00:00:00"
+                ]
+            },
+            "eventType": "Ex-Dividend",
+            "extraData": {
+                "dividendValue": 1.540513,
+                "dividendYield": 0.012,
+                "expectedAmount": 12.413118
+            }
+        }
+    ],
+    "2024-11-21": [
+        {
+            "ticker": {
+                "ticker": "VOD.L",
+                "price": 0.8307533,
+                "name": "VODAFONE GROUP PLC ORD USD0.20 ",
+                "yearly_dividend_yield": 0.08189999,
+                "next_dividend_yield": 0.033,
+                "yearly_dividend_value": 0.072114,
+                "next_dividend_value": 2.7042751,
+                "currency": "€",
+                "sector": "Communication Services",
+                "website": "https://www.vodafone.com",
+                "country": "United Kingdom",
+                "industry": "Telecom Services",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-21",
+                "earning_dates": [
+                    "2024-11-12T00:00:00"
+                ]
+            },
+            "eventType": "Ex-Dividend",
+            "extraData": {
+                "dividendValue": 2.7042751,
+                "dividendYield": 0.033,
+                "expectedAmount": 1352.1376
             }
         }
     ],
@@ -1045,27 +962,29 @@
         {
             "ticker": {
                 "ticker": "KHC",
-                "price": 30.858385,
+                "price": 30.564535,
                 "name": "The Kraft Heinz Company",
-                "yearly_dividend_yield": 0.0479,
+                "yearly_dividend_yield": 0.0498,
                 "next_dividend_yield": 0.012,
-                "yearly_dividend_value": 1.4822401,
-                "next_dividend_value": 0.37056002,
+                "yearly_dividend_value": 1.5121601,
+                "next_dividend_value": 0.37804002,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.kraftheinzcompany.com",
                 "country": "US",
                 "industry": "Packaged Foods",
                 "is_etf": false,
                 "ex_dividend_date": "2024-11-29",
                 "earning_dates": [
-                    "2024-10-30T00:00:00"
+                    "2025-02-12T00:00:00",
+                    "2025-02-17T00:00:00"
                 ]
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 0.37056002,
+                "dividendValue": 0.37804002,
                 "dividendYield": 0.012,
-                "expectedAmount": 3.7056003
+                "expectedAmount": 3.7804003
             }
         }
     ],
@@ -1073,14 +992,15 @@
         {
             "ticker": {
                 "ticker": "MCD",
-                "price": 272.97675,
+                "price": 281.49805,
                 "name": "McDonald's Corporation",
-                "yearly_dividend_yield": 0.0241,
+                "yearly_dividend_yield": 0.0238,
                 "next_dividend_yield": 0.006,
-                "yearly_dividend_value": 6.558912,
-                "next_dividend_value": 1.547088,
+                "yearly_dividend_value": 6.691308,
+                "next_dividend_value": 1.5783169,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.mcdonalds.com",
                 "country": "US",
                 "industry": "Restaurants",
                 "is_etf": false,
@@ -1092,9 +1012,9 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 1.547088,
+                "dividendValue": 1.5783169,
                 "dividendYield": 0.006,
-                "expectedAmount": 4.641264
+                "expectedAmount": 4.734951
             }
         }
     ],
@@ -1102,14 +1022,15 @@
         {
             "ticker": {
                 "ticker": "GOOGL",
-                "price": 165.23271,
+                "price": 167.81195,
                 "name": "Alphabet Inc.",
                 "yearly_dividend_yield": 0.0045,
                 "next_dividend_yield": 0.001,
-                "yearly_dividend_value": 0.74112004,
-                "next_dividend_value": 0.18528001,
+                "yearly_dividend_value": 0.75608003,
+                "next_dividend_value": 0.18902001,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://abc.xyz",
                 "country": "US",
                 "industry": "Internet Content \u0026 Information",
                 "is_etf": false,
@@ -1121,9 +1042,9 @@
             },
             "eventType": "Ex-Dividend",
             "extraData": {
-                "dividendValue": 0.18528001,
+                "dividendValue": 0.18902001,
                 "dividendYield": 0.001,
-                "expectedAmount": 0.18528001
+                "expectedAmount": 0.18902001
             }
         }
     ],
@@ -1131,14 +1052,15 @@
         {
             "ticker": {
                 "ticker": "TEF.MC",
-                "price": 4.188,
+                "price": 4.125,
                 "name": "TELEFONICA,S.A.",
-                "yearly_dividend_yield": 0.07,
+                "yearly_dividend_yield": 0.0735,
                 "next_dividend_yield": 0.036,
                 "yearly_dividend_value": 0.3,
                 "next_dividend_value": 0.15,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://www.telefonica.com",
                 "country": "Spain",
                 "industry": "Telecom Services",
                 "is_etf": false,
@@ -1159,14 +1081,15 @@
         {
             "ticker": {
                 "ticker": "GIS",
-                "price": 61.1424,
+                "price": 62.03929,
                 "name": "General Mills, Inc.",
-                "yearly_dividend_yield": 0.0364,
+                "yearly_dividend_yield": 0.0368,
                 "next_dividend_yield": 0.009,
-                "yearly_dividend_value": 2.22336,
-                "next_dividend_value": 0.55584,
+                "yearly_dividend_value": 2.2682402,
+                "next_dividend_value": 0.56706005,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.generalmills.com",
                 "country": "US",
                 "industry": "Packaged Foods",
                 "is_etf": false,
@@ -1184,14 +1107,15 @@
         {
             "ticker": {
                 "ticker": "GIS",
-                "price": 61.1424,
+                "price": 62.03929,
                 "name": "General Mills, Inc.",
-                "yearly_dividend_yield": 0.0364,
+                "yearly_dividend_yield": 0.0368,
                 "next_dividend_yield": 0.009,
-                "yearly_dividend_value": 2.22336,
-                "next_dividend_value": 0.55584,
+                "yearly_dividend_value": 2.2682402,
+                "next_dividend_value": 0.56706005,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.generalmills.com",
                 "country": "US",
                 "industry": "Packaged Foods",
                 "is_etf": false,
@@ -1209,14 +1133,15 @@
         {
             "ticker": {
                 "ticker": "MMM",
-                "price": 124.14686,
+                "price": 125.169044,
                 "name": "3M Company",
-                "yearly_dividend_yield": 0.0209,
+                "yearly_dividend_yield": 0.021300001,
                 "next_dividend_yield": 0.005,
-                "yearly_dividend_value": 2.59392,
-                "next_dividend_value": 0.64848,
+                "yearly_dividend_value": 2.64628,
+                "next_dividend_value": 0.66157,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.3m.com",
                 "country": "US",
                 "industry": "Conglomerates",
                 "is_etf": false,
@@ -1234,14 +1159,15 @@
         {
             "ticker": {
                 "ticker": "INTC",
-                "price": 23.558352,
+                "price": 23.95734,
                 "name": "Intel Corporation",
                 "yearly_dividend_yield": 0.0224,
                 "next_dividend_yield": 0.005,
-                "yearly_dividend_value": 0.4632,
-                "next_dividend_value": 0.1158,
+                "yearly_dividend_value": 0.47255,
+                "next_dividend_value": 0.1181375,
                 "currency": "€",
                 "sector": "Technology",
+                "website": "https://www.intel.com",
                 "country": "US",
                 "industry": "Semiconductors",
                 "is_etf": false,
@@ -1257,14 +1183,15 @@
         {
             "ticker": {
                 "ticker": "VZ",
-                "price": 37.746166,
+                "price": 38.75855,
                 "name": "Verizon Communications Inc.",
-                "yearly_dividend_yield": 0.065799996,
+                "yearly_dividend_yield": 0.0659,
                 "next_dividend_yield": 0.017,
-                "yearly_dividend_value": 2.510544,
-                "next_dividend_value": 0.6280992,
+                "yearly_dividend_value": 2.5612211,
+                "next_dividend_value": 0.64077777,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://www.verizon.com",
                 "country": "US",
                 "industry": "Telecom Services",
                 "is_etf": false,
@@ -1281,14 +1208,15 @@
         {
             "ticker": {
                 "ticker": "MMM",
-                "price": 124.14686,
+                "price": 125.169044,
                 "name": "3M Company",
-                "yearly_dividend_yield": 0.0209,
+                "yearly_dividend_yield": 0.021300001,
                 "next_dividend_yield": 0.005,
-                "yearly_dividend_value": 2.59392,
-                "next_dividend_value": 0.64848,
+                "yearly_dividend_value": 2.64628,
+                "next_dividend_value": 0.66157,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.3m.com",
                 "country": "US",
                 "industry": "Conglomerates",
                 "is_etf": false,
@@ -1306,14 +1234,15 @@
         {
             "ticker": {
                 "ticker": "GOOGL",
-                "price": 165.23271,
+                "price": 167.81195,
                 "name": "Alphabet Inc.",
                 "yearly_dividend_yield": 0.0045,
                 "next_dividend_yield": 0.001,
-                "yearly_dividend_value": 0.74112004,
-                "next_dividend_value": 0.18528001,
+                "yearly_dividend_value": 0.75608003,
+                "next_dividend_value": 0.18902001,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://abc.xyz",
                 "country": "US",
                 "industry": "Internet Content \u0026 Information",
                 "is_etf": false,
@@ -1329,14 +1258,15 @@
         {
             "ticker": {
                 "ticker": "INTC",
-                "price": 23.558352,
+                "price": 23.95734,
                 "name": "Intel Corporation",
                 "yearly_dividend_yield": 0.0224,
                 "next_dividend_yield": 0.005,
-                "yearly_dividend_value": 0.4632,
-                "next_dividend_value": 0.1158,
+                "yearly_dividend_value": 0.47255,
+                "next_dividend_value": 0.1181375,
                 "currency": "€",
                 "sector": "Technology",
+                "website": "https://www.intel.com",
                 "country": "US",
                 "industry": "Semiconductors",
                 "is_etf": false,
@@ -1352,18 +1282,19 @@
         {
             "ticker": {
                 "ticker": "UPS",
-                "price": 125.23908,
+                "price": 126.255905,
                 "name": "United Parcel Service, Inc.",
-                "yearly_dividend_yield": 0.048699997,
+                "yearly_dividend_yield": 0.048800003,
                 "next_dividend_yield": 0.012,
-                "yearly_dividend_value": 6.040128,
-                "next_dividend_value": 1.510032,
+                "yearly_dividend_value": 6.162052,
+                "next_dividend_value": 1.540513,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.ups.com",
                 "country": "US",
                 "industry": "Integrated Freight \u0026 Logistics",
                 "is_etf": false,
-                "ex_dividend_date": "2024-08-19",
+                "ex_dividend_date": "2024-11-18",
                 "earning_dates": [
                     "2025-01-28T00:00:00",
                     "2025-02-03T00:00:00"
@@ -1377,7 +1308,7 @@
         {
             "ticker": {
                 "ticker": "SAN.MC",
-                "price": 4.533,
+                "price": 4.4935,
                 "name": "BANCO SANTANDER S.A.",
                 "yearly_dividend_yield": 0.0454,
                 "next_dividend_yield": 0.022,
@@ -1385,6 +1316,7 @@
                 "next_dividend_value": 0.1,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.santander.com",
                 "country": "Spain",
                 "industry": "Banks - Diversified",
                 "is_etf": false,
@@ -1402,14 +1334,15 @@
         {
             "ticker": {
                 "ticker": "SAB.MC",
-                "price": 1.8125,
+                "price": 1.782,
                 "name": "BANCO DE SABADELL",
-                "yearly_dividend_yield": 0.0913,
-                "next_dividend_yield": 0.044,
+                "yearly_dividend_yield": 0.091800004,
+                "next_dividend_yield": 0.045,
                 "yearly_dividend_value": 0.16,
                 "next_dividend_value": 0.08,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.grupbancsabadell.com",
                 "country": "Spain",
                 "industry": "Banks - Diversified",
                 "is_etf": false,
@@ -1427,14 +1360,15 @@
         {
             "ticker": {
                 "ticker": "GOOGL",
-                "price": 165.23271,
+                "price": 167.81195,
                 "name": "Alphabet Inc.",
                 "yearly_dividend_yield": 0.0045,
                 "next_dividend_yield": 0.001,
-                "yearly_dividend_value": 0.74112004,
-                "next_dividend_value": 0.18528001,
+                "yearly_dividend_value": 0.75608003,
+                "next_dividend_value": 0.18902001,
                 "currency": "€",
                 "sector": "Communication Services",
+                "website": "https://abc.xyz",
                 "country": "US",
                 "industry": "Internet Content \u0026 Information",
                 "is_etf": false,
@@ -1450,14 +1384,15 @@
         {
             "ticker": {
                 "ticker": "MCD",
-                "price": 272.97675,
+                "price": 281.49805,
                 "name": "McDonald's Corporation",
-                "yearly_dividend_yield": 0.0241,
+                "yearly_dividend_yield": 0.0238,
                 "next_dividend_yield": 0.006,
-                "yearly_dividend_value": 6.558912,
-                "next_dividend_value": 1.547088,
+                "yearly_dividend_value": 6.691308,
+                "next_dividend_value": 1.5783169,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.mcdonalds.com",
                 "country": "US",
                 "industry": "Restaurants",
                 "is_etf": false,
@@ -1473,14 +1408,15 @@
         {
             "ticker": {
                 "ticker": "SAB.MC",
-                "price": 1.8125,
+                "price": 1.782,
                 "name": "BANCO DE SABADELL",
-                "yearly_dividend_yield": 0.0913,
-                "next_dividend_yield": 0.044,
+                "yearly_dividend_yield": 0.091800004,
+                "next_dividend_yield": 0.045,
                 "yearly_dividend_value": 0.16,
                 "next_dividend_value": 0.08,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.grupbancsabadell.com",
                 "country": "Spain",
                 "industry": "Banks - Diversified",
                 "is_etf": false,
@@ -1496,7 +1432,7 @@
         {
             "ticker": {
                 "ticker": "SAN.MC",
-                "price": 4.533,
+                "price": 4.4935,
                 "name": "BANCO SANTANDER S.A.",
                 "yearly_dividend_yield": 0.0454,
                 "next_dividend_yield": 0.022,
@@ -1504,6 +1440,7 @@
                 "next_dividend_value": 0.1,
                 "currency": "€",
                 "sector": "Financial Services",
+                "website": "https://www.santander.com",
                 "country": "Spain",
                 "industry": "Banks - Diversified",
                 "is_etf": false,
@@ -1519,18 +1456,19 @@
         {
             "ticker": {
                 "ticker": "UPS",
-                "price": 125.23908,
+                "price": 126.255905,
                 "name": "United Parcel Service, Inc.",
-                "yearly_dividend_yield": 0.048699997,
+                "yearly_dividend_yield": 0.048800003,
                 "next_dividend_yield": 0.012,
-                "yearly_dividend_value": 6.040128,
-                "next_dividend_value": 1.510032,
+                "yearly_dividend_value": 6.162052,
+                "next_dividend_value": 1.540513,
                 "currency": "€",
                 "sector": "Industrials",
+                "website": "https://www.ups.com",
                 "country": "US",
                 "industry": "Integrated Freight \u0026 Logistics",
                 "is_etf": false,
-                "ex_dividend_date": "2024-08-19",
+                "ex_dividend_date": "2024-11-18",
                 "earning_dates": [
                     "2025-01-28T00:00:00",
                     "2025-02-03T00:00:00"
@@ -1544,14 +1482,15 @@
         {
             "ticker": {
                 "ticker": "ENG.MC",
-                "price": 12.64,
+                "price": 12.63,
                 "name": "ENAGAS,S.A.",
-                "yearly_dividend_yield": 0.16510001,
+                "yearly_dividend_yield": 0.1672,
                 "next_dividend_yield": 0.083,
                 "yearly_dividend_value": 2.09,
                 "next_dividend_value": 1.044,
                 "currency": "€",
                 "sector": "Utilities",
+                "website": "https://www.enagas.es/es/",
                 "country": "Spain",
                 "industry": "Utilities - Regulated Gas",
                 "is_etf": false,
@@ -1565,18 +1504,45 @@
             "extraData": {}
         }
     ],
+    "2025-02-06": [
+        {
+            "ticker": {
+                "ticker": "HSY",
+                "price": 173.69757,
+                "name": "The Hershey Company",
+                "yearly_dividend_yield": 0.0297,
+                "next_dividend_yield": 0.007,
+                "yearly_dividend_value": 5.179148,
+                "next_dividend_value": 1.294787,
+                "currency": "€",
+                "sector": "Consumer Defensive",
+                "website": "https://www.thehersheycompany.com",
+                "country": "US",
+                "industry": "Confectioners",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-18",
+                "earning_dates": [
+                    "2025-02-06T00:00:00",
+                    "2025-02-10T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        }
+    ],
     "2025-02-07": [
         {
             "ticker": {
                 "ticker": "MCD",
-                "price": 272.97675,
+                "price": 281.49805,
                 "name": "McDonald's Corporation",
-                "yearly_dividend_yield": 0.0241,
+                "yearly_dividend_yield": 0.0238,
                 "next_dividend_yield": 0.006,
-                "yearly_dividend_value": 6.558912,
-                "next_dividend_value": 1.547088,
+                "yearly_dividend_value": 6.691308,
+                "next_dividend_value": 1.5783169,
                 "currency": "€",
                 "sector": "Consumer Cyclical",
+                "website": "https://www.mcdonalds.com",
                 "country": "US",
                 "industry": "Restaurants",
                 "is_etf": false,
@@ -1592,14 +1558,15 @@
         {
             "ticker": {
                 "ticker": "PEP",
-                "price": 152.28625,
+                "price": 155.13817,
                 "name": "Pepsico, Inc.",
                 "yearly_dividend_yield": 0.032899998,
                 "next_dividend_yield": 0.008,
-                "yearly_dividend_value": 5.021088,
-                "next_dividend_value": 1.255272,
+                "yearly_dividend_value": 5.1224422,
+                "next_dividend_value": 1.2806106,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.pepsico.com",
                 "country": "US",
                 "industry": "Beverages - Non - Alcoholic",
                 "is_etf": false,
@@ -1617,14 +1584,15 @@
         {
             "ticker": {
                 "ticker": "ENG.MC",
-                "price": 12.64,
+                "price": 12.63,
                 "name": "ENAGAS,S.A.",
-                "yearly_dividend_yield": 0.16510001,
+                "yearly_dividend_yield": 0.1672,
                 "next_dividend_yield": 0.083,
                 "yearly_dividend_value": 2.09,
                 "next_dividend_value": 1.044,
                 "currency": "€",
                 "sector": "Utilities",
+                "website": "https://www.enagas.es/es/",
                 "country": "Spain",
                 "industry": "Utilities - Regulated Gas",
                 "is_etf": false,
@@ -1638,18 +1606,45 @@
             "extraData": {}
         }
     ],
+    "2025-02-10": [
+        {
+            "ticker": {
+                "ticker": "HSY",
+                "price": 173.69757,
+                "name": "The Hershey Company",
+                "yearly_dividend_yield": 0.0297,
+                "next_dividend_yield": 0.007,
+                "yearly_dividend_value": 5.179148,
+                "next_dividend_value": 1.294787,
+                "currency": "€",
+                "sector": "Consumer Defensive",
+                "website": "https://www.thehersheycompany.com",
+                "country": "US",
+                "industry": "Confectioners",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-18",
+                "earning_dates": [
+                    "2025-02-06T00:00:00",
+                    "2025-02-10T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        }
+    ],
     "2025-02-11": [
         {
             "ticker": {
                 "ticker": "PEP",
-                "price": 152.28625,
+                "price": 155.13817,
                 "name": "Pepsico, Inc.",
                 "yearly_dividend_yield": 0.032899998,
                 "next_dividend_yield": 0.008,
-                "yearly_dividend_value": 5.021088,
-                "next_dividend_value": 1.255272,
+                "yearly_dividend_value": 5.1224422,
+                "next_dividend_value": 1.2806106,
                 "currency": "€",
                 "sector": "Consumer Defensive",
+                "website": "https://www.pepsico.com",
                 "country": "US",
                 "industry": "Beverages - Non - Alcoholic",
                 "is_etf": false,
@@ -1657,6 +1652,131 @@
                 "earning_dates": [
                     "2025-02-07T00:00:00",
                     "2025-02-11T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        }
+    ],
+    "2025-02-12": [
+        {
+            "ticker": {
+                "ticker": "KHC",
+                "price": 30.564535,
+                "name": "The Kraft Heinz Company",
+                "yearly_dividend_yield": 0.0498,
+                "next_dividend_yield": 0.012,
+                "yearly_dividend_value": 1.5121601,
+                "next_dividend_value": 0.37804002,
+                "currency": "€",
+                "sector": "Consumer Defensive",
+                "website": "https://www.kraftheinzcompany.com",
+                "country": "US",
+                "industry": "Packaged Foods",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-29",
+                "earning_dates": [
+                    "2025-02-12T00:00:00",
+                    "2025-02-17T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        },
+        {
+            "ticker": {
+                "ticker": "VRLA.PA",
+                "price": 26.94,
+                "name": "VERALLIA",
+                "yearly_dividend_yield": 0.082100004,
+                "next_dividend_yield": 0.08,
+                "yearly_dividend_value": 2.15,
+                "next_dividend_value": 2.15,
+                "currency": "€",
+                "sector": "Consumer Cyclical",
+                "website": "https://www.verallia.com",
+                "country": "France",
+                "industry": "Packaging \u0026 Containers",
+                "is_etf": false,
+                "ex_dividend_date": "2024-05-14",
+                "earning_dates": [
+                    "2025-02-12T00:00:00",
+                    "2025-02-17T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        }
+    ],
+    "2025-02-13": [
+        {
+            "ticker": {
+                "ticker": "UL.VI",
+                "price": 73.84,
+                "name": "UNIBAIL RODAMCO WESTFIELD SE",
+                "yearly_dividend_yield": 0.0346,
+                "next_dividend_yield": 0.034,
+                "yearly_dividend_value": 2.5,
+                "next_dividend_value": 2.5,
+                "currency": "€",
+                "sector": "Real Estate",
+                "website": "https://www.urw.com",
+                "country": "France",
+                "industry": "REIT - Retail",
+                "is_etf": false,
+                "ex_dividend_date": "2024-05-14",
+                "earning_dates": [
+                    "2025-02-13T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        }
+    ],
+    "2025-02-17": [
+        {
+            "ticker": {
+                "ticker": "KHC",
+                "price": 30.564535,
+                "name": "The Kraft Heinz Company",
+                "yearly_dividend_yield": 0.0498,
+                "next_dividend_yield": 0.012,
+                "yearly_dividend_value": 1.5121601,
+                "next_dividend_value": 0.37804002,
+                "currency": "€",
+                "sector": "Consumer Defensive",
+                "website": "https://www.kraftheinzcompany.com",
+                "country": "US",
+                "industry": "Packaged Foods",
+                "is_etf": false,
+                "ex_dividend_date": "2024-11-29",
+                "earning_dates": [
+                    "2025-02-12T00:00:00",
+                    "2025-02-17T00:00:00"
+                ]
+            },
+            "eventType": "Earning",
+            "extraData": {}
+        },
+        {
+            "ticker": {
+                "ticker": "VRLA.PA",
+                "price": 26.94,
+                "name": "VERALLIA",
+                "yearly_dividend_yield": 0.082100004,
+                "next_dividend_yield": 0.08,
+                "yearly_dividend_value": 2.15,
+                "next_dividend_value": 2.15,
+                "currency": "€",
+                "sector": "Consumer Cyclical",
+                "website": "https://www.verallia.com",
+                "country": "France",
+                "industry": "Packaging \u0026 Containers",
+                "is_etf": false,
+                "ex_dividend_date": "2024-05-14",
+                "earning_dates": [
+                    "2025-02-12T00:00:00",
+                    "2025-02-17T00:00:00"
                 ]
             },
             "eventType": "Earning",
