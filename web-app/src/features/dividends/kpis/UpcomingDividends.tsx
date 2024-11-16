@@ -27,7 +27,7 @@ export default function UpcomingDividends() {
       nextDividendValue: ticker.nextDividendValue || 0,
       country,
       units,
-      expectedAmount: (ticker.nextDividendYield || 0) * units,
+      expectedAmount: (ticker.nextDividendValue || 0) * units,
     }))
     .sort((a, b) => a.exDividendDate.getTime() - b.exDividendDate.getTime())
 
