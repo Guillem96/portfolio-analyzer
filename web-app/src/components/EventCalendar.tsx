@@ -81,7 +81,7 @@ export default function EventCalendar() {
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
         ></Button>
       </header>
-      <span className="lg:block hidden">
+      <span className="hidden lg:block">
         <DesktopEventCalendar currentMonth={currentMonth} events={events} />
       </span>
       <span className="lg:hidden">
