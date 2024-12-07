@@ -4,10 +4,7 @@ import { useBoundStore } from "@/store"
 import { Card } from "@tremor/react"
 
 export default function RemainingDividendsYear() {
-  const [mainCurrency, privateMode] = useBoundStore((state) => [
-    state.mainCurrency,
-    state.privateMode,
-  ])
+  const [mainCurrency, privateMode] = useBoundStore((state) => [state.mainCurrency, state.privateMode])
 
   const { leftDividendsYear } = useDividedsStats()
   return (

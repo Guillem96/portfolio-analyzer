@@ -1,9 +1,9 @@
-import { MONTHS } from "@/constants";
+import { MONTHS } from "@/constants"
 import { useBoundStore } from "@/store"
 import { Dividend } from "@/types"
 import { useMemo } from "react"
 
-const useDividendsPerYear = (dividends: Dividend[]): { date: number; "Dividend Earnings": number; }[] => {
+const useDividendsPerYear = (dividends: Dividend[]): { date: number; "Dividend Earnings": number }[] => {
   return useMemo(() => {
     if (dividends.length === 0) return []
 
@@ -27,7 +27,7 @@ const useDividendsPerYear = (dividends: Dividend[]): { date: number; "Dividend E
   }, [dividends])
 }
 
-const useDividendsPerMonth = (dividends: Dividend[]): { date: string;[x: number]: number; }[] => {
+const useDividendsPerMonth = (dividends: Dividend[]): { date: string; [x: number]: number }[] => {
   const year = new Date().getFullYear()
   const data = useMemo(() => {
     if (dividends.length === 0) return []
@@ -82,7 +82,10 @@ export const useDividedsStats = () => {
     () =>
       dividends
         .filter(({ isReinvested }) => !isReinvested)
-        .map(({ amount, doubleTaxationDestination, doubleTaxationOrigin }) => amount * (1 - doubleTaxationOrigin / 100) * (1 - doubleTaxationDestination / 100))
+        .map(
+          ({ amount, doubleTaxationDestination, doubleTaxationOrigin }) =>
+            amount * (1 - doubleTaxationOrigin / 100) * (1 - doubleTaxationDestination / 100),
+        )
         .reduce((a, b) => a + b, 0),
     [dividends],
   )

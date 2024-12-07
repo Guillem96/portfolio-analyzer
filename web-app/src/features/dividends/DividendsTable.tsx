@@ -103,7 +103,7 @@ export default function DividendTable() {
                     currency,
                     date,
                     preview,
-                    isReinvested
+                    isReinvested,
                   }) => (
                     <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
                       <TableCell>{company}</TableCell>
@@ -121,7 +121,10 @@ export default function DividendTable() {
                       </TableCell>
                       <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
                       <TableCell>
-                        <Checkbox checked={markReinvested[id] === undefined ? isReinvested : markReinvested[id]} onClick={handleCheckboxChange(id)} />
+                        <Checkbox
+                          checked={markReinvested[id] === undefined ? isReinvested : markReinvested[id]}
+                          onClick={handleCheckboxChange(id)}
+                        />
                       </TableCell>
                       <TableCell className="flex flex-row justify-end gap-x-4">
                         <Button

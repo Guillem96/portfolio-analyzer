@@ -109,7 +109,12 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
     } catch (error) {
       // Rollback
       console.error(error)
-      set({ dividends: [...prevDividends], dividendsPreferredCurrency: prevDividendsPreferredCurrency, dividendLoading: false, dividendError: getErrorMessage(error) })
+      set({
+        dividends: [...prevDividends],
+        dividendsPreferredCurrency: prevDividendsPreferredCurrency,
+        dividendLoading: false,
+        dividendError: getErrorMessage(error),
+      })
       showErrorToast("Error deleting dividend...", () => set({ dividendError: null }))
     }
   },

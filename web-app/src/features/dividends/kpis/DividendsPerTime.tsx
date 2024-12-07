@@ -66,8 +66,6 @@ const BarChartDividendsPerMonth = () => {
 
   const year = new Date().getFullYear()
   const { dividendsPerMonth } = useDividedsStats()
-
-  const { } = useDividedsStats()
   return (
     <BarChart
       className="mt-6"
