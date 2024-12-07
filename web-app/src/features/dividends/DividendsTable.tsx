@@ -42,11 +42,14 @@ export default function DividendTable() {
   }
 
   useEffect(() => {
+    if (Object.keys(markReinvested).length === 0) return
+
     const timeout = setTimeout(() => {
       markDividendAsReinvested(markReinvested).then(() => {
         setMarkReinvested({})
       })
-    }, 1000)
+    }, 1500)
+
     return () => {
       clearTimeout(timeout)
     }
