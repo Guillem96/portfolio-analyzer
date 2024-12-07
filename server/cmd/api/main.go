@@ -82,6 +82,7 @@ func fetchLogLevel() slog.Level {
 
 func setupRouter(l *slog.Logger, host string) http.Handler {
 	db := sql.GetDB()
+	sql.InitDB()
 
 	makeMigrations, present := os.LookupEnv("MAKE_MIGRATIONS")
 	if present && makeMigrations == "true" {

@@ -59,6 +59,7 @@ type Dividend struct {
 	Currency                  string  `json:"currency" validate:"required,eq=$|eq=€|eq=£"`
 	DoubleTaxationOrigin      float32 `json:"doubleTaxationOrigin" validate:"gte=0"`
 	DoubleTaxationDestination float32 `json:"doubleTaxationDestination" validate:"gte=0"`
+	IsReinvested              bool    `json:"isReinvested"`
 	Date                      Date    `json:"date" validate:"required"`
 }
 

@@ -29,6 +29,7 @@ type Dividend struct {
 	Currency                  string
 	DoubleTaxationOrigin      float32
 	DoubleTaxationDestination float32
+	IsReinvested              bool `gorm:"default:false"`
 	Date                      time.Time
 	CreatedAt                 time.Time
 	UpdatedAt                 time.Time

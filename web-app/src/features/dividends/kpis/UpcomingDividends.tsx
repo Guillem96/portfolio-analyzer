@@ -62,6 +62,7 @@ export default function UpcomingDividends() {
                     doubleTaxationOrigin: TAX_RATE[country],
                     doubleTaxationDestination: 0,
                     currency: mainCurrency,
+                    isReinvested: false,
                   })
                 }
               >

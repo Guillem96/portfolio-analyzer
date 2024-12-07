@@ -8,8 +8,9 @@ import {
   PctDividendsOverAssetValue,
   PctDividendsOverBuys,
   RemainingDividendsYear,
-  TotalDividendEarnings,
   UpcomingDividends,
+  PendingDividendsToReinvest,
+  MeanMonthlyDividends,
 } from "@features/dividends/kpis"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
@@ -22,7 +23,8 @@ const DividendsTab = () => (
     <div className="flex flex-col gap-2">
       <DividendsPerYear />
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-        <TotalDividendEarnings />
+        <MeanMonthlyDividends />
+        <PendingDividendsToReinvest />
         <RemainingDividendsYear />
         <ExpectedDividendsEarningsNextYear />
         <PctDividendsOverAssetValue />

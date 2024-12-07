@@ -5,6 +5,7 @@ import {
   fetchDividends as externalFetchDividends,
   fetchDividendsPreferredCurrency,
   postDividend,
+  updateDividends,
 } from "@services/dividends"
 import { getErrorMessage, showErrorToast } from "@services/utils"
 import { SettingSlice } from "./settings"
@@ -23,6 +24,7 @@ interface Actions {
   addDividend: (inv: Dividend) => Promise<void>
   deleteDividend: (invId: string) => Promise<void>
   selectDividend: (dividend: Dividend) => void
+  markDividendAsReinvested: (toUpdate: Record<string, boolean>) => Promise<void>
 }
 
 export type DividendSlice = State & Actions
@@ -85,5 +87,30 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
   },
   selectDividend: (dividend: Dividend) => {
     set({ selectedDividend: dividend })
+  },
+  markDividendAsReinvested: async (toUpdate: Record<string, boolean>) => {
+    const { dividends: prevDividends, dividendsPreferredCurrency: prevDividendsPreferredCurrency } = get()
+    const updatedDividends = prevDividends.map((div) => {
+      if (div.id in toUpdate) {
+        return { ...div, isReinvested: toUpdate[div.id] }
+      }
+      return div
+    })
+    const updatedDividendsPreferredCurrency = prevDividendsPreferredCurrency.map((div) => {
+      if (div.id in toUpdate) {
+        return { ...div, isReinvested: toUpdate[div.id] }
+      }
+      return div
+    })
+
+    set({ dividends: updatedDividends, dividendsPreferredCurrency: updatedDividendsPreferredCurrency })
+    try {
+      await updateDividends(toUpdate)
+    } catch (error) {
+      // Rollback
+      console.error(error)
+      set({ dividends: [...prevDividends], dividendsPreferredCurrency: prevDividendsPreferredCurrency, dividendLoading: false, dividendError: getErrorMessage(error) })
+      showErrorToast("Error deleting dividend...", () => set({ dividendError: null }))
+    }
   },
 })

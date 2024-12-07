@@ -6,19 +6,22 @@ import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { currencyFormatter } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
+import { Checkbox } from "@/components/ui/Checkbox"
 
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function DividendTable() {
-  const [dividends, loading, deleteDividend, privateMode] = useBoundStore((state) => [
+  const [dividends, loading, deleteDividend, markDividendAsReinvested, privateMode] = useBoundStore((state) => [
     state.dividends,
     state.dividendLoading,
     state.deleteDividend,
+    state.markDividendAsReinvested,
     state.privateMode,
   ])
 
   const [currentPage, setCurrentPage] = useState(-1)
   const [nPages, setNPages] = useState(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
+  const [markReinvested, setMarkReinvested] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     setNPages(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
@@ -27,6 +30,27 @@ export default function DividendTable() {
   const handleDeleteDividend = (dividendId: string) => () => {
     deleteDividend(dividendId)
   }
+
+  const handleCheckboxChange = (dividendId: string) => () => {
+    if (Object.keys(markReinvested).includes(dividendId)) {
+      setMarkReinvested((prev) => ({ ...prev, [dividendId]: !markReinvested[dividendId] }))
+      return
+    }
+
+    const currentDividend = dividends.find((dividend) => dividend.id === dividendId)
+    setMarkReinvested((prev) => ({ ...prev, [dividendId]: !currentDividend?.isReinvested }))
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      markDividendAsReinvested(markReinvested).then(() => {
+        setMarkReinvested({})
+      })
+    }, 1000)
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [markReinvested])
 
   const dividendsToRender = useMemo(() => {
     let cp = currentPage
@@ -62,6 +86,7 @@ export default function DividendTable() {
                   <TableHeaderCell>Taxes (Orig. - Dest)</TableHeaderCell>
                   <TableHeaderCell>Net</TableHeaderCell>
                   <TableHeaderCell>Date</TableHeaderCell>
+                  <TableHeaderCell>Reinvested</TableHeaderCell>
                   <TableHeaderCell className="text-right">Actions</TableHeaderCell>
                 </TableRow>
               </TableHead>
@@ -78,6 +103,7 @@ export default function DividendTable() {
                     currency,
                     date,
                     preview,
+                    isReinvested
                   }) => (
                     <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
                       <TableCell>{company}</TableCell>
@@ -94,6 +120,9 @@ export default function DividendTable() {
                         )}
                       </TableCell>
                       <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                      <TableCell>
+                        <Checkbox checked={markReinvested[id] === undefined ? isReinvested : markReinvested[id]} onClick={handleCheckboxChange(id)} />
+                      </TableCell>
                       <TableCell className="flex flex-row justify-end gap-x-4">
                         <Button
                           size="xs"

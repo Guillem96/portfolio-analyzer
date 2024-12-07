@@ -70,6 +70,7 @@ export interface Dividend {
   doubleTaxationOrigin: number
   doubleTaxationDestination: number
   currency: CurrencyType
+  isReinvested: boolean
   preview?: boolean
 }
 

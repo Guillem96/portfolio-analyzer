@@ -53,6 +53,7 @@ export default function DividendForm() {
       doubleTaxationOrigin,
       doubleTaxationDestination,
       date: selectedDate,
+      isReinvested: false,
     })
   }
 

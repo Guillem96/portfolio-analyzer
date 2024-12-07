@@ -119,6 +119,7 @@ func (r *DividendsRepository) FindAll(userEmail string) (domain.Dividends, error
 				DoubleTaxationOrigin:      dbDividend.DoubleTaxationOrigin,
 				DoubleTaxationDestination: dbDividend.DoubleTaxationDestination,
 				Date:                      domain.Date(dbDividend.Date),
+				IsReinvested:              dbDividend.IsReinvested,
 			},
 		}
 	}
@@ -166,6 +167,7 @@ func (r *DividendsRepository) FindAllPreferredCurrency(userEmail string) (domain
 				Currency:                  dbDividend.Currency,
 				DoubleTaxationOrigin:      dbDividend.DoubleTaxationOrigin,
 				DoubleTaxationDestination: dbDividend.DoubleTaxationDestination,
+				IsReinvested:              dbDividend.IsReinvested,
 				Date:                      domain.Date(dbDividend.Date),
 			},
 		}
@@ -176,6 +178,10 @@ func (r *DividendsRepository) FindAllPreferredCurrency(userEmail string) (domain
 
 func (r *DividendsRepository) Delete(id string, userEmail string) error {
 	return r.db.Where("id = ? AND user_email = ?", id, userEmail).Delete(&Dividend{}).Error
+}
+
+func (r *DividendsRepository) UpdateDividends(userEmail string, ids []string, reinvested bool) error {
+	return r.db.Model(&Dividend{}).Where("user_email = ? AND id IN ?", userEmail, ids).Update("is_reinvested", reinvested).Error
 }
 
 type UsersRepository struct {

@@ -95,6 +95,7 @@ jobs:
           docker tag portfolio-analyzer:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
       - name: Deploy terraform
+        id: terraform-apply
         working-directory: ./server/infrastructure
         run: |
           terraform init && \
@@ -102,7 +103,17 @@ jobs:
           TF_VAR_google_auth_client_id=${{ secrets.GOOGLE_AUTH_CLIENT_ID }} \
           TF_VAR_google_auth_client_secret=${{ secrets.GOOGLE_AUTH_CLIENT_SECRET }} \
           TF_VAR_database_url=${{ secrets.DATABASE_URL }} \
-          terraform apply -auto-approve
+          terraform apply -auto-approve && \
+          echo "$(terraform output --json)" | jq -r 'keys[] as $k | "\($k)=\(.[$k].value)"' >> $GITHUB_OUTPUT
+      - name: Refresh lambda image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: portfolio-analyzer
+          IMAGE_TAG: latest
+        run: |
+          aws lambda update-function-code \
+          --function-name ${{ steps.terraform-apply.outputs.api_lambda_name }} \
+          --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   # build-landing-page:
   #   runs-on: ubuntu-latest

@@ -1,20 +1,15 @@
+import { useDividedsStats } from "@/hooks/dividends"
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Card } from "@tremor/react"
-import { useMemo } from "react"
 
 export default function ExpectedDividendsEarningsNextYear() {
-  const [assets, mainCurrency, privateMode] = useBoundStore((state) => [
-    state.assets,
+  const [mainCurrency, privateMode] = useBoundStore((state) => [
     state.mainCurrency,
     state.privateMode,
   ])
 
-  const nextYearDividends = useMemo(
-    () => assets.map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units).reduce((a, b) => a + b, 0),
-    [assets],
-  )
-
+  const { nextYearDividends } = useDividedsStats()
   return (
     <Card decoration="top">
       <p className="text-tremor-default font-medium text-tremor-content dark:text-dark-tremor-content">

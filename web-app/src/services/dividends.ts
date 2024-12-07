@@ -16,3 +16,8 @@ export const postDividend = async (dividend: Dividend): Promise<DividendWithId> 
 export const deleteDividendById = async (id: string) => {
   await request(`dividends/${id}`, "DELETE", id)
 }
+
+export const updateDividends = async (reinvested: Record<string, boolean>) => {
+  const body = Object.entries(reinvested).map(([id, isReinvested]) => ({ id, reinvested: isReinvested }))
+  await request(`dividends/`, "PATCH", body)
+}
