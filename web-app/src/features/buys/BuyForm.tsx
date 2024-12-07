@@ -111,6 +111,7 @@ export default function BuyForm() {
             <Select name="currency" className="absolute bottom-0 max-w-8" disabled={loading} defaultValue="€">
               <SelectItem value="€">€</SelectItem>
               <SelectItem value="$">$</SelectItem>
+              <SelectItem value="£">£</SelectItem>
             </Select>
           </div>
           <div className="max-w-xs">
