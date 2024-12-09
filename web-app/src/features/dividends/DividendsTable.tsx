@@ -45,9 +45,7 @@ export default function DividendTable() {
     if (Object.keys(markReinvested).length === 0) return
 
     const timeout = setTimeout(() => {
-      markDividendAsReinvested(markReinvested).then(() => {
-        setMarkReinvested({})
-      })
+      markDividendAsReinvested(markReinvested)
     }, 1500)
 
     return () => {
