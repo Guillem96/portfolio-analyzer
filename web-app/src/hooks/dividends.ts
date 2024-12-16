@@ -3,9 +3,9 @@ import { useBoundStore } from "@/store"
 import { Dividend } from "@/types"
 import { useMemo } from "react"
 
-const useDividendsPerYear = (dividends: Dividend[]): { date: number; "Dividend Earnings": number }[] => {
+const useDividendsPerYear = (dividends: Dividend[], dividendLoading: boolean): { date: number; "Dividend Earnings": number }[] => {
   return useMemo(() => {
-    if (dividends.length === 0) return []
+    if (dividends.length === 0 || dividendLoading) return []
 
     const invWithDate = dividends.map((div) => {
       return { ...div, date: new Date(div.date) }
@@ -24,13 +24,13 @@ const useDividendsPerYear = (dividends: Dividend[]): { date: number; "Dividend E
     })
 
     return data
-  }, [dividends])
+  }, [dividends, dividendLoading])
 }
 
-const useDividendsPerMonth = (dividends: Dividend[]): { date: string; [x: number]: number }[] => {
+const useDividendsPerMonth = (dividends: Dividend[], dividendLoading: boolean): { date: string;[x: number]: number }[] => {
   const year = new Date().getFullYear()
   const data = useMemo(() => {
-    if (dividends.length === 0) return []
+    if (dividends.length === 0 || dividendLoading) return []
 
     const invWithDate = dividends.map((div) => {
       return { ...div, date: new Date(div.date) }
@@ -45,12 +45,12 @@ const useDividendsPerMonth = (dividends: Dividend[]): { date: string; [x: number
     })
 
     return barData
-  }, [dividends])
+  }, [dividends, dividendLoading])
   return data
 }
 
 export const useDividedsStats = () => {
-  const [assets, dividends] = useBoundStore((state) => [state.assets, state.dividendsPreferredCurrency])
+  const [assets, dividends, dividendLoading] = useBoundStore((state) => [state.assets, state.dividendsPreferredCurrency, state.dividendLoading])
 
   const totalInvested = useMemo(() => assets.map(({ buyValue }) => buyValue).reduce((a, b) => a + b, 0), [assets])
   const totalAssetValue = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])
@@ -60,8 +60,8 @@ export const useDividedsStats = () => {
     [assets],
   )
 
-  const dividendsPerYear = useDividendsPerYear(dividends)
-  const dividendsPerMonth = useDividendsPerMonth(dividends)
+  const dividendsPerYear = useDividendsPerYear(dividends, dividendLoading)
+  const dividendsPerMonth = useDividendsPerMonth(dividends, dividendLoading)
   const leftDividendsYear = useMemo(
     () =>
       assets

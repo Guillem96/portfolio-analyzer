@@ -129,15 +129,18 @@ func (d UserWithId) ToJSON(w io.Writer) error {
 }
 
 type Asset struct {
-	Ticker            Ticker  `json:"ticker"`
-	Name              string  `json:"name"`
-	BuyValue          float32 `json:"buyValue"`
-	Value             float32 `json:"value"`
-	Units             float32 `json:"units"`
-	Country           string  `json:"country"`
-	Sector            string  `json:"sector"`
-	AverageStockPrice float32 `json:"averageStockPrice"`
-	Currency          string  `json:"currency" validate:"required,eq=$|eq=€|eq=£"`
+	Ticker                Ticker  `json:"ticker"`
+	Name                  string  `json:"name"`
+	BuyValue              float32 `json:"buyValue"`
+	Value                 float32 `json:"value"`
+	Units                 float32 `json:"units"`
+	Country               string  `json:"country"`
+	Sector                string  `json:"sector"`
+	AverageStockPrice     float32 `json:"averageStockPrice"`
+	YieldWithRespectBuy   float32 `json:"yieldWithRespectBuy"`
+	YieldWithRespectValue float32 `json:"yieldWithRespectValue"`
+	LastBuyDate           Date    `json:"lastBuyDate"`
+	Currency              string  `json:"currency" validate:"required,eq=$|eq=€|eq=£"`
 }
 
 type Assets []Asset
@@ -197,4 +200,19 @@ func (ec EventCalendar) ToJSON(w io.Writer) error {
 		vjm[k.String()] = v
 	}
 	return encoder.Encode(vjm)
+}
+
+type HistoricEntry struct {
+	Date     Date    `json:"date"`
+	Value    float32 `json:"value"`
+	BuyValue float32 `json:"buyValue"`
+	Currency string  `json:"currency"`
+	Rate     float32 `json:"rate"`
+}
+
+type PortfolioHistoric []HistoricEntry
+
+func (ph PortfolioHistoric) ToJSON(w io.Writer) error {
+	encoder := json.NewEncoder(w)
+	return encoder.Encode(ph)
 }

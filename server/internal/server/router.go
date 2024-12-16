@@ -49,6 +49,7 @@ func SetupRouter(
 	assetsRouter.Use(auth.JwtMiddleware)
 	assetsRouter.HandleFunc("/", assetsHandler.ListAssetsHandler).Methods("GET")
 	assetsRouter.HandleFunc("/events", assetsHandler.ListEventsHandler).Methods("GET")
+	assetsRouter.HandleFunc("/historic", assetsHandler.RetrieveHistoricDataHandler).Methods("GET")
 
 	// Serve static files
 	staticDir := "./static/dist"

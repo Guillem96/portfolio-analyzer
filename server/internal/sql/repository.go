@@ -2,6 +2,7 @@ package sql
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -265,10 +266,19 @@ type AssetsRepository struct {
 }
 
 type assetsIterimResult struct {
-	Ticker   string  `gorm:"column:TICKER"`
-	Currency string  `gorm:"column:CURRENCY"`
+	Ticker      string    `gorm:"column:TICKER"`
+	Currency    string    `gorm:"column:CURRENCY"`
+	BuyValue    float32   `gorm:"column:BUY_VALUE"`
+	Units       float32   `gorm:"column:UNITS"`
+	LastBuyDate time.Time `gorm:"column:LAST_BUY_DATE"`
+}
+
+type interimHistoricResult struct {
+	Date     string  `gorm:"column:DATE"`
 	BuyValue float32 `gorm:"column:BUY_VALUE"`
-	Units    float32 `gorm:"column:UNITS"`
+	Value    float32 `gorm:"column:VALUE"`
+	Currency string  `gorm:"column:CURRENCY"`
+	Rate     float32 `gorm:"column:RATE"`
 }
 
 func NewAssetsRepository(db *gorm.DB, ur domain.UserRepository, tr domain.TickersRepository, logger *slog.Logger) *AssetsRepository {
@@ -301,11 +311,26 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		SELECT
 			BUYS.*,
 			USERS.PREFERRED_CURRENCY,
-			BUYS.AMOUNT * _RATES.RATE AS TOTAL_AMOUNT
+			BUYS.AMOUNT * _RATES.RATE AS TOTAL_AMOUNT,
+			BUYS.DATE
 		FROM BUYS
 		INNER JOIN USERS ON BUYS.USER_EMAIL = USERS.EMAIL
 		INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = BUYS.CURRENCY
 		WHERE USERS.EMAIL = ? AND BUYS.DELETED_AT IS NULL
+	),
+
+	_BUYS_DATE_W_RN AS (
+			SELECT
+					TICKER,
+					DATE,
+					ROW_NUMBER() OVER (PARTITION BY TICKER ORDER BY DATE DESC) AS RN
+			FROM _BUYS_SINGLE_CURRENCY
+	),
+
+	_BUYS_LAST_DATE AS (
+			SELECT TICKER, DATE
+			FROM _BUYS_DATE_W_RN
+			WHERE RN = 1
 	),
 
 	_BUYS AS (
@@ -336,9 +361,11 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		_BUYS.TICKER,
 		_BUYS.PREFERRED_CURRENCY AS CURRENCY,
 		_BUYS.TOTAL_AMOUNT AS BUY_VALUE,
-		(COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + _BUYS.TOTAL_UNITS) AS UNITS
+		(COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + _BUYS.TOTAL_UNITS) AS UNITS,
+		_BUYS_LAST_DATE.DATE AS LAST_BUY_DATE
 	FROM _BUYS
 	LEFT JOIN _REINVESTMENTS ON _BUYS.TICKER = _REINVESTMENTS.TICKER
+	LEFT JOIN _BUYS_LAST_DATE ON _BUYS.TICKER = _BUYS_LAST_DATE.TICKER
 	`, *user.PreferredCurrency, userEmail).Scan(&results).Error
 	if err != nil {
 		return nil, err
@@ -368,15 +395,18 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 
 	assets := arrayutils.Map(results, func(r assetsIterimResult) domain.Asset {
 		return domain.Asset{
-			Ticker:            tickersInfo[r.Ticker],
-			Name:              tickersInfo[r.Ticker].Name,
-			BuyValue:          r.BuyValue,
-			Value:             r.Units * tickersInfo[r.Ticker].Price,
-			Units:             r.Units,
-			AverageStockPrice: r.BuyValue / float32(r.Units),
-			Currency:          r.Currency,
-			Country:           tickersInfo[r.Ticker].Country,
-			Sector:            tickersInfo[r.Ticker].Sector,
+			Ticker:                tickersInfo[r.Ticker],
+			Name:                  tickersInfo[r.Ticker].Name,
+			BuyValue:              r.BuyValue,
+			Value:                 r.Units * tickersInfo[r.Ticker].Price,
+			Units:                 r.Units,
+			AverageStockPrice:     r.BuyValue / float32(r.Units),
+			LastBuyDate:           domain.Date(r.LastBuyDate),
+			YieldWithRespectBuy:   tickersInfo[r.Ticker].YearlyDividendValue / (r.BuyValue / float32(r.Units)),
+			YieldWithRespectValue: tickersInfo[r.Ticker].YearlyDividendValue / tickersInfo[r.Ticker].Price,
+			Currency:              r.Currency,
+			Country:               tickersInfo[r.Ticker].Country,
+			Sector:                tickersInfo[r.Ticker].Sector,
 		}
 	})
 
@@ -414,6 +444,60 @@ func (r *AssetsRepository) FindEvents(userEmail string) (domain.EventCalendar, e
 	}
 
 	return events, nil
+}
+
+func (r *AssetsRepository) FindHistoric(userEmail string, startDate, endDate domain.Date) (domain.PortfolioHistoric, error) {
+	var results []interimHistoricResult
+
+	if err := r.db.Raw(`
+	WITH _RATES AS (
+		SELECT
+			SOURCE_CURRENCY,
+			RATE
+		FROM EXCHANGE_RATES
+		WHERE TARGET_CURRENCY = (SELECT PREFERRED_CURRENCY FROM USERS WHERE EMAIL = ?)
+	),
+
+	_PORTFOLIO_HISTORICS_SINGLE_CURRENCY AS (
+		SELECT
+			PORTFOLIO_HISTORICS.*,
+			USERS.PREFERRED_CURRENCY AS CURRENCY
+		FROM PORTFOLIO_HISTORICS
+		INNER JOIN USERS ON PORTFOLIO_HISTORICS.USER_EMAIL = USERS.EMAIL
+		INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = PORTFOLIO_HISTORICS.CURRENCY
+		WHERE USERS.EMAIL = ?
+	),
+
+	_GROUPED_HISTORICS AS (
+		SELECT
+			DATE(CREATED_AT) AS DATE,
+			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.VALUE,
+			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.BUY_VALUE,
+			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.CURRENCY,
+			(_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.VALUE / _PORTFOLIO_HISTORICS_SINGLE_CURRENCY.BUY_VALUE - 1) AS RATE,
+			ROW_NUMBER() OVER (PARTITION BY DATE(CREATED_AT) ORDER BY CREATED_AT ASC) AS ROW_NUM
+		FROM _PORTFOLIO_HISTORICS_SINGLE_CURRENCY
+		WHERE DATE(CREATED_AT) BETWEEN ? AND ?
+	)
+	SELECT *
+	FROM _GROUPED_HISTORICS
+	WHERE ROW_NUM = 1;
+	`, userEmail, userEmail, time.Time(startDate).Format("2006-01-01"), time.Time(endDate).Format("2006-01-01")).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	fmt.Println(time.Time(startDate), time.Time(endDate))
+
+	historic := arrayutils.Map(results, func(r interimHistoricResult) domain.HistoricEntry {
+		d, _ := time.Parse("2006-01-02", r.Date)
+		return domain.HistoricEntry{
+			Date:     domain.Date(d),
+			Value:    r.Value,
+			BuyValue: r.BuyValue,
+			Currency: r.Currency,
+			Rate:     r.Rate,
+		}
+	})
+	return historic, nil
 }
 
 type ExchangeRatesRepository struct {

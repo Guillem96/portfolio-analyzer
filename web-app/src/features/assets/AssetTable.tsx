@@ -6,11 +6,12 @@ import { useBoundStore } from "@/store"
 import type { Asset } from "@/types.d"
 import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
+import { format } from "date-fns"
 
 interface RowProps {
   asset: Asset
 }
-type SortKeys = "gain" | "name" | "country" | "num-shares" | "sector" | "amount"
+type SortKeys = "gain" | "name" | "country" | "num-shares" | "sector" | "amount" | "last-buy"
 
 const MAX_ITEMS_PER_PAGE = 15
 
@@ -20,7 +21,7 @@ const AssetTableRow = ({ asset }: RowProps) => {
 
   const [showAbsolute, setShowAbsolute] = useState(false)
 
-  const { name, ticker, value, buyValue, units, sector, country, currency, avgPrice } = asset
+  const { name, ticker, value, buyValue, units, sector, country, currency, avgPrice, lastBuyDate, yieldWithRespectBuy, yieldWithRespectValue } = asset
   const rate = (value / buyValue - 1) * 100
   const absolute = value - buyValue
   const changeType = rate > 0 ? "positive" : "negative"
@@ -40,20 +41,22 @@ const AssetTableRow = ({ asset }: RowProps) => {
       </TableCell>
       <TableCell onClick={() => setShowAbsolute(!showAbsolute)}>
         <span
-          className={` ${
-            changeType === "positive"
-              ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
-              : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
-          } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+          className={` ${changeType === "positive"
+            ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
+            : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
+            } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
           {showAbsolute ? currencyFormatter(absolute, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
         </span>
       </TableCell>
       <TableCell>{sector}</TableCell>
       <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
+      <TableCell>{`${ticker.price.toFixed(2)}${currency}`}</TableCell>
       <TableCell>{units.toFixed(3)}</TableCell>
       <TableCell>{currencyFormatter(avgPrice, currency, privateMode)}</TableCell>
-
+      <TableCell>{format(lastBuyDate, "yyyy-MM-dd")}</TableCell>
+      <TableCell>{`${(yieldWithRespectBuy * 100).toFixed(2)}%`}</TableCell>
+      <TableCell>{`${(yieldWithRespectValue * 100).toFixed(2)}%`}</TableCell>
       <TableCell>{currencyFormatter(value, currency, privateMode)}</TableCell>
     </TableRow>
   )
@@ -77,6 +80,7 @@ export default function AssetTable() {
     if (sortBy === "gain") return b.value / b.buyValue - a.value / a.buyValue
     if (sortBy === "amount") return b.value - a.value
     if (sortBy === "num-shares") return b.units - a.units
+    if (sortBy === "last-buy") return b.lastBuyDate.getTime() - a.lastBuyDate.getTime()
     if (sortBy === "country" || sortBy === "name" || sortBy === "sector") return a[sortBy].localeCompare(b[sortBy])
     return a.ticker.ticker.localeCompare(b.ticker.ticker)
   }
@@ -118,8 +122,12 @@ export default function AssetTable() {
                   <TableHeaderCell onClick={onClickSortHandler("gain")}>Gain</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("sector")}>Sector</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("country")}>Country</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("num-shares")}>Unit Value</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
                   <TableHeaderCell>Avg. Price</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
+                  <TableHeaderCell>Yield w.r.t buy</TableHeaderCell>
+                  <TableHeaderCell>Yield w.r.t value</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
                 </TableRow>
               </TableHead>

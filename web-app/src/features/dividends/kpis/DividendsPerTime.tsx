@@ -12,6 +12,9 @@ const BarChartDividendsPerYear = () => {
     state.privateMode,
   ])
 
+  const { dividendsPerYear } = useDividedsStats()
+
+
   if (dividendsLoading)
     return (
       <div className="flex flex-row justify-center align-middle">
@@ -27,7 +30,6 @@ const BarChartDividendsPerYear = () => {
       </div>
     )
 
-  const { dividendsPerYear } = useDividedsStats()
   return (
     <BarChart
       colors={["emerald"]}
@@ -49,6 +51,7 @@ const BarChartDividendsPerMonth = () => {
     state.privateMode,
   ])
 
+  const { dividendsPerMonth } = useDividedsStats()
   if (dividendsLoading)
     return (
       <div className="flex flex-row justify-center align-middle">
@@ -65,7 +68,6 @@ const BarChartDividendsPerMonth = () => {
     )
 
   const year = new Date().getFullYear()
-  const { dividendsPerMonth } = useDividedsStats()
   return (
     <BarChart
       className="mt-6"

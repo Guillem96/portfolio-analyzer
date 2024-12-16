@@ -24,6 +24,7 @@ type UserRepository interface {
 type AssetsRepository interface {
 	FindAll(userEmail string) (Assets, error)
 	FindEvents(userEmail string) (EventCalendar, error)
+	FindHistoric(userEmail string, startDate, endDate Date) (PortfolioHistoric, error)
 }
 
 type CurrencyRepository interface {

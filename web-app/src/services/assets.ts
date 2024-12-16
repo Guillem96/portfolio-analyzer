@@ -1,4 +1,4 @@
-import type { Asset, Event } from "@/types.d"
+import type { Asset, Event, PortfolioHistoricEntry } from "@/types.d"
 import { request } from "./base"
 
 export const fetchAssets = async (): Promise<Asset[]> => {
@@ -31,6 +31,9 @@ export const fetchAssets = async (): Promise<Asset[]> => {
         sector: rawAsset.sector,
         avgPrice: rawAsset.averageStockPrice,
         currency: rawAsset.currency,
+        yieldWithRespectBuy: rawAsset.yieldWithRespectBuy,
+        yieldWithRespectValue: rawAsset.yieldWithRespectValue,
+        lastBuyDate: new Date(rawAsset.lastBuyDate),
       }) as Asset,
   )
 }
@@ -38,3 +41,13 @@ export const fetchAssets = async (): Promise<Asset[]> => {
 export const fetchEvents = async (): Promise<Record<string, Event[]>> => {
   return await request("assets/events/", "GET")
 }
+
+export const fetchHistoricalData = async (): Promise<PortfolioHistoricEntry[]> => {
+  const response = await request("assets/historic/", "GET")
+  return response.map((data: Record<string, number>) => {
+    const date = new Date(data.date)
+    return { ...data, date }
+  })
+}
+
+

@@ -19,6 +19,7 @@ func InitDB() {
 	db.AutoMigrate(&Dividend{})
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&ExchangeRate{})
+	db.AutoMigrate(&PortfolioHistoric{})
 }
 
 func GetDB() *gorm.DB {

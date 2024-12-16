@@ -88,6 +88,17 @@ export interface Asset {
   sector: string
   avgPrice: number
   currency: CurrencyType
+  yieldWithRespectBuy: float
+  yieldWithRespectValue: float
+  lastBuyDate: Date
+}
+
+export interface PortfolioHistoricEntry {
+  date: Date
+  value: number
+  buyValue: number
+  currency: CurrencyType
+  rate: number
 }
 
 export interface User {

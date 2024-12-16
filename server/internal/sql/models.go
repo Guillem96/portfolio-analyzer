@@ -52,3 +52,12 @@ type ExchangeRate struct {
 	Rate           float32
 	CreatedAt      time.Time
 }
+
+type PortfolioHistoric struct {
+	ID        string `gorm:"primarykey"`
+	UserEmail string
+	Value     float32
+	BuyValue  float32
+	Currency  string
+	CreatedAt time.Time
+}
