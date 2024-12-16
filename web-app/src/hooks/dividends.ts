@@ -3,7 +3,10 @@ import { useBoundStore } from "@/store"
 import { Dividend } from "@/types"
 import { useMemo } from "react"
 
-const useDividendsPerYear = (dividends: Dividend[], dividendLoading: boolean): { date: number; "Dividend Earnings": number }[] => {
+const useDividendsPerYear = (
+  dividends: Dividend[],
+  dividendLoading: boolean,
+): { date: number; "Dividend Earnings": number }[] => {
   return useMemo(() => {
     if (dividends.length === 0 || dividendLoading) return []
 
@@ -27,7 +30,10 @@ const useDividendsPerYear = (dividends: Dividend[], dividendLoading: boolean): {
   }, [dividends, dividendLoading])
 }
 
-const useDividendsPerMonth = (dividends: Dividend[], dividendLoading: boolean): { date: string;[x: number]: number }[] => {
+const useDividendsPerMonth = (
+  dividends: Dividend[],
+  dividendLoading: boolean,
+): { date: string; [x: number]: number }[] => {
   const year = new Date().getFullYear()
   const data = useMemo(() => {
     if (dividends.length === 0 || dividendLoading) return []
@@ -50,7 +56,11 @@ const useDividendsPerMonth = (dividends: Dividend[], dividendLoading: boolean): 
 }
 
 export const useDividedsStats = () => {
-  const [assets, dividends, dividendLoading] = useBoundStore((state) => [state.assets, state.dividendsPreferredCurrency, state.dividendLoading])
+  const [assets, dividends, dividendLoading] = useBoundStore((state) => [
+    state.assets,
+    state.dividendsPreferredCurrency,
+    state.dividendLoading,
+  ])
 
   const totalInvested = useMemo(() => assets.map(({ buyValue }) => buyValue).reduce((a, b) => a + b, 0), [assets])
   const totalAssetValue = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])

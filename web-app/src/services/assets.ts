@@ -49,5 +49,3 @@ export const fetchHistoricalData = async (): Promise<PortfolioHistoricEntry[]> =
     return { ...data, date }
   })
 }
-
-

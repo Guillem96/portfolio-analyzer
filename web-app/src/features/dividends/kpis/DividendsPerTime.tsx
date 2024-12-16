@@ -14,7 +14,6 @@ const BarChartDividendsPerYear = () => {
 
   const { dividendsPerYear } = useDividedsStats()
 
-
   if (dividendsLoading)
     return (
       <div className="flex flex-row justify-center align-middle">
