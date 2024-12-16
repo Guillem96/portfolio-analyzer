@@ -1,12 +1,15 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"log/slog"
 	"os"
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/infra_http"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/sql"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm/clause"
 )
@@ -20,6 +23,17 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	if utils.IsRunningInLambdaEnv() {
+		lambda.Start(task)
+		return
+	}
+
+	if err := task(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func task() error {
 	l := slog.Default()
 	db := sql.GetDB()
 	sql.InitDB()
@@ -27,14 +41,15 @@ func main() {
 	// Currency service
 	currencyUrl, present := os.LookupEnv("CURRENCY_EXCHANGE_RATES_API")
 	if !present {
-		log.Fatal("CURRENCY_EXCHANGE_RATES_API not found")
+		l.Error("CURRENCY_EXCHANGE_RATES_API not found", "error", "CURRENCY_EXCHANGE_RATES_API not found")
+		return errors.New("CURRENCY_EXCHANGE_RATES_API not found")
 	}
 	cr := infra_http.NewCurrencyRepository(currencyUrl, l)
 
 	aer, err := cr.FindAllExchangeRates()
 	if err != nil {
 		l.Error("Failed to fetch exchange rates", "error", err.Error())
-		return
+		return err
 	}
 
 	for sc, rates := range aer {
@@ -51,4 +66,5 @@ func main() {
 		}
 	}
 	db.Commit()
+	return nil
 }

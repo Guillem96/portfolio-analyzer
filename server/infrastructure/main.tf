@@ -47,6 +47,18 @@ variable "database_url" {
 
 locals {
   name_prefix = "portfolio-analyzer-server"
+  targets = [
+    {
+      name        = "exchange-rates-task"
+      entry_point = "/exchange-rates-task"
+      rate        = "rate(24 hours)"
+    },
+    {
+      name        = "compute-value-task"
+      entry_point = "/compute-value-task"
+      rate        = "rate(24 hours)"
+    }
+  ]
 }
 
 
@@ -61,16 +73,16 @@ data "aws_iam_policy_document" "assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
+      identifiers = ["lambda.amazonaws.com", "scheduler.amazonaws.com"]
     }
   }
+
 }
 
 resource "aws_iam_role" "lambda" {
   name               = "${local.name_prefix}-lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
-
 
 data "aws_iam_policy_document" "logs" {
   policy_id = "${local.name_prefix}-lambda-logs"
@@ -99,6 +111,34 @@ resource "aws_iam_role_policy_attachment" "logs" {
   policy_arn = aws_iam_policy.logs.arn
 }
 
+resource "aws_iam_role" "event_bridge" {
+  name               = "${local.name_prefix}-event-bridge"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+data "aws_iam_policy_document" "event_bridge" {
+  policy_id = "${local.name_prefix}-event-bridge"
+  version   = "2012-10-17"
+  statement {
+    effect  = "Allow"
+    actions = ["lambda:InvokeFunction"]
+    resources = [
+      for target in local.targets : aws_lambda_function.tasks[target.name].arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "event_bridge" {
+  name   = "${local.name_prefix}-lambda-event-bridge"
+  policy = data.aws_iam_policy_document.event_bridge.json
+}
+
+resource "aws_iam_role_policy_attachment" "event_bridge" {
+  depends_on = [aws_iam_role.event_bridge, aws_iam_policy.event_bridge]
+  role       = aws_iam_role.event_bridge.name
+  policy_arn = aws_iam_policy.event_bridge.arn
+}
+
 
 # CLOUDWATCH ##########################################
 
@@ -107,7 +147,8 @@ resource "aws_cloudwatch_log_group" "log" {
   retention_in_days = 7
 }
 
-# LAMBDA FUNCTION #####################################
+
+# LAMBDA FUNCTIONS #####################################
 
 resource "aws_lambda_function" "handler" {
   function_name = "${local.name_prefix}-handler"
@@ -134,6 +175,51 @@ resource "aws_lambda_function" "handler" {
     }
   }
 }
+
+resource "aws_lambda_function" "tasks" {
+  for_each = { for target in local.targets : target.name => target }
+
+  function_name = "${local.name_prefix}-${each.key}"
+  package_type  = "Image"
+  image_uri     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-2.amazonaws.com/portfolio-analyzer:latest"
+  image_config {
+    entry_point = [each.value.entry_point]
+  }
+  role        = aws_iam_role.lambda.arn
+  memory_size = 1024
+  timeout     = 60
+
+  depends_on = [
+    aws_iam_role_policy_attachment.logs,
+    aws_cloudwatch_log_group.log,
+  ]
+
+  environment {
+    variables = {
+      ENVIRONMENT                 = "prod"
+      DATABASE_URL                = var.database_url
+      CURRENCY_EXCHANGE_RATES_API = "https://v6.exchangerate-api.com/v6/83a609d5f4903a781a8462fc/latest"
+      TICKER_INFO_API             = "https://wcou3sszabchl2bemt7sxwbjey0cbkmx.lambda-url.eu-west-2.on.aws"
+    }
+  }
+}
+
+resource "aws_scheduler_schedule" "tasks" {
+  for_each   = { for target in local.targets : target.name => target }
+  name       = "${local.name_prefix}-${each.key}"
+  group_name = "default"
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  schedule_expression = each.value.rate
+
+  target {
+    arn      = aws_lambda_function.tasks[each.key].arn
+    role_arn = aws_iam_role.event_bridge.arn
+  }
+}
+
 
 resource "aws_lambda_permission" "apigw" {
   action        = "lambda:InvokeFunction"

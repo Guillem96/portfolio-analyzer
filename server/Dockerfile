@@ -12,7 +12,16 @@ COPY cmd cmd
 RUN go build -ldflags='-s -w -extldflags "-static"' \
     -tags lambda.norpc -o main ./cmd/api
 
+RUN go build -ldflags='-s -w -extldflags "-static"' \
+    -tags lambda.norpc -o compute-value-task ./cmd/compute_value_task
+
+RUN go build -ldflags='-s -w -extldflags "-static"' \
+    -tags lambda.norpc -o exchange-rates-task ./cmd/exchange_rates_task
+
 FROM alpine:3.20
 COPY --from=build /build/main /main
+COPY --from=build /build/compute-value-task /compute-value-task
+COPY --from=build /build/exchange-rates-task /exchange-rates-task
 COPY static/dist /static/dist
+
 ENTRYPOINT [ "/main" ]

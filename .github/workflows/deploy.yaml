@@ -113,7 +113,13 @@ jobs:
         run: |
           aws lambda update-function-code \
           --function-name ${{ steps.terraform-apply.outputs.api_lambda_name }} \
-          --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG && \
+          aws lambda update-function-code \
+          --function-name ${{ steps.terraform-apply.outputs.task_exchange_rates_lambda_name }} \
+          --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG && \
+          aws lambda update-function-code \
+          --function-name ${{ steps.terraform-apply.outputs.task_compute_value_lambda_name }} \
+          --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG && \
 
   # build-landing-page:
   #   runs-on: ubuntu-latest

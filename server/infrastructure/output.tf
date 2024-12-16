@@ -9,3 +9,19 @@ output "api_lambda_arn" {
 output "api_lambda_name" {
   value = aws_lambda_function.handler.function_name
 }
+
+output "task_exchange_rates_lambda_arn" {
+  value = aws_lambda_function.tasks["exchange-rates-task"].arn
+}
+
+output "task_exchange_rates_lambda_name" {
+  value = aws_lambda_function.tasks["exchange-rates-task"].function_name
+}
+
+output "task_compute_value_lambda_arn" {
+  value = aws_lambda_function.tasks["compute-value-task"].arn
+}
+
+output "task_compute_value_lambda_name" {
+  value = aws_lambda_function.tasks["compute-value-task"].function_name
+}
