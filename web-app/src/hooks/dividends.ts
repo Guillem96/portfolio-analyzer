@@ -17,7 +17,7 @@ const useDividendsPerYear = (
     const startingYear = new Date().getFullYear() - 4
     const data = new Array(5).fill(undefined).map((_, i) => {
       return {
-        date: startingYear + i + 1,
+        date: startingYear + i,
         "Dividend Earnings": 0,
       }
     })
