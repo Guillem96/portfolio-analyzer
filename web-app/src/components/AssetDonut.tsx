@@ -24,22 +24,24 @@ export default function AssetDonut({ by, colorMapping = null }: Props) {
   const data = useMemo(() => {
     const totalValue = assets.map(({ value }) => value).reduce((a, b) => a + b, 0)
 
-    return uniqueBys.map((v, index) => {
-      const totalByTag = assets
-        .filter((asset) => asset[by] === v)
-        .map(({ value }) => value)
-        .reduce((a, b) => a + b, 0)
+    return uniqueBys
+      .map((v, index) => {
+        const totalByTag = assets
+          .filter((asset) => asset[by] === v)
+          .map(({ value }) => value)
+          .reduce((a, b) => a + b, 0)
 
-      let name = v
-      if (name === "") name = "<none>"
+        let name = v
+        if (name === "") name = "<none>"
 
-      return {
-        name: name,
-        amount: totalByTag,
-        share: ((totalByTag / totalValue) * 100).toFixed(2) + "%",
-        color: colorMapping?.[name as string] ?? `bg-[${PASTEL_VIVID_COLORS[index]}]`,
-      }
-    }).sort((a, b) => b.amount - a.amount)
+        return {
+          name: name,
+          amount: totalByTag,
+          share: ((totalByTag / totalValue) * 100).toFixed(2) + "%",
+          color: colorMapping?.[name as string] ?? `bg-[${PASTEL_VIVID_COLORS[index]}]`,
+        }
+      })
+      .sort((a, b) => b.amount - a.amount)
   }, [assets, by, colorMapping, uniqueBys])
 
   return (
