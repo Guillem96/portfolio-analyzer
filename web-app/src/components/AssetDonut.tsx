@@ -39,7 +39,7 @@ export default function AssetDonut({ by, colorMapping = null }: Props) {
         share: ((totalByTag / totalValue) * 100).toFixed(2) + "%",
         color: colorMapping?.[name as string] ?? `bg-[${PASTEL_VIVID_COLORS[index]}]`,
       }
-    })
+    }).sort((a, b) => b.amount - a.amount)
   }, [assets, by, colorMapping, uniqueBys])
 
   return (
