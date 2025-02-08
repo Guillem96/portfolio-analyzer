@@ -16,6 +16,8 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
 import BuysCard from "@/features/buys"
 import EventCalendar from "@/components/EventCalendar"
+import AssetHistoricValue from "./assets/kpis/AssetHistoricValue"
+import TopMovers from "./assets/kpis/TopMovers"
 
 const DividendsTab = () => (
   <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -39,19 +41,21 @@ const DividendsTab = () => (
 
 const AssetsTab = () => (
   <>
-    <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-2">
+      <AssetHistoricValue />
       <AssetsCard />
+      <AssetBarList />
       <div className="flex flex-col gap-2">
-        <AssetBarList />
         <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
           <TotalAssetValue />
           <AssetsCount />
         </div>
       </div>
     </div>
-    <div className="grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
+    <div className="mb-2 grid grid-cols-1 gap-2 pt-2 lg:grid-cols-3">
       <CountryDonut />
       <SectorDonut />
+      <TopMovers />
     </div>
   </>
 )

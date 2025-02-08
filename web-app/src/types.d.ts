@@ -14,10 +14,18 @@ export enum Risk {
   HIGH_RISK = "high",
 }
 
+export interface PriceRange {
+  min: number
+  max: number
+}
+
 export interface TickerInfo {
   ticker: string
   name: string
   price: number
+  changeRate: number
+  monthlyPriceRange: PriceRange
+  yearlyPriceRange: PriceRange
   yearlyDividendYield: number | null
   yearlyDividendValue: number | null
   nextDividendYield: number

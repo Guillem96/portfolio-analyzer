@@ -90,8 +90,12 @@ func (r *TickerRepository) mapper(ticker domain.Ticker, currency string) (domain
 		ticker.Price = ticker.Price / 100
 		ticker.NextDividendValue = ticker.NextDividendValue / 100
 		ticker.YearlyDividendValue = ticker.YearlyDividendValue / 100
+		ticker.MonthlyPriceRange.Min = ticker.MonthlyPriceRange.Min / 100
+		ticker.MonthlyPriceRange.Max = ticker.MonthlyPriceRange.Max / 100
+		ticker.YearlyPriceRange.Min = ticker.YearlyPriceRange.Min / 100
+		ticker.YearlyPriceRange.Max = ticker.YearlyPriceRange.Max / 100
 	}
-
+	fmt.Println(ticker)
 	// Convert the price to the preferred currency
 	exchangeRates, err := r.cr.FindAllExchangeRates()
 	if err != nil {

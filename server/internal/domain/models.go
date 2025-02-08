@@ -150,8 +150,14 @@ func (as Assets) ToJSON(w io.Writer) error {
 	return encoder.Encode(as)
 }
 
+type PriceRange struct {
+	Min float32 `json:"min"`
+	Max float32 `json:"max"`
+}
+
 type Ticker struct {
 	Ticker              string         `json:"ticker"`
+	ChangeRate          float32        `json:"change_rate"`
 	Price               float32        `json:"price"`
 	Name                string         `json:"name"`
 	YearlyDividendYield float32        `json:"yearly_dividend_yield"`
@@ -166,6 +172,8 @@ type Ticker struct {
 	IsEtf               bool           `json:"is_etf"`
 	ExDividendDate      *Date          `json:"ex_dividend_date"`
 	EarningDates        []DateWithTime `json:"earning_dates"`
+	MonthlyPriceRange   PriceRange     `json:"monthly_price_range"`
+	YearlyPriceRange    PriceRange     `json:"yearly_price_range"`
 }
 
 type Tickers []Ticker

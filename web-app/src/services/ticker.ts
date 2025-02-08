@@ -29,6 +29,7 @@ const mapTicker = (ticker: string, tickerFromApi: any): TickerInfo => {
   const country = (tickerFromApi.country == "United States" ? Country.US : tickerFromApi.country) as Country
   return {
     ticker: ticker,
+    changeRate: tickerFromApi.change_rate,
     name: tickerFromApi.name,
     isEtf: tickerFromApi.is_etf,
     price: tickerFromApi.currency == "GBp" ? tickerFromApi.price / 100 : tickerFromApi.price,
@@ -42,5 +43,13 @@ const mapTicker = (ticker: string, tickerFromApi: any): TickerInfo => {
     sector: tickerFromApi.sector,
     website: tickerFromApi.website,
     country,
+    monthlyPriceRange: {
+      min: tickerFromApi.monthly_price_range.min,
+      max: tickerFromApi.monthly_price_range.max,
+    },
+    yearlyPriceRange: {
+      min: tickerFromApi.yearly_price_range.min,
+      max: tickerFromApi.yearly_price_range.max,
+    },
   }
 }
