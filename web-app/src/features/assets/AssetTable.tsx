@@ -87,6 +87,8 @@ export default function AssetTable() {
   const [sortBy, setSortBy] = useState<SortKeys>("name")
   const [sortAsc, setSortAsc] = useState(false)
 
+  const totalAssetValue = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])
+
   const sortFunction = (a: Asset, b: Asset) => {
     if (sortAsc) {
       const tmp = b
@@ -116,8 +118,6 @@ export default function AssetTable() {
     const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
     return assets.sort(sortFunction).slice(start, start + MAX_ITEMS_PER_PAGE)
   }, [assets, sortBy, sortAsc, currentPage])
-
-  const totalAssetValue = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])
 
   return (
     <>
