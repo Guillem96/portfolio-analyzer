@@ -155,25 +155,31 @@ type PriceRange struct {
 	Max float32 `json:"max"`
 }
 
+type HistoricalEntry struct {
+	Date  Date    `json:"date"`
+	Price float32 `json:"price"`
+}
+
 type Ticker struct {
-	Ticker              string         `json:"ticker"`
-	ChangeRate          float32        `json:"change_rate"`
-	Price               float32        `json:"price"`
-	Name                string         `json:"name"`
-	YearlyDividendYield float32        `json:"yearly_dividend_yield"`
-	NextDividendYield   float32        `json:"next_dividend_yield"`
-	YearlyDividendValue float32        `json:"yearly_dividend_value"`
-	NextDividendValue   float32        `json:"next_dividend_value"`
-	Currency            string         `json:"currency" validate:"required,eq=EUR|eq=USD|eq=GBp"`
-	Sector              string         `json:"sector"`
-	Website             string         `json:"website"`
-	Country             string         `json:"country"`
-	Industry            string         `json:"industry"`
-	IsEtf               bool           `json:"is_etf"`
-	ExDividendDate      *Date          `json:"ex_dividend_date"`
-	EarningDates        []DateWithTime `json:"earning_dates"`
-	MonthlyPriceRange   PriceRange     `json:"monthly_price_range"`
-	YearlyPriceRange    PriceRange     `json:"yearly_price_range"`
+	Ticker              string            `json:"ticker"`
+	ChangeRate          float32           `json:"change_rate"`
+	Price               float32           `json:"price"`
+	Name                string            `json:"name"`
+	YearlyDividendYield float32           `json:"yearly_dividend_yield"`
+	NextDividendYield   float32           `json:"next_dividend_yield"`
+	YearlyDividendValue float32           `json:"yearly_dividend_value"`
+	NextDividendValue   float32           `json:"next_dividend_value"`
+	Currency            string            `json:"currency" validate:"required,eq=EUR|eq=USD|eq=GBp"`
+	Sector              string            `json:"sector"`
+	Website             string            `json:"website"`
+	Country             string            `json:"country"`
+	Industry            string            `json:"industry"`
+	IsEtf               bool              `json:"is_etf"`
+	ExDividendDate      *Date             `json:"ex_dividend_date"`
+	EarningDates        []DateWithTime    `json:"earning_dates"`
+	MonthlyPriceRange   PriceRange        `json:"monthly_price_range"`
+	YearlyPriceRange    PriceRange        `json:"yearly_price_range"`
+	HistoricalData      []HistoricalEntry `json:"historical_data"`
 }
 
 type Tickers []Ticker

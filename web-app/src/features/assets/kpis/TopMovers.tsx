@@ -1,11 +1,12 @@
 import { useBoundStore } from "@/store"
-import { Card, List, ListItem } from "@tremor/react"
+import { Card, Icon, List, ListItem } from "@tremor/react"
 import { useMemo } from "react"
 import { getWebsiteLogo } from "@/services/utils"
+import { RiTimeLine } from "@remixicon/react"
 
 export default function TopMovers() {
-  const [tickerToInfo] = useBoundStore((state) => [state.tickerToInfo])
-  console.log(tickerToInfo)
+  const [tickerToInfo, assetsLoading] = useBoundStore((state) => [state.tickerToInfo, state.assetsLoading])
+
   const topGainers = useMemo(() => {
     return Object.values(tickerToInfo)
       .sort((a, b) => b.changeRate - a.changeRate)
@@ -17,6 +18,32 @@ export default function TopMovers() {
       .sort((a, b) => a.changeRate - b.changeRate)
       .slice(0, 5)
   }, [tickerToInfo])
+
+  if (topGainers.length === 0 && topLosers.length === 0) {
+    return <div>No data</div>
+  }
+
+  if (assetsLoading) {
+    return (
+      <Card>
+        <div className="flex flex-row justify-center align-middle">
+          <Icon icon={RiTimeLine} />
+          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
+        </div>
+      </Card>
+    )
+  }
+
+  if (topGainers.length === 0 && topLosers.length === 0) {
+    return (
+      <Card>
+        <div className="flex flex-row justify-center align-middle">
+          <Icon icon={RiTimeLine} />
+          <p className="text-tremor-content dark:text-dark-tremor-content">No assets yet available</p>
+        </div>
+      </Card>
+    )
+  }
 
   return (
     <Card>

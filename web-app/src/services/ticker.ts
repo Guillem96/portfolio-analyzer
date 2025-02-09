@@ -51,5 +51,10 @@ const mapTicker = (ticker: string, tickerFromApi: any): TickerInfo => {
       min: tickerFromApi.yearly_price_range.min,
       max: tickerFromApi.yearly_price_range.max,
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    historicalData: tickerFromApi.historical_data.map((d: any) => ({
+      date: new Date(d.date),
+      price: d.price,
+    })),
   }
 }

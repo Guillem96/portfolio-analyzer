@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react"
+import { Icon, SparkAreaChart, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react"
 import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { useBoundStore } from "@/store"
@@ -67,9 +67,18 @@ const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
       </TableCell>
       <TableCell>{sector}</TableCell>
       <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
+      <TableCell>
+        <SparkAreaChart
+          data={ticker.historicalData.concat([{ date: new Date(), price: ticker.price }])}
+          categories={["price"]}
+          index="date"
+          colors={[ticker.historicalData[0].price > ticker.price ? "red" : "emerald"]}
+          autoMinValue={true}
+        />
+      </TableCell>
       <TableCell>{`${ticker.price.toFixed(2)}${currency}`}</TableCell>
-      <TableCell>{units.toFixed(3)}</TableCell>
       <TableCell>{currencyFormatter(avgPrice, currency, privateMode)}</TableCell>
+      <TableCell>{units.toFixed(3)}</TableCell>
       <TableCell>{format(lastBuyDate, "yyyy-MM-dd")}</TableCell>
       <TableCell>{`${(yieldWithRespectBuy * 100).toFixed(2)}%`}</TableCell>
       <TableCell>{`${(yieldWithRespectValue * 100).toFixed(2)}%`}</TableCell>
@@ -142,9 +151,10 @@ export default function AssetTable() {
                   <TableHeaderCell onClick={onClickSortHandler("gain")}>Gain</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("sector")}>Sector</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("country")}>Country</TableHeaderCell>
+                  <TableHeaderCell>Price Evolution</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("num-shares")}>Unit Value</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
                   <TableHeaderCell>Avg. Price</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
                   <TableHeaderCell>Yield w.r.t buy</TableHeaderCell>
                   <TableHeaderCell>Yield w.r.t value</TableHeaderCell>

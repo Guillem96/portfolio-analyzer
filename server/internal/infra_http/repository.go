@@ -7,8 +7,10 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
+	"github.com/judedaryl/go-arrayutils"
 )
 
 type TickerRepository struct {
@@ -22,7 +24,7 @@ func NewTickerRepository(baseUrl string, currencyRepository domain.CurrencyRepos
 }
 
 func (r *TickerRepository) FindByTicker(ticker string, currency string) (domain.Ticker, error) {
-	url := fmt.Sprintf("%s/%s", r.baseUrl, ticker)
+	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, ticker, time.Now().AddDate(-1, 0, 0).Format("2006-01-02"))
 	r.l.Debug("Fetching ticker", "url", url)
 
 	resp, err := http.Get(url)
@@ -47,7 +49,8 @@ func (r *TickerRepository) FindByTicker(ticker string, currency string) (domain.
 }
 
 func (r *TickerRepository) FindMultipleTickers(tickers []string, currency string) (map[string]domain.Ticker, error) {
-	url := fmt.Sprintf("%s/%s", r.baseUrl, strings.Join(tickers, ","))
+	historyStartDate := time.Now().AddDate(-1, 0, 0)
+	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, strings.Join(tickers, ","), historyStartDate.Format("2006-01-02"))
 	r.l.Debug("Fetching tickers", "url", url)
 
 	resp, err := http.Get(url)
@@ -94,6 +97,12 @@ func (r *TickerRepository) mapper(ticker domain.Ticker, currency string) (domain
 		ticker.MonthlyPriceRange.Max = ticker.MonthlyPriceRange.Max / 100
 		ticker.YearlyPriceRange.Min = ticker.YearlyPriceRange.Min / 100
 		ticker.YearlyPriceRange.Max = ticker.YearlyPriceRange.Max / 100
+		ticker.HistoricalData = arrayutils.Map(ticker.HistoricalData, func(value domain.HistoricalEntry) domain.HistoricalEntry {
+			return domain.HistoricalEntry{
+				Date:  value.Date,
+				Price: value.Price / 100,
+			}
+		})
 	}
 	fmt.Println(ticker)
 	// Convert the price to the preferred currency

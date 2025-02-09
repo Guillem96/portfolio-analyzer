@@ -19,6 +19,11 @@ export interface PriceRange {
   max: number
 }
 
+export interface HistoricalEntry {
+  date: Date
+  price: number
+}
+
 export interface TickerInfo {
   ticker: string
   name: string
@@ -37,6 +42,7 @@ export interface TickerInfo {
   website: string
   country: Country
   isEtf: boolean
+  historicalData: HistoricalEntry[]
 }
 
 type ExDividendEvent = {
