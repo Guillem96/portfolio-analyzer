@@ -51,7 +51,9 @@ const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
             alt={`${ticker.ticker} company logo`}
           />
           <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">{ticker.ticker}</p>
-          <span className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">{name}</span>
+          <span className="hidden text-tremor-default text-tremor-content dark:text-dark-tremor-content md:block">
+            {name}
+          </span>
         </div>
       </TableCell>
       <TableCell onClick={() => setShowAbsolute(!showAbsolute)}>

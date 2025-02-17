@@ -8,15 +8,17 @@ export default function TopMovers() {
   const [tickerToInfo, assetsLoading] = useBoundStore((state) => [state.tickerToInfo, state.assetsLoading])
 
   const topGainers = useMemo(() => {
-    return Object.values(tickerToInfo)
-      .sort((a, b) => b.changeRate - a.changeRate)
+    return Object.entries(tickerToInfo)
+      .sort(([, a], [, b]) => b.changeRate - a.changeRate)
       .slice(0, 5)
+      .map(([ticker, info]) => ({ ...info, ticker }))
   }, [tickerToInfo])
 
   const topLosers = useMemo(() => {
-    return Object.values(tickerToInfo)
-      .sort((a, b) => a.changeRate - b.changeRate)
+    return Object.entries(tickerToInfo)
+      .sort(([, a], [, b]) => a.changeRate - b.changeRate)
       .slice(0, 5)
+      .map(([ticker, info]) => ({ ...info, ticker }))
   }, [tickerToInfo])
 
   if (topGainers.length === 0 && topLosers.length === 0) {
@@ -59,14 +61,21 @@ export default function TopMovers() {
                   src={getWebsiteLogo(ticker.website)}
                   alt={`${ticker.ticker} company logo`}
                 />
-                <p className="w-full truncate text-left">{ticker.name}</p>
+                <div className="flex flex-grow flex-row justify-start gap-2 truncate text-left">
+                  <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                    {ticker.ticker}
+                  </p>
+                  <span className="hidden text-tremor-default text-tremor-content dark:text-dark-tremor-content md:block">
+                    {ticker.name}
+                  </span>
+                </div>
 
                 <span
                   className={` ${
                     Math.sign(ticker.changeRate) === 1
                       ? "bg-emerald-100 text-center text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
                       : "bg-red-100 text-center text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
-                  } inline-flex w-20 items-center justify-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+                  } inline-flex items-center justify-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
                 >
                   {`${ticker.changeRate.toFixed(2)} %`}
                 </span>
@@ -86,13 +95,20 @@ export default function TopMovers() {
                   src={getWebsiteLogo(ticker.website)}
                   alt={`${ticker.ticker} company logo`}
                 />
-                <p className="w-full truncate text-left">{ticker.name}</p>
+                <div className="flex flex-grow flex-row justify-start gap-2 truncate text-left">
+                  <p className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                    {ticker.ticker}
+                  </p>
+                  <span className="hidden text-tremor-default text-tremor-content dark:text-dark-tremor-content md:block">
+                    {ticker.name}
+                  </span>
+                </div>
                 <div
                   className={` ${
                     Math.sign(ticker.changeRate) === 1
                       ? "bg-emerald-100 text-center text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
                       : "bg-red-100 text-center text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
-                  } inline-flex w-20 items-center justify-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+                  } inline-flex items-center justify-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
                 >
                   {`${ticker.changeRate.toFixed(2)} %`}
                 </div>

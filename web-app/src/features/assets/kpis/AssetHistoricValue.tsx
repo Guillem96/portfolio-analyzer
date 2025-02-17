@@ -27,13 +27,26 @@ export default function AssetHistoricValue() {
     [assets, mainCurrency],
   )
 
+  const assetAmount = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets, mainCurrency])
+  const rate = (assetAmount / investmentAmount - 1) * 100
+  const absolute = assetAmount - investmentAmount
+  const changeType = rate > 0 ? "positive" : "negative"
+
   useEffect(() => {
     fetchHistoric()
   }, [])
 
   useEffect(() => {
     if (aggregation === "daily") {
-      setShownAssetHistoric(assetsHistoric)
+      setShownAssetHistoric(
+        assetsHistoric.concat({
+          date: new Date(),
+          value: assetAmount,
+          buyValue: investmentAmount,
+          currency: mainCurrency,
+          rate,
+        }),
+      )
     } else {
       console.log(
         assetsHistoric.filter((entry) => {
@@ -45,15 +58,10 @@ export default function AssetHistoricValue() {
           .filter((entry) => {
             return isFirstDayOfMonth(entry.date)
           })
-          .concat(assetsHistoric[assetsHistoric.length - 1]),
+          .concat({ date: new Date(), value: assetAmount, buyValue: investmentAmount, currency: mainCurrency, rate }),
       )
     }
   }, [assetsHistoric, aggregation])
-
-  const assetAmount = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets, mainCurrency])
-  const rate = (assetAmount / investmentAmount - 1) * 100
-  const absolute = assetAmount - investmentAmount
-  const changeType = rate > 0 ? "positive" : "negative"
 
   const chartData = useMemo(() => {
     return shownAssetHistoric.map((entry) => {
