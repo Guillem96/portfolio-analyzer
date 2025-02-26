@@ -1,20 +1,43 @@
 import { useEffect, useMemo, useState } from "react"
-import { Icon, SparkAreaChart, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react"
+import {
+  Button,
+  Icon,
+  Select,
+  SelectItem,
+  SparkAreaChart,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TextInput,
+} from "@tremor/react"
 import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { useBoundStore } from "@/store"
-import type { Asset } from "@/types.d"
+import { Asset } from "@/types.d"
 import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
-import { format } from "date-fns"
+import { format, startOfMonth } from "date-fns"
 
 interface RowProps {
   asset: Asset
   totalAssetValue: number
 }
-type SortKeys = "gain" | "name" | "country" | "num-shares" | "sector" | "amount" | "last-buy" | "weight"
+type SortKeys =
+  | "gain"
+  | "name"
+  | "country"
+  | "num-shares"
+  | "sector"
+  | "amount"
+  | "last-buy"
+  | "weight"
+  | "ywrb"
+  | "ywrv"
 
-const MAX_ITEMS_PER_PAGE = 15
+const MAX_ITEMS_PER_PAGE = 12
 
 const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)
@@ -71,7 +94,9 @@ const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
       <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
       <TableCell>
         <SparkAreaChart
-          data={ticker.historicalData.concat([{ date: new Date(), price: ticker.price }])}
+          data={ticker.historicalData
+            .map(({ date, price }) => ({ date: startOfMonth(date), price }))
+            .concat([{ date: new Date(), price: ticker.price }])}
           categories={["price"]}
           index="date"
           colors={[ticker.historicalData[0].price > ticker.price ? "red" : "emerald"]}
@@ -90,6 +115,76 @@ const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
   )
 }
 
+const Filters = ({
+  availableSectors,
+  onFilter,
+}: {
+  availableSectors: string[]
+  onFilter: (country: string | null, sector: string | null, name: string) => void
+}) => {
+  const handleFilter = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.target as HTMLFormElement)
+    const country = formData.get("country") as string
+    const sector = formData.get("sector") as string
+    const name = formData.get("ticker") as string
+    onFilter(country, sector, name)
+  }
+
+  const clearFilters = () => {
+    onFilter(null, null, "")
+  }
+
+  return (
+    <form className="flex flex-col items-start gap-2 md:flex-row md:items-end md:gap-x-2" onSubmit={handleFilter}>
+      <div className="w-full">
+        <label htmlFor="amount" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+          Name/Ticker
+        </label>
+        <TextInput name="ticker" id="asset-filter-ticker" />
+      </div>
+      <div className="flex w-full flex-row justify-between gap-x-2">
+        <div className="w-full">
+          <label htmlFor="country" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+            Country
+          </label>
+          <Select id="asset-filter-country" name="country">
+            {Object.entries(COUNTRY_EMOJI).map(([country, emoji]) => (
+              <SelectItem key={country} value={country}>
+                {emoji} {country}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+        <div className="w-full">
+          <label htmlFor="sector" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+            Sector
+          </label>
+          <Select id="asset-filter-sector" name="sector">
+            {availableSectors.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+      </div>
+      <div className="flex w-full flex-row gap-x-2">
+        <div className="w-full">
+          <Button type="submit" className="m-auto mt-1 w-full md:mt-0 md:max-w-xs">
+            Filter
+          </Button>
+        </div>
+        <div className="w-full">
+          <Button type="button" color="gray" onClick={clearFilters} className="m-auto mt-1 w-full md:mt-0 md:max-w-xs">
+            Reset
+          </Button>
+        </div>
+      </div>
+    </form>
+  )
+}
+
 export default function AssetTable() {
   const [assets, loading] = useBoundStore((state) => [state.assets, state.assetsLoading])
 
@@ -97,6 +192,7 @@ export default function AssetTable() {
   const [nPages, setNPages] = useState(Math.ceil(assets.length / MAX_ITEMS_PER_PAGE))
   const [sortBy, setSortBy] = useState<SortKeys>("name")
   const [sortAsc, setSortAsc] = useState(false)
+  const [filteredAssets, setFilteredAssets] = useState<Asset[]>([])
 
   const totalAssetValue = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets])
 
@@ -113,6 +209,9 @@ export default function AssetTable() {
     if (sortBy === "last-buy") return b.lastBuyDate.getTime() - a.lastBuyDate.getTime()
     if (sortBy === "weight") return b.value / totalAssetValue - a.value / totalAssetValue
     if (sortBy === "country" || sortBy === "name" || sortBy === "sector") return a[sortBy].localeCompare(b[sortBy])
+    if (sortBy === "ywrv") return b.yieldWithRespectValue - a.yieldWithRespectValue
+    if (sortBy === "ywrb") return b.yieldWithRespectBuy - a.yieldWithRespectBuy
+
     return a.ticker.ticker.localeCompare(b.ticker.ticker)
   }
 
@@ -121,14 +220,48 @@ export default function AssetTable() {
     setSortAsc(!sortAsc)
   }
 
+  const handleFilter = (country: string | null, sector: string | null, name: string) => {
+    let filteredAssets = [...assets]
+
+    console.log({ country, sector, name })
+    if (name !== "") {
+      filteredAssets = filteredAssets.filter(
+        ({ ticker, name: assetName }) => ticker.ticker.includes(name) || assetName.includes(name),
+      )
+    }
+
+    if (country !== null) {
+      filteredAssets = filteredAssets.filter(({ country: assetCountry }) => assetCountry === country)
+    }
+
+    if (sector !== null) {
+      filteredAssets = filteredAssets.filter(({ sector: assetSector }) => assetSector === sector)
+    }
+
+    setFilteredAssets(filteredAssets)
+  }
+
   useEffect(() => {
-    setNPages(Math.ceil(assets.length / MAX_ITEMS_PER_PAGE))
+    setFilteredAssets(assets)
   }, [assets])
+
+  useEffect(() => {
+    const nPages = Math.ceil(filteredAssets.length / MAX_ITEMS_PER_PAGE)
+    setNPages(nPages)
+    if (currentPage > nPages) {
+      setCurrentPage(nPages)
+    }
+  }, [filteredAssets, currentPage, nPages])
+
+  const availableSectors = useMemo(
+    () => [...new Set(assets.map(({ sector }) => sector).filter((s) => s !== null))],
+    [assets],
+  )
 
   const assetsToRender = useMemo(() => {
     const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
-    return assets.sort(sortFunction).slice(start, start + MAX_ITEMS_PER_PAGE)
-  }, [assets, sortBy, sortAsc, currentPage])
+    return filteredAssets.sort(sortFunction).slice(start, start + MAX_ITEMS_PER_PAGE)
+  }, [sortBy, sortAsc, currentPage, filteredAssets])
 
   return (
     <>
@@ -145,7 +278,8 @@ export default function AssetTable() {
 
       {assetsToRender.length > 0 ? (
         <>
-          <div className="mb-4">
+          <div className="mb-4 flex flex-col gap-4">
+            <Filters availableSectors={availableSectors} onFilter={handleFilter} />
             <Table>
               <TableHead>
                 <TableRow>
@@ -158,8 +292,8 @@ export default function AssetTable() {
                   <TableHeaderCell>Avg. Price</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
-                  <TableHeaderCell>Yield w.r.t buy</TableHeaderCell>
-                  <TableHeaderCell>Yield w.r.t value</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("ywrb")}>Yield w.r.t buy</TableHeaderCell>
+                  <TableHeaderCell onClick={onClickSortHandler("ywrv")}>Yield w.r.t value</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("weight")}>Weight</TableHeaderCell>
                   <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
                 </TableRow>

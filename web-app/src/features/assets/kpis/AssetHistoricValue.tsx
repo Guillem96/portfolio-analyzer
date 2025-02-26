@@ -1,8 +1,8 @@
-import { Card, Icon, Select, SelectItem } from "@tremor/react"
+import { Button, Card, Icon } from "@tremor/react"
 import { useBoundStore } from "@/store"
 import { useEffect, useMemo, useState } from "react"
 import { RiTimeLine } from "@remixicon/react"
-import { format, isFirstDayOfMonth } from "date-fns"
+import { format, isAfter, startOfYear, subDays, subMonths, subYears } from "date-fns"
 import { currencyFormatter } from "@/services/utils"
 import { AreaChart } from "@/components/ui/AreaChart"
 import { PortfolioHistoricEntry } from "@/types"
@@ -19,8 +19,10 @@ export default function AssetHistoricValue() {
     ],
   )
   const [showAbsolute, setShowAbsolute] = useState(false)
-  const [aggregation, setAggregation] = useState<"daily" | "monthly">("daily")
+
   const [shownAssetHistoric, setShownAssetHistoric] = useState<PortfolioHistoricEntry[]>([])
+  const [selectedPeriod, setSelectedPeriod] = useState<"1W" | "1M" | "1Y" | "YTD" | "MAX">("MAX")
+  const [rateRelativeToFirstEntry, setRateRelativeToFirstEntry] = useState<number>(0)
 
   const investmentAmount = useMemo(
     () => assets.map(({ buyValue }) => buyValue).reduce((a, b) => a + b, 0),
@@ -28,40 +30,75 @@ export default function AssetHistoricValue() {
   )
 
   const assetAmount = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets, mainCurrency])
-  const rate = (assetAmount / investmentAmount - 1) * 100
-  const absolute = assetAmount - investmentAmount
-  const changeType = rate > 0 ? "positive" : "negative"
+  const absolute = useMemo(() => {
+    if (shownAssetHistoric.length === 0) {
+      return 0
+    }
+    return shownAssetHistoric[shownAssetHistoric.length - 1].value - shownAssetHistoric[0].value
+  }, [shownAssetHistoric])
+  const changeType = useMemo(() => (rateRelativeToFirstEntry > 0 ? "positive" : "negative"), [rateRelativeToFirstEntry])
 
   useEffect(() => {
     fetchHistoric()
   }, [])
 
   useEffect(() => {
-    if (aggregation === "daily") {
-      setShownAssetHistoric(
-        assetsHistoric.concat({
-          date: new Date(),
-          value: assetAmount,
-          buyValue: investmentAmount,
-          currency: mainCurrency,
-          rate,
-        }),
-      )
-    } else {
-      console.log(
-        assetsHistoric.filter((entry) => {
-          return isFirstDayOfMonth(entry.date)
-        }),
-      )
-      setShownAssetHistoric(
-        assetsHistoric
-          .filter((entry) => {
-            return isFirstDayOfMonth(entry.date)
-          })
-          .concat({ date: new Date(), value: assetAmount, buyValue: investmentAmount, currency: mainCurrency, rate }),
-      )
+    if (shownAssetHistoric.length === 0) {
+      return
     }
-  }, [assetsHistoric, aggregation])
+    const firstEntry = shownAssetHistoric[0]
+    const lastEntry = shownAssetHistoric[shownAssetHistoric.length - 1]
+    setRateRelativeToFirstEntry(((lastEntry.value - firstEntry.value) / firstEntry.value) * 100)
+  }, [shownAssetHistoric])
+
+  useEffect(() => {
+    const today = new Date()
+    let assetHistoricToShow = [...assetsHistoric]
+    console.log(assetHistoricToShow)
+    if (selectedPeriod === "1W") {
+      const lastWeek = subDays(today, 7)
+      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
+        return isAfter(entry.date, lastWeek)
+      })
+    } else if (selectedPeriod === "1M") {
+      const lastMonth = subMonths(today, 1)
+      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
+        return isAfter(entry.date, lastMonth)
+      })
+    } else if (selectedPeriod === "1Y") {
+      const lastYear = subYears(today, 1)
+      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
+        return isAfter(entry.date, lastYear)
+      })
+    } else if (selectedPeriod === "YTD") {
+      const soy = startOfYear(today)
+      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
+        return isAfter(entry.date, soy)
+      })
+    } else if (selectedPeriod === "MAX") {
+      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
+        return isAfter(entry.date, new Date("1900-01-01"))
+      })
+    }
+    assetHistoricToShow = assetHistoricToShow.concat({
+      date: new Date(),
+      value: assetAmount,
+      buyValue: investmentAmount,
+      currency: mainCurrency,
+      rate: 0,
+    })
+
+    // adjust rate relative to the first entry
+    const firstEntry = assetHistoricToShow[0]
+    const rateRelativeToFirstEntry = assetHistoricToShow.map((entry) => {
+      return {
+        ...entry,
+        rate: ((entry.value - firstEntry.value) / firstEntry.value) * 100,
+      }
+    })
+
+    setShownAssetHistoric(rateRelativeToFirstEntry)
+  }, [assetsHistoric, selectedPeriod])
 
   const chartData = useMemo(() => {
     return shownAssetHistoric.map((entry) => {
@@ -75,7 +112,7 @@ export default function AssetHistoricValue() {
 
   return (
     <Card>
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-col items-start gap-4">
         <div className="flex flex-col">
           <h1 className="mb-2 max-w-2xl text-4xl tracking-tight text-slate-900 dark:text-neutral-300">
             {currencyFormatter(assetAmount, mainCurrency, privateMode)}
@@ -89,28 +126,26 @@ export default function AssetHistoricValue() {
                   : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
               } inline-flex items-center rounded-tremor-small px-2 py-1 text-center text-tremor-label font-medium ring-1 ring-inset`}
             >
-              {showAbsolute ? currencyFormatter(absolute, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
+              {showAbsolute
+                ? currencyFormatter(absolute, mainCurrency, privateMode)
+                : `${rateRelativeToFirstEntry.toFixed(2)} %`}
             </div>
           </div>
         </div>
-        <aside className="flex flex-col gap-y-2">
-          <label
-            htmlFor="aggregation"
-            className="text-tremor-default text-tremor-content dark:text-dark-tremor-content"
-          >
-            Time Aggregation
-          </label>
-          <Select
-            disabled={assetsHistoricLoading}
-            onChange={(event) => setAggregation(event as unknown as "daily" | "monthly")}
-            name="aggregation"
-            defaultValue="daily"
-            value={aggregation}
-          >
-            <SelectItem value="daily">Daily</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-          </Select>
-        </aside>
+        <ul className="m-auto flex w-full max-w-md flex-row items-center justify-between gap-x-2">
+          {["1W", "1M", "1Y", "YTD", "MAX"].map((period) => (
+            <li key={period}>
+              <Button
+                variant="light"
+                size="xs"
+                onClick={() => setSelectedPeriod(period as "1W" | "1M" | "1Y" | "YTD" | "MAX")}
+                className={`rounded-lg p-1 px-4 ${selectedPeriod === period ? "font-extrabold" : "font-light"}`}
+              >
+                {period}
+              </Button>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {assetsHistoricLoading ? (

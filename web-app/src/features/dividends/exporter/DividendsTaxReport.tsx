@@ -2,16 +2,14 @@ import Modal from "@/components/Modal"
 import { COUNTRY_EMOJI } from "@/constants"
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
-import { Country, type CurrencyType, type Dividend } from "@/types.d"
+import { Country, type Dividend } from "@/types.d"
 import { RiFileChart2Line, RiSaveLine } from "@remixicon/react"
 import { Button, Select, SelectItem } from "@tremor/react"
 import { useMemo, useState } from "react"
 import { usePDF } from "react-to-pdf"
 
-function calculateReport(year: number, dividends: Dividend[], currency: CurrencyType) {
-  const currentDividends = dividends
-    .filter(({ date }) => new Date(date).getFullYear() === year)
-    .filter((d) => d.currency === currency)
+function calculateReport(year: number, dividends: Dividend[]) {
+  const currentDividends = dividends.filter(({ date }) => new Date(date).getFullYear() === year)
   const dividendsPerCountry = Object.groupBy(currentDividends, (div) => div.country)
   const grossPerCountry = Object.fromEntries(
     Object.entries(dividendsPerCountry).map(([country, dividends]) => {
@@ -84,12 +82,12 @@ export default function DividendsTaxReport() {
   const { toPDF, targetRef } = usePDF({ filename: "dividends-tax-report.pdf" })
   const [showModal, setShowModal] = useState(false)
   const [year, setYear] = useState(new Date().getFullYear())
-  const [dividends, mainCurrency] = useBoundStore((state) => [state.dividends, state.mainCurrency])
+  const [dividends, mainCurrency] = useBoundStore((state) => [state.dividendsPreferredCurrency, state.mainCurrency])
   const availableYears = useMemo(() => {
     if (dividends.length === 0) return []
     return [...new Set(dividends.map((div) => new Date(div.date).getFullYear()))]
   }, [dividends])
-  const report = useMemo(() => calculateReport(year, dividends, mainCurrency), [year, dividends, mainCurrency])
+  const report = useMemo(() => calculateReport(year, dividends), [year, dividends])
   const toggleModal = () => {
     setShowModal(!showModal)
   }
