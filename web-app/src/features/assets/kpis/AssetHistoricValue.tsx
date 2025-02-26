@@ -54,7 +54,6 @@ export default function AssetHistoricValue() {
   useEffect(() => {
     const today = new Date()
     let assetHistoricToShow = [...assetsHistoric]
-    console.log(assetHistoricToShow)
     if (selectedPeriod === "1W") {
       const lastWeek = subDays(today, 7)
       assetHistoricToShow = assetHistoricToShow.filter((entry) => {

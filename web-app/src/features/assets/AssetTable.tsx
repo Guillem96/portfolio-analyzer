@@ -223,7 +223,6 @@ export default function AssetTable() {
   const handleFilter = (country: string | null, sector: string | null, name: string) => {
     let filteredAssets = [...assets]
 
-    console.log({ country, sector, name })
     if (name !== "") {
       filteredAssets = filteredAssets.filter(
         ({ ticker, name: assetName }) => ticker.ticker.includes(name) || assetName.includes(name),
@@ -246,7 +245,7 @@ export default function AssetTable() {
   }, [assets])
 
   useEffect(() => {
-    const nPages = Math.ceil(filteredAssets.length / MAX_ITEMS_PER_PAGE)
+    const nPages = Math.max(1, Math.ceil(filteredAssets.length / MAX_ITEMS_PER_PAGE))
     setNPages(nPages)
     if (currentPage > nPages) {
       setCurrentPage(nPages)
@@ -260,8 +259,9 @@ export default function AssetTable() {
 
   const assetsToRender = useMemo(() => {
     const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
+    console.log({ filteredAssets, start, currentPage })
     return filteredAssets.sort(sortFunction).slice(start, start + MAX_ITEMS_PER_PAGE)
-  }, [sortBy, sortAsc, currentPage, filteredAssets])
+  }, [sortBy, sortAsc, currentPage, nPages, filteredAssets])
 
   return (
     <>

@@ -33,7 +33,7 @@ export default function BuyTable() {
   const [filteredBuys, setFilteredBuys] = useState<BuyWithId[]>([])
 
   useEffect(() => {
-    const nPages = Math.ceil(filteredBuys.length / MAX_ITEMS_PER_PAGE)
+    const nPages = Math.max(1, Math.ceil(filteredBuys.length / MAX_ITEMS_PER_PAGE))
     setNPages(nPages)
     if (currentPage > nPages) {
       setCurrentPage(nPages)
