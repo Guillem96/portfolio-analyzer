@@ -91,7 +91,7 @@ func (r *TickerRepository) mapper(ticker domain.Ticker, currency string) (domain
 	ticker.Currency = tickerCurrencyMapper(ticker.Currency)
 	if ticker.Currency == domain.GBP {
 		ticker.Price = ticker.Price / 100
-		ticker.NextDividendValue = ticker.NextDividendValue / 100
+		// ticker.NextDividendValue = ticker.NextDividendValue / 100
 		// ticker.YearlyDividendValue = ticker.YearlyDividendValue / 100
 		ticker.MonthlyPriceRange.Min = ticker.MonthlyPriceRange.Min / 100
 		ticker.MonthlyPriceRange.Max = ticker.MonthlyPriceRange.Max / 100
