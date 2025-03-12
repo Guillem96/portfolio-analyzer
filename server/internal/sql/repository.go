@@ -2,7 +2,6 @@ package sql
 
 import (
 	"errors"
-	"fmt"
 	"log/slog"
 	"time"
 
@@ -434,6 +433,18 @@ func (r *AssetsRepository) FindEvents(userEmail string) (domain.EventCalendar, e
 			})
 		}
 
+		if asset.Ticker.DividendPaymentDate != nil {
+			events[*asset.Ticker.DividendPaymentDate] = append(events[*asset.Ticker.DividendPaymentDate], domain.FinancialEvent{
+				EventType: domain.DividendPayment,
+				Ticker:    asset.Ticker,
+				ExtraData: map[string]interface{}{
+					"dividendValue":  asset.Ticker.NextDividendValue,
+					"dividendYield":  asset.Ticker.NextDividendYield,
+					"expectedAmount": asset.Units * asset.Ticker.NextDividendValue,
+				},
+			})
+		}
+
 		for _, earningDate := range asset.Ticker.EarningDates {
 			events[domain.Date(earningDate)] = append(events[domain.Date(earningDate)], domain.FinancialEvent{
 				EventType: domain.Earning,
@@ -485,7 +496,6 @@ func (r *AssetsRepository) FindHistoric(userEmail string, startDate, endDate dom
 	`, userEmail, userEmail, time.Time(startDate).Format("2006-01-01"), time.Time(endDate).Format("2006-01-01")).Scan(&results).Error; err != nil {
 		return nil, err
 	}
-	fmt.Println(time.Time(startDate), time.Time(endDate))
 
 	historic := arrayutils.Map(results, func(r interimHistoricResult) domain.HistoricEntry {
 		d, _ := time.Parse("2006-01-02", r.Date)

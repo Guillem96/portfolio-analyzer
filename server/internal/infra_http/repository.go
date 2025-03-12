@@ -104,7 +104,7 @@ func (r *TickerRepository) mapper(ticker domain.Ticker, currency string) (domain
 			}
 		})
 	}
-	fmt.Println(ticker)
+
 	// Convert the price to the preferred currency
 	exchangeRates, err := r.cr.FindAllExchangeRates()
 	if err != nil {

@@ -27,11 +27,13 @@ interface Props {
 const BG_COLORS_MAPPING = {
   "Ex-Dividend": "bg-purple-200/20",
   Earning: "bg-green-300/20",
+  "Dividend Payment": "bg-orange-300/20",
 }
 
 const COLORS_MAPPING = {
   "Ex-Dividend": "border-purple-200",
   Earning: "border-green-300",
+  "Dividend Payment": "border-orange-300",
 }
 
 const MAX_EVENTS_TO_SHOW = 3
@@ -293,15 +295,18 @@ const InfoDrawer = ({
               <li key={`drawer-${event.ticker.ticker}`} className="pb-8">
                 <header className="flex flex-row items-center gap-x-4">
                   <img
-                    className="d-block h-12 w-12 rounded-full bg-transparent bg-white"
+                    className="d-block h-10 w-10 rounded-full bg-transparent bg-white"
                     src={getWebsiteLogo(event.ticker.website)}
                     alt={`${event.ticker.ticker} company logo`}
                   />
                   <h3 className="text-lg font-bold text-tremor-content-strong dark:text-dark-tremor-brand-emphasis">
                     {event.ticker.name}
+                    <span className="font-light text-tremor-content-subtle dark:text-dark-tremor-content-subtle">
+                      {"  "} ({event.eventType})
+                    </span>
                   </h3>
                 </header>
-                {event.eventType === "Ex-Dividend" ? (
+                {event.eventType === "Ex-Dividend" || event.eventType === "Dividend Payment" ? (
                   <main className="mt-2 flex flex-row items-center justify-center gap-x-8 gap-y-2 text-tremor-content dark:text-dark-tremor-content">
                     <div className="flex flex-col items-center justify-center">
                       <h4 className="text-tremor-content-subtle dark:text-dark-tremor-brand-subtle">Dividend value</h4>
@@ -322,11 +327,7 @@ const InfoDrawer = ({
                       </p>
                     </div>
                   </main>
-                ) : (
-                  <main className="p-4">
-                    <p className="text-tremor-content dark:text-dark-tremor-content">Earnings report</p>
-                  </main>
-                )}
+                ) : null}
 
                 <footer>
                   <Divider />

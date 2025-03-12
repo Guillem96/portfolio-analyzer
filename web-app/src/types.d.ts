@@ -37,6 +37,7 @@ export interface TickerInfo {
   nextDividendValue: number | null
   currency: CurrencyType
   exDividendDate: Date
+  dividendPaymentDate: Date | null
   earningDates: Date[]
   sector: string
   website: string
@@ -60,7 +61,17 @@ type EarningEvent = {
   ticker: TickerInfo
 }
 
-export type Event = ExDividendEvent | EarningEvent
+type DividendPaymentEvent = {
+  eventType: "Dividend Payment"
+  ticker: TickerInfo
+  extraData: {
+    dividendValue: number
+    dividendYield: number
+    expectedAmount: number
+  }
+}
+
+export type Event = ExDividendEvent | EarningEvent | DividendPaymentEvent
 
 export interface Buy {
   ticker: string

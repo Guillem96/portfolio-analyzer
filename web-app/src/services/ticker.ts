@@ -37,6 +37,9 @@ const mapTicker = (ticker: string, tickerFromApi: any): TickerInfo => {
     yearlyDividendValue: tickerFromApi.yearly_dividend_value,
     nextDividendYield: tickerFromApi.next_dividend_yield,
     nextDividendValue: tickerFromApi.next_dividend_value,
+    dividendPaymentDate: tickerFromApi.dividend_payment_date
+      ? new Date(Date.parse(tickerFromApi.dividend_payment_date))
+      : null,
     currency: CURRENCY_MAPPER[tickerFromApi.currency],
     exDividendDate: new Date(Date.parse(tickerFromApi.ex_dividend_date)),
     earningDates: tickerFromApi.earning_dates.map(Date.parse).map((d: number) => new Date(d)),

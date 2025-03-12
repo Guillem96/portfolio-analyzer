@@ -9,6 +9,7 @@ const (
 
 // Financial events types
 const (
-	ExDividend string = "Ex-Dividend"
-	Earning    string = "Earning"
+	ExDividend      string = "Ex-Dividend"
+	DividendPayment string = "Dividend Payment"
+	Earning         string = "Earning"
 )

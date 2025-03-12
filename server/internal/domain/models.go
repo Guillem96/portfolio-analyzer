@@ -176,6 +176,7 @@ type Ticker struct {
 	Industry            string            `json:"industry"`
 	IsEtf               bool              `json:"is_etf"`
 	ExDividendDate      *Date             `json:"ex_dividend_date"`
+	DividendPaymentDate *Date             `json:"dividend_payment_date"`
 	EarningDates        []DateWithTime    `json:"earning_dates"`
 	MonthlyPriceRange   PriceRange        `json:"monthly_price_range"`
 	YearlyPriceRange    PriceRange        `json:"yearly_price_range"`

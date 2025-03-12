@@ -20,6 +20,9 @@ export const fetchAssets = async (): Promise<Asset[]> => {
           currency: rawAsset.ticker.currency,
           exDividendDate: new Date(rawAsset.ticker.ex_dividend_date),
           earningDates: rawAsset.ticker.earning_dates.map((d: number) => new Date(d)),
+          dividendPaymentDate: rawAsset.ticker.dividend_payment_date
+            ? new Date(rawAsset.ticker.dividend_payment_date)
+            : null,
           sector: rawAsset.ticker.sector,
           website: rawAsset.ticker.website,
           country: rawAsset.ticker.country,
