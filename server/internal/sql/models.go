@@ -20,6 +20,21 @@ type Buy struct {
 	DeletedAt      gorm.DeletedAt `gorm:"index"`
 }
 
+type Sell struct {
+	ID               string `gorm:"primarykey"`
+	UserEmail        string
+	Units            float32
+	Ticker           string
+	Amount           float32
+	Fees             float32
+	AcquisitionValue float32
+	Currency         string
+	Date             time.Time
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
+}
+
 type Dividend struct {
 	ID                        string `gorm:"primarykey"`
 	UserEmail                 string
@@ -54,10 +69,11 @@ type ExchangeRate struct {
 }
 
 type PortfolioHistoric struct {
-	ID        string `gorm:"primarykey"`
-	UserEmail string
-	Value     float32
-	BuyValue  float32
-	Currency  string
-	CreatedAt time.Time
+	ID                   string `gorm:"primarykey"`
+	UserEmail            string
+	Value                float32
+	BuyValue             float32
+	ValueWithoutReinvest float32
+	Currency             string
+	CreatedAt            time.Time
 }

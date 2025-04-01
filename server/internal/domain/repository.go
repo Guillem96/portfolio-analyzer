@@ -3,6 +3,7 @@ package domain
 type BuysRepository interface {
 	Create(buy Buy, userEmail string) (*BuyWithId, error)
 	FindAll(userEmail string) (Buys, error)
+	FindByTicker(ticker string, userEmail string) (Buys, error)
 	Delete(id string, userEmail string) error
 }
 
@@ -35,4 +36,11 @@ type CurrencyRepository interface {
 type TickersRepository interface {
 	FindByTicker(ticker string, currency string) (Ticker, error)
 	FindMultipleTickers(tickers []string, currency string) (map[string]Ticker, error)
+}
+
+type SellsRepository interface {
+	Create(sell Sell, userEmail string) (*SellWithId, error)
+	FindAll(userEmail string) (Sells, error)
+	FindByTicker(ticker string, userEmail string) (Sells, error)
+	Delete(id string, userEmail string) error
 }

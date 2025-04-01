@@ -1,6 +1,5 @@
 export { default as DividendsPerYear } from "./DividendsPerTime"
 export { default as UpcomingDividends } from "./UpcomingDividends"
-export { default as RemainingDividendsYear } from "./RemainingDividendsYear"
 export { default as ExpectedDividendsEarningsNextYear } from "./ExpectedDividendsEarningsNextYear"
 export { PctDividendsOverAssetValue, PctDividendsOverBuys } from "./PctDividends"
 export { default as MeanMonthlyDividends } from "./MeanMonthlyDividends"

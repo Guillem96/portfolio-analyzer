@@ -7,7 +7,6 @@ import {
   ExpectedDividendsEarningsNextYear,
   PctDividendsOverAssetValue,
   PctDividendsOverBuys,
-  RemainingDividendsYear,
   UpcomingDividends,
   PendingDividendsToReinvest,
   MeanMonthlyDividends,
@@ -18,6 +17,7 @@ import BuysCard from "@/features/buys"
 import EventCalendar from "@/components/EventCalendar"
 import AssetHistoricValue from "./assets/kpis/AssetHistoricValue"
 import TopMovers from "./assets/kpis/TopMovers"
+import SellsCard from "./sells"
 
 const DividendsTab = () => (
   <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -27,7 +27,6 @@ const DividendsTab = () => (
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
         <MeanMonthlyDividends />
         <PendingDividendsToReinvest />
-        <RemainingDividendsYear />
         <ExpectedDividendsEarningsNextYear />
         <PctDividendsOverAssetValue />
         <PctDividendsOverBuys />
@@ -61,14 +60,17 @@ const AssetsTab = () => (
 )
 
 const BuysTab = () => (
-  <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-    <BuysCard />
-    <div className="flex flex-col gap-2">
-      <InvestedPerMonth />
-      <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-        <BuysCount />
-        <InvestmentEurTotalAmount />
-        <InvestmentUsdTotalAmount />
+  <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+      <BuysCard />
+      <SellsCard />
+      <div className="flex flex-col gap-2">
+        <InvestedPerMonth />
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
+          <BuysCount />
+          <InvestmentEurTotalAmount />
+          <InvestmentUsdTotalAmount />
+        </div>
       </div>
     </div>
   </div>
@@ -84,7 +86,7 @@ export default function Dashboard() {
       </div>
       <TabGroup className="mt-2 text-center">
         <TabList className="my-4" variant="solid" defaultValue="1">
-          <Tab value="1">Investements</Tab>
+          <Tab value="1">Operations</Tab>
           <Tab value="2">Assets</Tab>
           <Tab value="3">Dividends</Tab>
           <Tab value="4">Events</Tab>

@@ -66,6 +66,30 @@ func (r *BuysRepository) FindAll(userEmail string) (domain.Buys, error) {
 	return buys, nil
 }
 
+func (r *BuysRepository) FindByTicker(ticker string, userEmail string) (domain.Buys, error) {
+	dbBuys := []Buy{}
+	if err := r.db.Where("user_email = ? AND ticker = ?", userEmail, ticker).Find(&dbBuys).Order("date asc").Error; err != nil {
+		return nil, err
+	}
+
+	buys := make([]domain.BuyWithId, len(dbBuys))
+	for i, dbBuy := range dbBuys {
+		buys[i] = domain.BuyWithId{
+			Id: dbBuy.ID,
+			Buy: domain.Buy{
+				Units:          dbBuy.Units,
+				Ticker:         dbBuy.Ticker,
+				Amount:         dbBuy.Amount,
+				Currency:       dbBuy.Currency,
+				IsReinvestment: dbBuy.IsReinvestment,
+				Date:           domain.Date(dbBuy.Date),
+			},
+		}
+	}
+
+	return buys, nil
+}
+
 func (r *BuysRepository) Delete(id string, userEmail string) error {
 	return r.db.Where("id = ? AND user_email = ?", id, userEmail).Delete(&Buy{}).Error
 }
@@ -265,19 +289,24 @@ type AssetsRepository struct {
 }
 
 type assetsIterimResult struct {
-	Ticker      string    `gorm:"column:TICKER"`
-	Currency    string    `gorm:"column:CURRENCY"`
-	BuyValue    float32   `gorm:"column:BUY_VALUE"`
-	Units       float32   `gorm:"column:UNITS"`
-	LastBuyDate time.Time `gorm:"column:LAST_BUY_DATE"`
+	Ticker        string    `gorm:"column:TICKER"`
+	Currency      string    `gorm:"column:CURRENCY"`
+	BuyValue      float32   `gorm:"column:BUY_VALUE"`
+	Units         float32   `gorm:"column:UNITS"`
+	ReinvestUnits float32   `gorm:"column:REINVEST_UNITS"`
+	BuyUnits      float32   `gorm:"column:BUY_UNITS"`
+	SoldUnits     float32   `gorm:"column:SOLD_UNITS"`
+	LastBuyDate   time.Time `gorm:"column:LAST_BUY_DATE"`
 }
 
 type interimHistoricResult struct {
-	Date     string  `gorm:"column:DATE"`
-	BuyValue float32 `gorm:"column:BUY_VALUE"`
-	Value    float32 `gorm:"column:VALUE"`
-	Currency string  `gorm:"column:CURRENCY"`
-	Rate     float32 `gorm:"column:RATE"`
+	Date                 string  `gorm:"column:DATE"`
+	BuyValue             float32 `gorm:"column:BUY_VALUE"`
+	Value                float32 `gorm:"column:VALUE"`
+	ValueWithoutReinvest float32 `gorm:"column:VALUE_WITHOUT_REINVEST"`
+	Currency             string  `gorm:"column:CURRENCY"`
+	Rate                 float32 `gorm:"column:RATE"`
+	RateWithoutReinvest  float32 `gorm:"column:RATE_WITHOUT_REINVEST"`
 }
 
 func NewAssetsRepository(db *gorm.DB, ur domain.UserRepository, tr domain.TickersRepository, logger *slog.Logger) *AssetsRepository {
@@ -304,6 +333,16 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 			RATE
 		FROM EXCHANGE_RATES
 		WHERE TARGET_CURRENCY = ?
+	),
+
+	_SOLD_UNITS AS (
+		SELECT
+			USER_EMAIL,
+			TICKER,
+			SUM(UNITS) AS TOTAL_UNITS
+		FROM SELLS
+		WHERE USER_EMAIL = ? AND DELETED_AT IS NULL
+		GROUP BY USER_EMAIL, TICKER
 	),
 	
 	_BUYS_SINGLE_CURRENCY AS (
@@ -360,12 +399,16 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		_BUYS.TICKER,
 		_BUYS.PREFERRED_CURRENCY AS CURRENCY,
 		_BUYS.TOTAL_AMOUNT AS BUY_VALUE,
+		_BUYS.TOTAL_UNITS AS BUY_UNITS,
+		COALESCE(_SOLD_UNITS.TOTAL_UNITS, 0) AS SOLD_UNITS,
+		COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) AS REINVEST_UNITS,
 		(COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + _BUYS.TOTAL_UNITS) AS UNITS,
 		_BUYS_LAST_DATE.DATE AS LAST_BUY_DATE
 	FROM _BUYS
 	LEFT JOIN _REINVESTMENTS ON _BUYS.TICKER = _REINVESTMENTS.TICKER
 	LEFT JOIN _BUYS_LAST_DATE ON _BUYS.TICKER = _BUYS_LAST_DATE.TICKER
-	`, *user.PreferredCurrency, userEmail).Scan(&results).Error
+	LEFT JOIN _SOLD_UNITS ON _BUYS.TICKER = _SOLD_UNITS.TICKER
+	`, *user.PreferredCurrency, userEmail, userEmail).Scan(&results).Error
 	if err != nil {
 		return nil, err
 	}
@@ -393,19 +436,33 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 	}
 
 	assets := arrayutils.Map(results, func(r assetsIterimResult) domain.Asset {
+		ownedUnits := r.Units - r.SoldUnits
+		unitsWithoutReinvest := ownedUnits - r.ReinvestUnits
+		var averageStockPrice float32
+		if ownedUnits > 0 {
+			averageStockPrice = r.BuyValue / float32(ownedUnits)
+		}
+		var averageStockPriceWithoutReinvest float32
+		if unitsWithoutReinvest > 0 {
+			averageStockPriceWithoutReinvest = r.BuyValue / float32(unitsWithoutReinvest)
+		}
 		return domain.Asset{
-			Ticker:                tickersInfo[r.Ticker],
-			Name:                  tickersInfo[r.Ticker].Name,
-			BuyValue:              r.BuyValue,
-			Value:                 r.Units * tickersInfo[r.Ticker].Price,
-			Units:                 r.Units,
-			AverageStockPrice:     r.BuyValue / float32(r.Units),
-			LastBuyDate:           domain.Date(r.LastBuyDate),
-			YieldWithRespectBuy:   tickersInfo[r.Ticker].YearlyDividendValue / (r.BuyValue / float32(r.Units)),
-			YieldWithRespectValue: tickersInfo[r.Ticker].YearlyDividendValue / tickersInfo[r.Ticker].Price,
-			Currency:              r.Currency,
-			Country:               tickersInfo[r.Ticker].Country,
-			Sector:                tickersInfo[r.Ticker].Sector,
+			Ticker:                             tickersInfo[r.Ticker],
+			Name:                               tickersInfo[r.Ticker].Name,
+			BuyValue:                           r.BuyValue,
+			Value:                              ownedUnits * tickersInfo[r.Ticker].Price,
+			ValueWithoutReinvest:               unitsWithoutReinvest * tickersInfo[r.Ticker].Price,
+			Units:                              ownedUnits,
+			UnitsWithoutReinvest:               unitsWithoutReinvest,
+			AverageStockPrice:                  averageStockPrice,
+			AverageStockPriceWithoutReinvest:   averageStockPriceWithoutReinvest,
+			LastBuyDate:                        domain.Date(r.LastBuyDate),
+			YieldWithRespectBuy:                tickersInfo[r.Ticker].YearlyDividendValue / (r.BuyValue / float32(ownedUnits)),
+			YieldWithRespectBuyWithoutReinvest: tickersInfo[r.Ticker].YearlyDividendValue / (r.BuyValue / float32(unitsWithoutReinvest)),
+			YieldWithRespectValue:              tickersInfo[r.Ticker].YearlyDividendValue / tickersInfo[r.Ticker].Price,
+			Currency:                           r.Currency,
+			Country:                            tickersInfo[r.Ticker].Country,
+			Sector:                             tickersInfo[r.Ticker].Sector,
 		}
 	})
 
@@ -484,8 +541,10 @@ func (r *AssetsRepository) FindHistoric(userEmail string, startDate, endDate dom
 			DATE(CREATED_AT) AS DATE,
 			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.VALUE,
 			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.BUY_VALUE,
+			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.VALUE_WITHOUT_REINVEST,
 			_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.CURRENCY,
 			(_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.VALUE / _PORTFOLIO_HISTORICS_SINGLE_CURRENCY.BUY_VALUE - 1) * 100 AS RATE,
+			(_PORTFOLIO_HISTORICS_SINGLE_CURRENCY.VALUE_WITHOUT_REINVEST / _PORTFOLIO_HISTORICS_SINGLE_CURRENCY.BUY_VALUE - 1) * 100 AS RATE_WITHOUT_REINVEST,
 			ROW_NUMBER() OVER (PARTITION BY DATE(CREATED_AT) ORDER BY CREATED_AT ASC) AS ROW_NUM
 		FROM _PORTFOLIO_HISTORICS_SINGLE_CURRENCY
 		WHERE DATE(CREATED_AT) BETWEEN ? AND ?
@@ -500,11 +559,13 @@ func (r *AssetsRepository) FindHistoric(userEmail string, startDate, endDate dom
 	historic := arrayutils.Map(results, func(r interimHistoricResult) domain.HistoricEntry {
 		d, _ := time.Parse("2006-01-02", r.Date)
 		return domain.HistoricEntry{
-			Date:     domain.Date(d),
-			Value:    r.Value,
-			BuyValue: r.BuyValue,
-			Currency: r.Currency,
-			Rate:     r.Rate,
+			Date:                 domain.Date(d),
+			Value:                r.Value,
+			ValueWithoutReinvest: r.ValueWithoutReinvest,
+			BuyValue:             r.BuyValue,
+			Currency:             r.Currency,
+			Rate:                 r.Rate,
+			RateWithoutReinvest:  r.RateWithoutReinvest,
 		}
 	})
 	return historic, nil
@@ -548,4 +609,89 @@ func (r *ExchangeRatesRepository) FindAllExchangeRates() (map[string]map[string]
 	}
 
 	return rates, nil
+}
+
+type SellsRepository struct {
+	db *gorm.DB
+	l  *slog.Logger
+}
+
+func NewSellsRepository(db *gorm.DB, logger *slog.Logger) *SellsRepository {
+	return &SellsRepository{db: db, l: logger}
+}
+
+func (r *SellsRepository) Create(sell domain.Sell, userEmail string) (*domain.SellWithId, error) {
+	id := uuid.New().String()
+	dbSell := Sell{
+		ID:               id,
+		UserEmail:        userEmail,
+		Units:            sell.Units,
+		Ticker:           sell.Ticker,
+		Amount:           sell.Amount,
+		AcquisitionValue: sell.AcquisitionValue,
+		Currency:         sell.Currency,
+		Fees:             sell.Fees,
+		Date:             time.Time(sell.Date),
+	}
+	if err := r.db.Create(&dbSell).Error; err != nil {
+		return nil, err
+	}
+	return &domain.SellWithId{
+		Id:   id,
+		Sell: sell,
+	}, nil
+}
+
+func (r *SellsRepository) FindAll(userEmail string) (domain.Sells, error) {
+	dbSells := []Sell{}
+	if err := r.db.Where("user_email = ?", userEmail).Find(&dbSells).Error; err != nil {
+		return nil, err
+	}
+
+	sells := make([]domain.SellWithId, len(dbSells))
+	for i, dbSell := range dbSells {
+		sells[i] = domain.SellWithId{
+			Id: dbSell.ID,
+			Sell: domain.Sell{
+				Units:    dbSell.Units,
+				Ticker:   dbSell.Ticker,
+				Amount:   dbSell.Amount,
+				Fees:     dbSell.Fees,
+				Currency: dbSell.Currency,
+				Date:     domain.Date(dbSell.Date),
+			},
+		}
+	}
+	return sells, nil
+}
+
+func (r *SellsRepository) FindByTicker(ticker string, userEmail string) (domain.Sells, error) {
+	dbSells := []Sell{}
+	if err := r.db.Where("user_email = ? AND ticker = ?", userEmail, ticker).Find(&dbSells).Order("date asc").Error; err != nil {
+		return nil, err
+	}
+
+	sells := make([]domain.SellWithId, len(dbSells))
+	for i, dbSell := range dbSells {
+		sells[i] = domain.SellWithId{
+			Id: dbSell.ID,
+			Sell: domain.Sell{
+				Units:            dbSell.Units,
+				Ticker:           dbSell.Ticker,
+				Amount:           dbSell.Amount,
+				AcquisitionValue: dbSell.AcquisitionValue,
+				Currency:         dbSell.Currency,
+				Fees:             dbSell.Fees,
+				Date:             domain.Date(dbSell.Date),
+			},
+		}
+	}
+	return sells, nil
+}
+
+func (r *SellsRepository) Delete(id string, userEmail string) error {
+	if err := r.db.Where("id = ? AND user_email = ?", id, userEmail).Delete(&Sell{}).Error; err != nil {
+		return err
+	}
+	return nil
 }

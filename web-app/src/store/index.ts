@@ -6,8 +6,11 @@ import { persist } from "zustand/middleware"
 import { createDividendSlice, DividendSlice } from "./dividends"
 import { createTickerSlice, TickerSlice } from "./tickers"
 import { createUserSlice, UserSlice } from "./user"
+import { createSellSlice, SellSlice } from "./sells"
 
-export const useBoundStore = create<AssetSlice & BuySlice & SettingSlice & DividendSlice & TickerSlice & UserSlice>()(
+export const useBoundStore = create<
+  AssetSlice & BuySlice & SettingSlice & DividendSlice & TickerSlice & UserSlice & SellSlice
+>()(
   persist(
     (...a) => ({
       ...createSettingsSlice(...a),
@@ -16,6 +19,7 @@ export const useBoundStore = create<AssetSlice & BuySlice & SettingSlice & Divid
       ...createDividendSlice(...a),
       ...createTickerSlice(...a),
       ...createUserSlice(...a),
+      ...createSellSlice(...a),
     }),
     {
       name: "json-bin-settings",

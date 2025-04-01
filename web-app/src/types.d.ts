@@ -87,6 +87,21 @@ export interface BuyWithId extends Buy {
   id: string
 }
 
+export interface Sell {
+  ticker: string
+  date: string
+  currency: CurrencyType
+  amount: number
+  units: number
+  fees: number
+  preview?: boolean
+}
+
+export interface SellWithId extends Sell {
+  id: string
+  acquisitionValue: number
+}
+
 export interface Dividend {
   company: string
   amount: number
@@ -108,22 +123,28 @@ export interface Asset {
   ticker: TickerInfo
   buyValue: number
   value: number
+  valueWithoutReinvest: number
   units: number
+  unitsWithoutReinvest: number
   country: Country
   sector: string
   avgPrice: number
+  avgPriceWithoutReinvest: number
   currency: CurrencyType
-  yieldWithRespectBuy: float
-  yieldWithRespectValue: float
+  yieldWithRespectBuy: number
+  yieldWithRespectBuyWithoutReinvest: number
+  yieldWithRespectValue: number
   lastBuyDate: Date
 }
 
 export interface PortfolioHistoricEntry {
   date: Date
   value: number
+  valueWithoutReinvest: number
   buyValue: number
   currency: CurrencyType
   rate: number
+  rateWithoutReinvest: number
 }
 
 export interface User {

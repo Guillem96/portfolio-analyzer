@@ -18,8 +18,8 @@ export default function AssetHistoricValue() {
       state.mainCurrency,
     ],
   )
-  const [showAbsolute, setShowAbsolute] = useState(false)
 
+  const [showAbsolute, setShowAbsolute] = useState(false)
   const [shownAssetHistoric, setShownAssetHistoric] = useState<PortfolioHistoricEntry[]>([])
   const [selectedPeriod, setSelectedPeriod] = useState<"1W" | "1M" | "1Y" | "YTD" | "MAX">("MAX")
   const [rateRelativeToFirstEntry, setRateRelativeToFirstEntry] = useState<number>(0)
@@ -30,6 +30,10 @@ export default function AssetHistoricValue() {
   )
 
   const assetAmount = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets, mainCurrency])
+  const assetAmountWithoutReinvest = useMemo(
+    () => assets.map(({ valueWithoutReinvest }) => valueWithoutReinvest).reduce((a, b) => a + b, 0),
+    [assets, mainCurrency],
+  )
   const absolute = useMemo(() => {
     if (shownAssetHistoric.length === 0) {
       return 0
@@ -54,48 +58,50 @@ export default function AssetHistoricValue() {
   useEffect(() => {
     const today = new Date()
     let assetHistoricToShow = [...assetsHistoric]
+
+    let filterFn = (entry: PortfolioHistoricEntry) => isAfter(entry.date, new Date("1900-01-01"))
     if (selectedPeriod === "1W") {
       const lastWeek = subDays(today, 7)
-      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
-        return isAfter(entry.date, lastWeek)
-      })
+      filterFn = (entry) => isAfter(entry.date, lastWeek)
     } else if (selectedPeriod === "1M") {
       const lastMonth = subMonths(today, 1)
-      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
-        return isAfter(entry.date, lastMonth)
-      })
+      filterFn = (entry) => isAfter(entry.date, lastMonth)
     } else if (selectedPeriod === "1Y") {
       const lastYear = subYears(today, 1)
-      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
-        return isAfter(entry.date, lastYear)
-      })
+      filterFn = (entry) => isAfter(entry.date, lastYear)
     } else if (selectedPeriod === "YTD") {
       const soy = startOfYear(today)
-      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
-        return isAfter(entry.date, soy)
-      })
+      filterFn = (entry) => isAfter(entry.date, soy)
     } else if (selectedPeriod === "MAX") {
-      assetHistoricToShow = assetHistoricToShow.filter((entry) => {
-        return isAfter(entry.date, new Date("1900-01-01"))
-      })
+      filterFn = (entry) => isAfter(entry.date, new Date("1900-01-01"))
     }
-    assetHistoricToShow = assetHistoricToShow.concat({
+
+    assetHistoricToShow = assetHistoricToShow.filter(filterFn).concat({
       date: new Date(),
       value: assetAmount,
+      valueWithoutReinvest: assetAmountWithoutReinvest,
       buyValue: investmentAmount,
       currency: mainCurrency,
       rate: 0,
+      rateWithoutReinvest: 0,
     })
 
     // adjust rate relative to the first entry
     const firstEntry = assetHistoricToShow[0]
+    const firstEntryWithoutReinvest = assetHistoricToShow.find((entry) => entry.valueWithoutReinvest !== 0)
     const rateRelativeToFirstEntry = assetHistoricToShow.map((entry) => {
       return {
         ...entry,
         rate: ((entry.value - firstEntry.value) / firstEntry.value) * 100,
+        rateWithoutReinvest:
+          entry.valueWithoutReinvest !== 0 && firstEntryWithoutReinvest
+            ? ((entry.valueWithoutReinvest - firstEntryWithoutReinvest.valueWithoutReinvest) /
+                firstEntryWithoutReinvest.valueWithoutReinvest) *
+              100
+            : 0,
       }
     })
-
+    console.log(rateRelativeToFirstEntry)
     setShownAssetHistoric(rateRelativeToFirstEntry)
   }, [assetsHistoric, selectedPeriod])
 
@@ -105,6 +111,7 @@ export default function AssetHistoricValue() {
         date: format(entry.date, "yyyy-MM-dd"),
         Value: entry.value,
         Rate: entry.rate,
+        RateWithoutReinvest: entry.rateWithoutReinvest,
       }
     })
   }, [shownAssetHistoric])
@@ -156,10 +163,10 @@ export default function AssetHistoricValue() {
       <div className="mt-2 flex items-baseline space-x-2.5">
         <AreaChart
           className="h-80"
-          colors={[changeType === "positive" ? "emerald" : "red"]}
+          colors={[changeType === "positive" ? "emerald" : "red", "amber"]}
           data={chartData}
           index="date"
-          categories={["Rate"]}
+          categories={["Rate", "Rate Without Reinvest"]}
           valueFormatter={(number: number) =>
             `${number.toFixed(2)}% (${currencyFormatter((number / 100) * investmentAmount + investmentAmount, mainCurrency, privateMode)})`
           }

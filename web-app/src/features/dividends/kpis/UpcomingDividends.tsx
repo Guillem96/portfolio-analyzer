@@ -28,6 +28,7 @@ export default function UpcomingDividends() {
   }
 
   const nextExDividends = assets
+    .filter(({ units }) => units > 0)
     .map(({ ticker, country, units }) => ({
       ticker: ticker.ticker,
       exDividendDate: ticker.exDividendDate,

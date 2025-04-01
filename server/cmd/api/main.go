@@ -12,6 +12,7 @@ import (
 	"github.com/Guillem96/portfolio-analyzer-server/internal/buys"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/dividends"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/infra_http"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/sells"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/server"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/sql"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
@@ -99,12 +100,14 @@ func setupRouter(l *slog.Logger, host string) http.Handler {
 	dr := sql.NewDividendsRepository(db, l)
 	ur := sql.NewUsersRepository(db, l)
 	ar := sql.NewAssetsRepository(db, ur, tr, l)
+	sr := sql.NewSellsRepository(db, l)
 
 	// Handlers
 	ah := auth.New(ur, host, l)
 	bh := buys.New(br, l)
+	sh := sells.New(sr, br, l)
 	dh := dividends.New(dr, l)
 	assetsHandler := assets.New(ar, l)
 
-	return server.SetupRouter(ah, bh, dh, assetsHandler)
+	return server.SetupRouter(ah, bh, dh, assetsHandler, sh)
 }

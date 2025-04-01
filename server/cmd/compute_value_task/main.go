@@ -68,16 +68,21 @@ func task() error {
 			return agg + asset.Value
 		})
 
+		totalValueWithoutReinvest := arrayutils.Reduce(assets, 0, func(agg float32, asset domain.Asset) float32 {
+			return agg + asset.ValueWithoutReinvest
+		})
+
 		totalBuyValue := arrayutils.Reduce(assets, 0, func(agg float32, asset domain.Asset) float32 {
 			return agg + asset.BuyValue
 		})
 
 		historics = append(historics, &sql.PortfolioHistoric{
-			UserEmail: user.Email,
-			Value:     totalValue,
-			BuyValue:  totalBuyValue,
-			Currency:  user.PreferredCurrency,
-			ID:        uuid.New().String(),
+			UserEmail:            user.Email,
+			Value:                totalValue,
+			ValueWithoutReinvest: totalValueWithoutReinvest,
+			BuyValue:             totalBuyValue,
+			Currency:             user.PreferredCurrency,
+			ID:                   uuid.New().String(),
 		})
 	}
 

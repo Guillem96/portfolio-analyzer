@@ -8,6 +8,7 @@ import (
 	"github.com/Guillem96/portfolio-analyzer-server/internal/auth"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/buys"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/dividends"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/sells"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
 
 	"github.com/gorilla/handlers"
@@ -20,6 +21,7 @@ func SetupRouter(
 	buysHandler *buys.Handler,
 	dividendsHandler *dividends.Handler,
 	assetsHandler *assets.Handler,
+	sellsHandler *sells.Handler,
 ) http.Handler {
 	router := mux.NewRouter()
 	router.StrictSlash(true)
@@ -36,6 +38,12 @@ func SetupRouter(
 	buysRouter.HandleFunc("/", buysHandler.ListBuysHandler).Methods("GET")
 	buysRouter.HandleFunc("/", buysHandler.CreateBuyHandler).Methods("POST")
 	buysRouter.HandleFunc("/{id}", buysHandler.DeleteBuyHandler).Methods("DELETE")
+
+	sellsRouter := router.PathPrefix("/sells").Subrouter()
+	sellsRouter.Use(auth.JwtMiddleware)
+	sellsRouter.HandleFunc("/", sellsHandler.ListSellsHandler).Methods("GET")
+	sellsRouter.HandleFunc("/", sellsHandler.CreateSellHandler).Methods("POST")
+	sellsRouter.HandleFunc("/{id}", sellsHandler.DeleteSellHandler).Methods("DELETE")
 
 	dividendsRouter := router.PathPrefix("/dividends").Subrouter()
 	dividendsRouter.Use(auth.JwtMiddleware)

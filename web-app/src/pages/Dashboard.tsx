@@ -9,6 +9,7 @@ export default function DashboardPage() {
 
   const [
     fetchAssets,
+    fetchSells,
     fetchBuys,
     fetchTickers,
     fetchDividends,
@@ -17,6 +18,7 @@ export default function DashboardPage() {
     setInSettingsScreen,
   ] = useBoundStore((state) => [
     state.fetchAssets,
+    state.fetchSells,
     state.fetchBuys,
     state.fetchTickers,
     state.fetchDividends,
@@ -28,7 +30,7 @@ export default function DashboardPage() {
   useEffect(() => {
     setAppLoading(true)
     const fetchData = async () => {
-      await Promise.all([fetchBuys(), fetchDividends(), fetchDividendsPreferredCurrency(), fetchAssets()])
+      await Promise.all([fetchBuys(), fetchSells(), fetchDividends(), fetchDividendsPreferredCurrency(), fetchAssets()])
       await fetchTickers()
     }
 

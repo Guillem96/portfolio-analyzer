@@ -55,7 +55,9 @@ export default function BuyTable() {
     let filteredBuys = [...buys]
     if (search !== "") {
       filteredBuys = filteredBuys.filter(
-        (buy) => buy.ticker.includes(search as string) || tickerToInfo[buy.ticker].name.includes(search as string),
+        (buy) =>
+          buy.ticker.toLowerCase().includes((search as string).toLowerCase()) ||
+          tickerToInfo[buy.ticker].name.toLowerCase().includes((search as string).toLowerCase()),
       )
     }
     setFilteredBuys(filteredBuys)

@@ -20,11 +20,15 @@ import { Asset } from "@/types.d"
 import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
 import { format, startOfMonth } from "date-fns"
+import { Switch } from "@/components/ui/Switch"
+import { Label } from "@/components/ui/Label"
 
 interface RowProps {
   asset: Asset
   totalAssetValue: number
+  adjustDividends: boolean
 }
+
 type SortKeys =
   | "gain"
   | "name"
@@ -39,7 +43,7 @@ type SortKeys =
 
 const MAX_ITEMS_PER_PAGE = 12
 
-const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
+const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) => {
   const privateMode = useBoundStore((state) => state.privateMode)
   const mainCurrency = useBoundStore((state) => state.mainCurrency)
 
@@ -49,19 +53,23 @@ const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
     name,
     ticker,
     value,
+    valueWithoutReinvest,
     buyValue,
     units,
     sector,
     country,
     currency,
     avgPrice,
+    avgPriceWithoutReinvest,
     lastBuyDate,
     yieldWithRespectBuy,
     yieldWithRespectValue,
+    unitsWithoutReinvest,
+    yieldWithRespectBuyWithoutReinvest,
   } = asset
 
-  const rate = (value / buyValue - 1) * 100
-  const absolute = value - buyValue
+  const rate = adjustDividends ? (value / buyValue - 1) * 100 : (valueWithoutReinvest / buyValue - 1) * 100
+  const absolute = adjustDividends ? value - buyValue : valueWithoutReinvest - buyValue
   const changeType = rate > 0 ? "positive" : "negative"
 
   return (
@@ -104,13 +112,15 @@ const AssetTableRow = ({ asset, totalAssetValue }: RowProps) => {
         />
       </TableCell>
       <TableCell>{`${ticker.price.toFixed(2)}${currency}`}</TableCell>
-      <TableCell>{currencyFormatter(avgPrice, currency, privateMode)}</TableCell>
-      <TableCell>{units.toFixed(3)}</TableCell>
+      <TableCell>
+        {currencyFormatter(adjustDividends ? avgPrice : avgPriceWithoutReinvest, currency, privateMode)}
+      </TableCell>
+      <TableCell>{adjustDividends ? units.toFixed(3) : unitsWithoutReinvest.toFixed(3)}</TableCell>
       <TableCell>{format(lastBuyDate, "yyyy-MM-dd")}</TableCell>
-      <TableCell>{`${(yieldWithRespectBuy * 100).toFixed(2)}%`}</TableCell>
+      <TableCell>{`${((adjustDividends ? yieldWithRespectBuy : yieldWithRespectBuyWithoutReinvest) * 100).toFixed(2)}%`}</TableCell>
       <TableCell>{`${(yieldWithRespectValue * 100).toFixed(2)}%`}</TableCell>
-      <TableCell>{`${((value / totalAssetValue) * 100).toFixed(2)}%`}</TableCell>
-      <TableCell>{currencyFormatter(value, currency, privateMode)}</TableCell>
+      <TableCell>{`${(((adjustDividends ? value : valueWithoutReinvest) / totalAssetValue) * 100).toFixed(2)}%`}</TableCell>
+      <TableCell>{currencyFormatter(adjustDividends ? value : valueWithoutReinvest, currency, privateMode)}</TableCell>
     </TableRow>
   )
 }
@@ -187,7 +197,7 @@ const Filters = ({
 
 export default function AssetTable() {
   const [assets, loading] = useBoundStore((state) => [state.assets, state.assetsLoading])
-
+  const [adjustDividends, setAdjustDividends] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [nPages, setNPages] = useState(Math.ceil(assets.length / MAX_ITEMS_PER_PAGE))
   const [sortBy, setSortBy] = useState<SortKeys>("name")
@@ -221,11 +231,13 @@ export default function AssetTable() {
   }
 
   const handleFilter = (country: string | null, sector: string | null, name: string) => {
-    let filteredAssets = [...assets]
+    let filteredAssets = assets.filter(({ units }) => units > 0)
 
     if (name !== "") {
       filteredAssets = filteredAssets.filter(
-        ({ ticker, name: assetName }) => ticker.ticker.includes(name) || assetName.includes(name),
+        ({ ticker, name: assetName }) =>
+          ticker.ticker.toLowerCase().includes(name.toLowerCase()) ||
+          assetName.toLowerCase().includes(name.toLowerCase()),
       )
     }
 
@@ -259,7 +271,6 @@ export default function AssetTable() {
 
   const assetsToRender = useMemo(() => {
     const start = (currentPage - 1) * MAX_ITEMS_PER_PAGE
-    console.log({ filteredAssets, start, currentPage })
     return filteredAssets.sort(sortFunction).slice(start, start + MAX_ITEMS_PER_PAGE)
   }, [sortBy, sortAsc, currentPage, nPages, filteredAssets])
 
@@ -276,10 +287,10 @@ export default function AssetTable() {
         <p className="py-4 text-center text-tremor-content dark:text-dark-tremor-content">No assets yet available</p>
       ) : null}
 
-      {assetsToRender.length > 0 ? (
-        <>
-          <div className="mb-4 flex flex-col gap-4">
-            <Filters availableSectors={availableSectors} onFilter={handleFilter} />
+      <>
+        <div className="mb-4 flex flex-col gap-4">
+          <Filters availableSectors={availableSectors} onFilter={handleFilter} />
+          {assetsToRender.length > 0 ? (
             <Table>
               <TableHead>
                 <TableRow>
@@ -305,19 +316,24 @@ export default function AssetTable() {
                     key={`${asset.ticker.ticker}-${asset.currency}`}
                     asset={asset}
                     totalAssetValue={totalAssetValue}
+                    adjustDividends={adjustDividends}
                   />
                 ))}
               </TableBody>
             </Table>
+          ) : null}
+          <div className="flex items-center justify-center gap-2">
+            <Switch id="adjust-dividends" checked={adjustDividends} onCheckedChange={setAdjustDividends} />
+            <Label htmlFor="adjust-dividends">Show yields adjusted to dividends</Label>
           </div>
-          <PaginationNav
-            currentPage={currentPage}
-            nPages={nPages}
-            maxPagesToShow={4}
-            onPageNavigation={setCurrentPage}
-          ></PaginationNav>
-        </>
-      ) : null}
+        </div>
+        <PaginationNav
+          currentPage={currentPage}
+          nPages={nPages}
+          maxPagesToShow={4}
+          onPageNavigation={setCurrentPage}
+        ></PaginationNav>
+      </>
     </>
   )
 }

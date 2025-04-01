@@ -117,7 +117,7 @@ func (ah *Handler) HandleGoogleCallback(w http.ResponseWriter, r *http.Request) 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "portfolio-analyzer-token",
 		Value:    tokenString,
-		MaxAge:   int((24 * time.Hour).Seconds()),
+		MaxAge:   int((24 * 7 * time.Hour).Seconds()),
 		HttpOnly: true,
 		Secure:   utils.IsProdEnvironment(),
 		Path:     "/",
