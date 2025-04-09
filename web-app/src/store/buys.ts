@@ -2,6 +2,8 @@ import { StateCreator } from "zustand"
 import type { Buy, BuyWithId } from "@/types.d"
 import { deleteBuyById, fetchBuys as externalFetchBuys, postBuy } from "@services/buys"
 import { getErrorMessage, showErrorToast } from "@services/utils"
+import { fetchTicker } from "@/services/ticker"
+import { TickerSlice } from "./tickers"
 
 interface State {
   buys: BuyWithId[]
@@ -18,7 +20,7 @@ interface Actions {
 
 export type BuySlice = State & Actions
 
-export const createBuySlice: StateCreator<State, [], [], BuySlice> = (set, get) => ({
+export const createBuySlice: StateCreator<State & TickerSlice, [], [], BuySlice> = (set, get) => ({
   buys: [],
   buysLoading: false,
   buysError: null,
@@ -35,10 +37,20 @@ export const createBuySlice: StateCreator<State, [], [], BuySlice> = (set, get) 
     }
   },
   addBuy: async (inv: Buy) => {
-    const { buys: prevInv } = get()
+    const { buys: prevInv, tickerToInfo: prevTickerToInfo } = get()
 
     // Optimistic update in preview
     set({ buys: [...prevInv, { ...inv, id: "tmp", preview: true }], buysLoading: true })
+
+    if (prevTickerToInfo[inv.ticker] === undefined) {
+      const tickerInfo = await fetchTicker(inv.ticker)
+      if (tickerInfo === null) {
+        set({ buys: prevInv, buysLoading: false, buysError: "Ticker not found" })
+        return
+      }
+      set({ tickerToInfo: { ...prevTickerToInfo, [inv.ticker]: tickerInfo } })
+    }
+
     try {
       const newInv = await postBuy(inv)
       // Finalize the optimistic update by dropping the preview field
