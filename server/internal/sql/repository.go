@@ -653,12 +653,13 @@ func (r *SellsRepository) FindAll(userEmail string) (domain.Sells, error) {
 		sells[i] = domain.SellWithId{
 			Id: dbSell.ID,
 			Sell: domain.Sell{
-				Units:    dbSell.Units,
-				Ticker:   dbSell.Ticker,
-				Amount:   dbSell.Amount,
-				Fees:     dbSell.Fees,
-				Currency: dbSell.Currency,
-				Date:     domain.Date(dbSell.Date),
+				Units:            dbSell.Units,
+				Ticker:           dbSell.Ticker,
+				AcquisitionValue: dbSell.AcquisitionValue,
+				Amount:           dbSell.Amount,
+				Fees:             dbSell.Fees,
+				Currency:         dbSell.Currency,
+				Date:             domain.Date(dbSell.Date),
 			},
 		}
 	}
