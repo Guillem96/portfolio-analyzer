@@ -45,6 +45,7 @@ push-image: build-image
 
 .PHONY: run
 dump-prod-database: dirs
+	rm db/local.sqlite
 	turso db shell $(TURSO_DB_NAME) .dump > db/dump.sql
 	cat db/dump.sql | sqlite3 db/local.sqlite
 	rm db/dump.sql

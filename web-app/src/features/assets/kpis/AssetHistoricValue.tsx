@@ -38,7 +38,8 @@ export default function AssetHistoricValue() {
     if (shownAssetHistoric.length === 0) {
       return 0
     }
-    return shownAssetHistoric[shownAssetHistoric.length - 1].value - shownAssetHistoric[0].value
+    const buyAmount = shownAssetHistoric[shownAssetHistoric.length - 1].buyValue - shownAssetHistoric[0].buyValue
+    return shownAssetHistoric[shownAssetHistoric.length - 1].value - shownAssetHistoric[0].value - buyAmount
   }, [shownAssetHistoric])
   const changeType = useMemo(() => (rateRelativeToFirstEntry > 0 ? "positive" : "negative"), [rateRelativeToFirstEntry])
 
@@ -52,7 +53,8 @@ export default function AssetHistoricValue() {
     }
     const firstEntry = shownAssetHistoric[0]
     const lastEntry = shownAssetHistoric[shownAssetHistoric.length - 1]
-    setRateRelativeToFirstEntry(((lastEntry.value - firstEntry.value) / firstEntry.value) * 100)
+    const buyAmount = lastEntry.buyValue - firstEntry.buyValue
+    setRateRelativeToFirstEntry(((lastEntry.value - firstEntry.value - buyAmount) / firstEntry.value) * 100)
   }, [shownAssetHistoric])
 
   useEffect(() => {
@@ -90,18 +92,21 @@ export default function AssetHistoricValue() {
     const firstEntry = assetHistoricToShow[0]
     const firstEntryWithoutReinvest = assetHistoricToShow.find((entry) => entry.valueWithoutReinvest !== 0)
     const rateRelativeToFirstEntry = assetHistoricToShow.map((entry) => {
+      const buyAmount = entry.buyValue - firstEntry.buyValue
+      const rate = ((entry.value - firstEntry.value - buyAmount) / firstEntry.value) * 100
+      const rateWithoutReinvest =
+        entry.valueWithoutReinvest !== 0 && firstEntryWithoutReinvest
+          ? ((entry.valueWithoutReinvest - firstEntryWithoutReinvest.valueWithoutReinvest - buyAmount) /
+              firstEntryWithoutReinvest.valueWithoutReinvest) *
+            100
+          : 0
       return {
         ...entry,
-        rate: ((entry.value - firstEntry.value) / firstEntry.value) * 100,
-        rateWithoutReinvest:
-          entry.valueWithoutReinvest !== 0 && firstEntryWithoutReinvest
-            ? ((entry.valueWithoutReinvest - firstEntryWithoutReinvest.valueWithoutReinvest) /
-                firstEntryWithoutReinvest.valueWithoutReinvest) *
-              100
-            : 0,
+        rate,
+        rateWithoutReinvest,
+        "Rate Without Reinvest": rateWithoutReinvest,
       }
     })
-    console.log(rateRelativeToFirstEntry)
     setShownAssetHistoric(rateRelativeToFirstEntry)
   }, [assetsHistoric, selectedPeriod])
 
@@ -166,7 +171,7 @@ export default function AssetHistoricValue() {
           colors={[changeType === "positive" ? "emerald" : "red", "amber"]}
           data={chartData}
           index="date"
-          categories={["Rate", "Rate Without Reinvest"]}
+          categories={["Rate", "RateWithoutReinvest"]}
           valueFormatter={(number: number) =>
             `${number.toFixed(2)}% (${currencyFormatter((number / 100) * investmentAmount + investmentAmount, mainCurrency, privateMode)})`
           }
