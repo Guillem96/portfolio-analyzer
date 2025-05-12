@@ -14,16 +14,17 @@ const useDividendsPerYear = (
       return { ...div, date: new Date(div.date) }
     })
 
-    const startingYear = new Date().getFullYear() - 4
-    const data = new Array(5).fill(undefined).map((_, i) => {
+    const allYears = [...new Set(invWithDate.map(({ date }) => date.getFullYear()))]
+
+    const data = allYears.map((year) => {
       return {
-        date: startingYear + i,
+        date: year,
         "Dividend Earnings": 0,
       }
     })
 
     invWithDate.forEach(({ date, amount }) => {
-      data[date.getFullYear() - startingYear]["Dividend Earnings"] += amount
+      data[date.getFullYear() - allYears[0]]["Dividend Earnings"] += amount
     })
 
     return data
@@ -35,6 +36,8 @@ const useDividendsPerMonth = (
   dividendLoading: boolean,
 ): { date: string; [x: number]: number }[] => {
   const year = new Date().getFullYear()
+  const startYear = year - 3
+
   const data = useMemo(() => {
     if (dividends.length === 0 || dividendLoading) return []
 
@@ -42,15 +45,31 @@ const useDividendsPerMonth = (
       return { ...div, date: new Date(div.date) }
     })
 
-    const currInv = invWithDate.filter(({ date }) => date.getFullYear() === year || date.getFullYear() - 1)
+    const currInv = invWithDate.filter(({ date }) => date.getFullYear() >= startYear)
 
-    const barData = MONTHS.map((month) => ({ date: month, [year]: 0, [year - 1]: 0 }))
+    // Dynamically generate columns for each year in the range [startYear, year]
+    const years = Array.from({ length: year - startYear + 1 }, (_, i) => startYear + i)
+    const barData = MONTHS.map((month) => {
+      const entry: { date: string; [key: number]: number } = { date: month }
+      years.forEach((y) => {
+        entry[y] = 0
+      })
+      return entry
+    })
 
     currInv.forEach(({ date, amount }) => {
       barData[date.getMonth()][date.getFullYear()] += amount
     })
 
-    return barData
+    // Filter out years (columns) where all values are 0
+    const yearsToKeep = years.filter((y) => barData.some((row) => row[y] !== 0))
+    return barData.map((row) => {
+      const filteredRow: { date: string; [key: number]: number } = { date: row.date }
+      yearsToKeep.forEach((y) => {
+        filteredRow[y] = row[y]
+      })
+      return filteredRow
+    })
   }, [dividends, dividendLoading])
   return data
 }

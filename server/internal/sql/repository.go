@@ -475,9 +475,13 @@ func (r *AssetsRepository) FindEvents(userEmail string) (domain.EventCalendar, e
 		return nil, err
 	}
 
+	filteredAssets := arrayutils.Filter(assets, func(a domain.Asset) bool {
+		return a.Units > 0
+	})
+
 	events := domain.EventCalendar{}
 
-	for _, asset := range assets {
+	for _, asset := range filteredAssets {
 		if asset.Ticker.ExDividendDate != nil {
 			events[*asset.Ticker.ExDividendDate] = append(events[*asset.Ticker.ExDividendDate], domain.FinancialEvent{
 				EventType: domain.ExDividend,

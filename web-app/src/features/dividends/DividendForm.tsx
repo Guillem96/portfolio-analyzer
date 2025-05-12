@@ -1,4 +1,4 @@
-import { Button, DatePicker, DatePickerValue, NumberInput, Select, SelectItem, TextInput } from "@tremor/react"
+import { Button, DatePicker, DatePickerValue, Select, SelectItem, TextInput } from "@tremor/react"
 import { RiMoneyEuroBoxFill, RiPercentLine } from "@remixicon/react"
 import { useBoundStore } from "@/store"
 import { useEffect, useState } from "react"
@@ -37,10 +37,14 @@ export default function DividendForm() {
     }
 
     const doubleTaxationOrigin = Number(data.get("dividend-tax-origin")?.toString() ?? "")
-    const doubleTaxationDestination = Number(data.get("dividend-tax-dest")?.toString() ?? "")
+    if (isNaN(doubleTaxationOrigin)) {
+      setAmountErrorMessage("Invalid tax origin value")
+      return
+    }
 
-    if (isNaN(amount)) {
-      setAmountErrorMessage("Invalid number")
+    const doubleTaxationDestination = Number(data.get("dividend-tax-dest")?.toString() ?? "")
+    if (isNaN(doubleTaxationDestination)) {
+      setAmountErrorMessage("Invalid tax destination value")
       return
     }
 
@@ -128,14 +132,12 @@ export default function DividendForm() {
             >
               Tax Origin (%)
             </label>
-            <NumberInput
+            <TextInput
               id="dividend-tax-origin"
               name="dividend-tax-origin"
               disabled={loading}
               icon={RiPercentLine}
-              defaultValue={15}
-              min={0}
-              max={100}
+              defaultValue={"15"}
               placeholder="%"
             />
           </div>
@@ -146,14 +148,12 @@ export default function DividendForm() {
             >
               Tax Dest (%)
             </label>
-            <NumberInput
+            <TextInput
               id="dividend-tax-dest"
               name="dividend-tax-dest"
               disabled={loading}
               icon={RiPercentLine}
-              defaultValue={15}
-              min={0}
-              max={100}
+              defaultValue={"15"}
               placeholder="%"
             />
           </div>

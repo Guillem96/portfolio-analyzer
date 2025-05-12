@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useId, useMemo, useState } from "react"
 import { useBoundStore } from "../../store"
 import { Button, Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react"
 import { RiDeleteBin2Line } from "@remixicon/react"
@@ -11,14 +11,17 @@ import { Checkbox } from "@/components/ui/Checkbox"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function DividendTable() {
-  const [dividends, loading, deleteDividend, markDividendAsReinvested, privateMode] = useBoundStore((state) => [
-    state.dividends,
-    state.dividendLoading,
-    state.deleteDividend,
-    state.markDividendAsReinvested,
-    state.privateMode,
-  ])
-
+  const [dividends, selectedDividend, loading, deleteDividend, markDividendAsReinvested, privateMode] = useBoundStore(
+    (state) => [
+      state.dividends,
+      state.selectedDividend,
+      state.dividendLoading,
+      state.deleteDividend,
+      state.markDividendAsReinvested,
+      state.privateMode,
+    ],
+  )
+  const tableId = useId()
   const [currentPage, setCurrentPage] = useState(-1)
   const [nPages, setNPages] = useState(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
   const [markReinvested, setMarkReinvested] = useState<Record<string, boolean>>({})
@@ -26,6 +29,15 @@ export default function DividendTable() {
   useEffect(() => {
     setNPages(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
   }, [dividends])
+
+  useEffect(() => {
+    if (selectedDividend) {
+      const table = document.getElementById(tableId)
+      if (table) {
+        table.scrollIntoView({ behavior: "smooth" })
+      }
+    }
+  }, [selectedDividend])
 
   const handleDeleteDividend = (dividendId: string) => () => {
     deleteDividend(dividendId)
@@ -77,7 +89,7 @@ export default function DividendTable() {
 
       {dividendsToRender.length > 0 ? (
         <>
-          <div className="mb-4 lg:max-h-[30em] lg:overflow-y-scroll">
+          <div id={tableId} className="mb-4 lg:max-h-[30em] lg:overflow-y-scroll">
             <Table>
               <TableHead>
                 <TableRow>

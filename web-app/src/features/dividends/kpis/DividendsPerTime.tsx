@@ -66,14 +66,13 @@ const BarChartDividendsPerMonth = () => {
       </div>
     )
 
-  const year = new Date().getFullYear()
   return (
     <BarChart
       className="mt-6"
       data={dividendsPerMonth}
       index="date"
-      categories={[(year - 1).toString(), year.toString()]}
-      colors={["gray", "emerald"]}
+      categories={Object.keys(dividendsPerMonth[0]).filter((key) => key !== "date")}
+      // colors={["gray", "emerald"]}
       yAxisWidth={30}
       valueFormatter={(val) => currencyFormatter(val, mainCurrency, privateMode)}
     />

@@ -118,7 +118,7 @@ export default function BuyTable() {
                         <div className="flex flex-row items-center gap-x-2 align-middle">
                           <img
                             className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
-                            src={getWebsiteLogo(tickerToInfo[ticker].website)}
+                            src={getWebsiteLogo(tickerToInfo[ticker]?.website)}
                             alt={`${ticker} company logo`}
                           />
                           <p>{ticker}</p>

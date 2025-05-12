@@ -276,20 +276,19 @@ export default function AssetTable() {
 
   return (
     <>
-      {assetsToRender.length === 0 && loading ? (
-        <div className="flex flex-row justify-center align-middle">
-          <Icon icon={RiTimeLine} />
-          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-        </div>
-      ) : null}
-
-      {assetsToRender.length === 0 && !loading ? (
-        <p className="py-4 text-center text-tremor-content dark:text-dark-tremor-content">No assets yet available</p>
-      ) : null}
-
       <>
         <div className="mb-4 flex flex-col gap-4">
           <Filters availableSectors={availableSectors} onFilter={handleFilter} />
+          {assetsToRender.length === 0 && loading ? (
+            <div className="flex flex-row justify-center align-middle">
+              <Icon icon={RiTimeLine} />
+              <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
+            </div>
+          ) : null}
+
+          {assetsToRender.length === 0 && !loading ? (
+            <p className="py-4 text-center text-tremor-content dark:text-dark-tremor-content">No assets available</p>
+          ) : null}
           {assetsToRender.length > 0 ? (
             <Table>
               <TableHead>
