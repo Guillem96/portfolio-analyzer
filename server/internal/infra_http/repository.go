@@ -24,7 +24,9 @@ func NewTickerRepository(baseUrl string, currencyRepository domain.CurrencyRepos
 }
 
 func (r *TickerRepository) FindByTicker(ticker string, currency string) (domain.Ticker, error) {
-	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, ticker, time.Now().AddDate(-1, 0, 0).Format("2006-01-02"))
+	lastYear := time.Now().AddDate(-1, 0, 0)
+	firstDayOfLastYearMonth := time.Date(lastYear.Year(), lastYear.Month(), 1, 0, 0, 0, 0, lastYear.Location())
+	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, ticker, firstDayOfLastYearMonth.Format(time.DateOnly))
 	r.l.Debug("Fetching ticker", "url", url)
 
 	resp, err := http.Get(url)
@@ -49,8 +51,9 @@ func (r *TickerRepository) FindByTicker(ticker string, currency string) (domain.
 }
 
 func (r *TickerRepository) FindMultipleTickers(tickers []string, currency string) (map[string]domain.Ticker, error) {
-	historyStartDate := time.Now().AddDate(-1, 0, 0)
-	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, strings.Join(tickers, ","), historyStartDate.Format("2006-01-02"))
+	lastYear := time.Now().AddDate(-1, 0, 0)
+	firstDayOfLastYearMonth := time.Date(lastYear.Year(), lastYear.Month(), 1, 0, 0, 0, 0, lastYear.Location())
+	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, strings.Join(tickers, ","), firstDayOfLastYearMonth.Format(time.DateOnly))
 	r.l.Debug("Fetching tickers", "url", url)
 
 	resp, err := http.Get(url)

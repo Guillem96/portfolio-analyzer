@@ -13,11 +13,13 @@ export default function AssetBarList({ className = "" }: Props) {
   const data = useMemo(() => {
     if (assetsLoading || assets.length === 0) return []
     const totalAmount = assets.map(({ value }) => value).reduce((a, b) => a + b, 0)
-    return assets.map(({ name, ticker, value }) => ({
-      name: `${name} (${ticker.ticker})`,
-      value: value / totalAmount,
-      icon: () => <Icon className="mr-2" icon={RiLineChartLine} />,
-    }))
+    return assets
+      .filter(({ units }) => units > 0)
+      .map(({ name, ticker, value }) => ({
+        name: `${name} (${ticker.ticker})`,
+        value: value / totalAmount,
+        icon: () => <Icon className="mr-2" icon={RiLineChartLine} />,
+      }))
   }, [assets, assetsLoading])
 
   if (assetsLoading)

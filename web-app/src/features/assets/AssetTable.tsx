@@ -19,7 +19,7 @@ import { useBoundStore } from "@/store"
 import { Asset } from "@/types.d"
 import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
-import { format, startOfMonth } from "date-fns"
+import { addMonths, format, startOfMonth, startOfToday } from "date-fns"
 import { Switch } from "@/components/ui/Switch"
 import { Label } from "@/components/ui/Label"
 
@@ -103,10 +103,11 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
       <TableCell>
         <SparkAreaChart
           data={ticker.historicalData
-            .map(({ date, price }) => ({ date: startOfMonth(date), price }))
-            .concat([{ date: new Date(), price: ticker.price }])}
+            .sort((a, b) => a.date.getTime() - b.date.getTime())
+            .map(({ date, price }) => ({ date: format(date, "dd-MM-yyyy"), price }))
+            .concat([{ date: format(startOfMonth(addMonths(startOfToday(), 1)), "dd-MM-yyyy"), price: ticker.price }])}
           categories={["price"]}
-          index="date"
+          index={"date"}
           colors={[ticker.historicalData[0].price > ticker.price ? "red" : "emerald"]}
           autoMinValue={true}
         />
