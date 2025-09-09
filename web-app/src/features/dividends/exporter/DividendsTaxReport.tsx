@@ -30,7 +30,8 @@ function calculateReport(year: number, dividends: Dividend[]) {
       return [
         country,
         dividends.reduce(
-          (acc, { amount, doubleTaxationDestination }) => acc + (amount * doubleTaxationDestination) / 100,
+          (acc, { amount, doubleTaxationOrigin, doubleTaxationDestination }) =>
+            acc + (amount * (1 - doubleTaxationOrigin / 100) * doubleTaxationDestination) / 100,
           0,
         ),
       ]
