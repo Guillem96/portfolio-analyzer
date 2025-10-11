@@ -229,10 +229,11 @@ const Day = ({
   const dayEvents = events[format(date, "yyyy-MM-dd")] || []
   const eventsToShow = dayEvents.length > MAX_EVENTS_TO_SHOW ? dayEvents.slice(0, MAX_EVENTS_TO_SHOW - 1) : dayEvents
   const nMore = dayEvents.length - eventsToShow.length
+  const isToday = format(new Date(), "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
 
   const dayContent = (
     <article className={`${!isCurrentMonth ? "opacity-60" : ""} ${dayEvents.length > 0 ? "hover:cursor-pointer" : ""}`}>
-      <Card className={`flex aspect-square flex-col gap-y-2 overflow-hidden p-1 ${dayEvents.length > 0 ? "" : ""} `}>
+      <Card className={`flex aspect-square flex-col gap-y-2 overflow-hidden p-1 ${isToday ? "border-2" : ""}`}>
         <h3 className="text-lg text-tremor-content dark:text-dark-tremor-content">{date.getDate()}</h3>
         <ul>
           {eventsToShow.map((event) => (

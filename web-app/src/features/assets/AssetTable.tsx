@@ -53,8 +53,8 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     name,
     ticker,
     value,
-    valueWithoutReinvest,
     buyValue,
+    reinvestedBuyValue,
     units,
     sector,
     country,
@@ -68,8 +68,9 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     yieldWithRespectBuyWithoutReinvest,
   } = asset
 
-  const rate = adjustDividends ? (value / buyValue - 1) * 100 : (valueWithoutReinvest / buyValue - 1) * 100
-  const absolute = adjustDividends ? value - buyValue : valueWithoutReinvest - buyValue
+  const paid = adjustDividends ? buyValue : buyValue + reinvestedBuyValue
+  const benefit = value - paid
+  const rate = (benefit / paid) * 100
   const changeType = rate > 0 ? "positive" : "negative"
 
   return (
@@ -95,7 +96,7 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
               : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
           } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
-          {showAbsolute ? currencyFormatter(absolute, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
+          {showAbsolute ? currencyFormatter(benefit, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
         </span>
       </TableCell>
       <TableCell>{sector}</TableCell>
@@ -120,8 +121,8 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
       <TableCell>{format(lastBuyDate, "yyyy-MM-dd")}</TableCell>
       <TableCell>{`${((adjustDividends ? yieldWithRespectBuy : yieldWithRespectBuyWithoutReinvest) * 100).toFixed(2)}%`}</TableCell>
       <TableCell>{`${(yieldWithRespectValue * 100).toFixed(2)}%`}</TableCell>
-      <TableCell>{`${(((adjustDividends ? value : valueWithoutReinvest) / totalAssetValue) * 100).toFixed(2)}%`}</TableCell>
-      <TableCell>{currencyFormatter(adjustDividends ? value : valueWithoutReinvest, currency, privateMode)}</TableCell>
+      <TableCell>{`${((value / totalAssetValue) * 100).toFixed(2)}%`}</TableCell>
+      <TableCell>{currencyFormatter(value, currency, privateMode)}</TableCell>
     </TableRow>
   )
 }

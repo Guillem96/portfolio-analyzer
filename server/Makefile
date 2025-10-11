@@ -43,7 +43,7 @@ push-image: build-image
 	docker tag portfolio-analyzer:latest $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/portfolio-analyzer:latest
 	AWS_PROFILE=$(AWS_PROFILE) docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/portfolio-analyzer:latest
 
-.PHONY: run
+.PHONY: dump-prod-database
 dump-prod-database: dirs
 	rm db/local.sqlite
 	turso db shell $(TURSO_DB_NAME) .dump > db/dump.sql

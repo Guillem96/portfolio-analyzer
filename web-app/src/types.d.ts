@@ -124,6 +124,7 @@ export interface Asset {
   buyValue: number
   value: number
   valueWithoutReinvest: number
+  reinvestedBuyValue: number
   units: number
   unitsWithoutReinvest: number
   country: Country

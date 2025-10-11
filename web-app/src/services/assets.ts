@@ -36,6 +36,7 @@ export const fetchAssets = async (): Promise<Asset[]> => {
           })),
         },
         buyValue: rawAsset.buyValue,
+        reinvestedBuyValue: rawAsset.reinvestedBuyValue,
         value: rawAsset.value,
         valueWithoutReinvest: rawAsset.valueWithoutReinvest,
         units: rawAsset.units,

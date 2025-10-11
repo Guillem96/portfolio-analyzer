@@ -54,11 +54,13 @@ export default function BuyTable() {
     const search = formData.get("search")
     let filteredBuys = [...buys]
     if (search !== "") {
-      filteredBuys = filteredBuys.filter(
-        (buy) =>
-          buy.ticker.toLowerCase().includes((search as string).toLowerCase()) ||
-          tickerToInfo[buy.ticker].name.toLowerCase().includes((search as string).toLowerCase()),
-      )
+      filteredBuys = filteredBuys.filter((buy) => {
+        const tickerText = buy.ticker.toLowerCase()
+        const nameText = (tickerToInfo[buy.ticker]?.name || "").toLowerCase()
+        return (
+          tickerText.includes((search as string).toLowerCase()) || nameText.includes((search as string).toLowerCase())
+        )
+      })
     }
     setFilteredBuys(filteredBuys)
   }

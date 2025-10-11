@@ -175,6 +175,7 @@ type Asset struct {
 	Ticker                             Ticker  `json:"ticker"`
 	Name                               string  `json:"name"`
 	BuyValue                           float32 `json:"buyValue"`
+	ReinvestedBuyValue                 float32 `json:"reinvestedBuyValue"`
 	Value                              float32 `json:"value"`
 	ValueWithoutReinvest               float32 `json:"valueWithoutReinvest"`
 	Units                              float32 `json:"units"`

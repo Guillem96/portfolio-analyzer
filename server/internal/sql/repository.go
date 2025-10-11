@@ -289,14 +289,15 @@ type AssetsRepository struct {
 }
 
 type assetsIterimResult struct {
-	Ticker        string    `gorm:"column:TICKER"`
-	Currency      string    `gorm:"column:CURRENCY"`
-	BuyValue      float32   `gorm:"column:BUY_VALUE"`
-	Units         float32   `gorm:"column:UNITS"`
-	ReinvestUnits float32   `gorm:"column:REINVEST_UNITS"`
-	BuyUnits      float32   `gorm:"column:BUY_UNITS"`
-	SoldUnits     float32   `gorm:"column:SOLD_UNITS"`
-	LastBuyDate   time.Time `gorm:"column:LAST_BUY_DATE"`
+	Ticker             string    `gorm:"column:TICKER"`
+	Currency           string    `gorm:"column:CURRENCY"`
+	BuyValue           float32   `gorm:"column:BUY_VALUE"`
+	ReinvestedBuyValue float32   `gorm:"column:REINVESTED_BUY_VALUE"`
+	Units              float32   `gorm:"column:UNITS"`
+	ReinvestUnits      float32   `gorm:"column:REINVEST_UNITS"`
+	BuyUnits           float32   `gorm:"column:BUY_UNITS"`
+	SoldUnits          float32   `gorm:"column:SOLD_UNITS"`
+	LastBuyDate        time.Time `gorm:"column:LAST_BUY_DATE"`
 }
 
 type interimHistoricResult struct {
@@ -400,6 +401,7 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		_BUYS.PREFERRED_CURRENCY AS CURRENCY,
 		_BUYS.TOTAL_AMOUNT AS BUY_VALUE,
 		_BUYS.TOTAL_UNITS AS BUY_UNITS,
+		COALESCE(_REINVESTMENTS.TOTAL_AMOUNT, 0) AS REINVESTED_BUY_VALUE,
 		COALESCE(_SOLD_UNITS.TOTAL_UNITS, 0) AS SOLD_UNITS,
 		COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) AS REINVEST_UNITS,
 		(COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + _BUYS.TOTAL_UNITS) AS UNITS,
@@ -450,6 +452,7 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 			Ticker:                             tickersInfo[r.Ticker],
 			Name:                               tickersInfo[r.Ticker].Name,
 			BuyValue:                           r.BuyValue,
+			ReinvestedBuyValue:                 r.ReinvestedBuyValue,
 			Value:                              ownedUnits * tickersInfo[r.Ticker].Price,
 			ValueWithoutReinvest:               unitsWithoutReinvest * tickersInfo[r.Ticker].Price,
 			Units:                              ownedUnits,
