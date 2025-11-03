@@ -5,7 +5,7 @@ export const fetchSells = async (): Promise<SellWithId[]> => {
   return await request("sells/", "GET")
 }
 
-export const postSell = async (sell: Sell): Promise<SellWithId> => {
+export const postSell = async (sell: Omit<Sell, "accumulatedFees">): Promise<SellWithId> => {
   return await request("sells/", "POST", sell)
 }
 

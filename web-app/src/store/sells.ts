@@ -11,7 +11,7 @@ interface State {
 
 interface Actions {
   fetchSells: () => Promise<void>
-  addSell: (inv: Sell) => Promise<void>
+  addSell: (inv: Omit<Sell, "accumulatedFees">) => Promise<void>
   deleteSell: (invId: string) => Promise<void>
   forceLoadingSells: (isLoading: boolean) => void
 }
@@ -35,11 +35,14 @@ export const createSellSlice: StateCreator<State & AssetSlice, [], [], SellSlice
       set({ sellsError: getErrorMessage(error), sellsLoading: false })
     }
   },
-  addSell: async (inv: Sell) => {
+  addSell: async (inv: Omit<Sell, "accumulatedFees">) => {
     const { sells: prevInv, assets: prevAssets } = get()
 
     // Optimistic update in preview
-    set({ sells: [...prevInv, { ...inv, id: "tmp", preview: true, acquisitionValue: 0 }], sellsLoading: true })
+    set({
+      sells: [...prevInv, { ...inv, id: "tmp", accumulatedFees: 0, preview: true, acquisitionValue: 0 }],
+      sellsLoading: true,
+    })
     try {
       const newInv = await postSell(inv)
       // Finalize the optimistic update by dropping the preview field
