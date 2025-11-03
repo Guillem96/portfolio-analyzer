@@ -102,6 +102,9 @@ export default function BuyTable() {
                 <TableRow>
                   <TableHeaderCell>Ticker</TableHeaderCell>
                   <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell>Fee</TableHeaderCell>
+                  <TableHeaderCell>Taxes</TableHeaderCell>
+                  <TableHeaderCell>Total Amount</TableHeaderCell>
                   <TableHeaderCell># Shares</TableHeaderCell>
                   <TableHeaderCell>Share price</TableHeaderCell>
                   <TableHeaderCell># Is Reinvestment?</TableHeaderCell>
@@ -111,37 +114,42 @@ export default function BuyTable() {
               </TableHead>
 
               <TableBody>
-                {buysToRender.map(({ id, ticker, amount, units, currency, date, isDividendReinvestment, preview }) => (
-                  <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                    <TableCell>
-                      <div className="flex flex-row items-center gap-x-2 align-middle">
-                        <img
-                          className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
-                          src={getWebsiteLogo(tickerToInfo[ticker]?.website ?? null)}
-                          alt={`${ticker} company logo`}
-                        />
-                        <p>{ticker}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
-                    <TableCell>{units.toFixed(3)}</TableCell>
-                    <TableCell>{currencyFormatter(amount / units, currency, privateMode)}</TableCell>
-                    <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>
-                    <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                    <TableCell className="flex flex-row justify-end gap-x-4">
-                      <Button
-                        size="xs"
-                        disabled={preview}
-                        color="red"
-                        className="hover:cursor-pointer"
-                        icon={RiDeleteBin2Line}
-                        onClick={handleDeleteBuy(id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {buysToRender.map(
+                  ({ id, ticker, amount, taxes, fee, units, currency, date, isDividendReinvestment, preview }) => (
+                    <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                      <TableCell>
+                        <div className="flex flex-row items-center gap-x-2 align-middle">
+                          <img
+                            className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+                            src={getWebsiteLogo(tickerToInfo[ticker]?.website ?? null)}
+                            alt={`${ticker} company logo`}
+                          />
+                          <p>{ticker}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
+                      <TableCell>{currencyFormatter(fee, currency, privateMode)}</TableCell>
+                      <TableCell>{currencyFormatter(taxes, currency, privateMode)}</TableCell>
+                      <TableCell>{currencyFormatter(fee + amount + taxes, currency, privateMode)}</TableCell>
+                      <TableCell>{units.toFixed(3)}</TableCell>
+                      <TableCell>{currencyFormatter(amount / units, currency, privateMode)}</TableCell>
+                      <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>
+                      <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                      <TableCell className="flex flex-row justify-end gap-x-4">
+                        <Button
+                          size="xs"
+                          disabled={preview}
+                          color="red"
+                          className="hover:cursor-pointer"
+                          icon={RiDeleteBin2Line}
+                          onClick={handleDeleteBuy(id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )}
               </TableBody>
             </Table>
           </div>

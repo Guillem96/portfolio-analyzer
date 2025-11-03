@@ -10,7 +10,7 @@ const TotalCardAmount = ({ currency }: { currency: "€" | "$" }) => {
       buys
         .filter((inv) => inv.currency === currency)
         .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
-        .map(({ amount }) => amount)
+        .map(({ amount, taxes, fee }) => amount + fee + taxes)
         .reduce((a, b) => a + b, 0),
     [buys, currency],
   )

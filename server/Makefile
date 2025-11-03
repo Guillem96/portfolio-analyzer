@@ -12,6 +12,10 @@ TARGET=bootstrap
 
 BASE_PATH := $(shell pwd)
 
+.PHONY:
+dev:
+	go run cmd/api/main.go
+
 .PHONY: dirs
 dirs:
 	@mkdir -p db

@@ -2,6 +2,7 @@ package sql
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -27,6 +28,8 @@ func (r *BuysRepository) Create(buy domain.Buy, userEmail string) (*domain.BuyWi
 		UserEmail:      userEmail,
 		Units:          buy.Units,
 		Ticker:         buy.Ticker,
+		Taxes:          buy.Taxes,
+		Fee:            buy.Fee,
 		Amount:         buy.Amount,
 		Currency:       buy.Currency,
 		IsReinvestment: buy.IsReinvestment,
@@ -55,6 +58,8 @@ func (r *BuysRepository) FindAll(userEmail string) (domain.Buys, error) {
 			Buy: domain.Buy{
 				Units:          dbBuy.Units,
 				Ticker:         dbBuy.Ticker,
+				Taxes:          dbBuy.Taxes,
+				Fee:            dbBuy.Fee,
 				Amount:         dbBuy.Amount,
 				Currency:       dbBuy.Currency,
 				IsReinvestment: dbBuy.IsReinvestment,
@@ -79,6 +84,8 @@ func (r *BuysRepository) FindByTicker(ticker string, userEmail string) (domain.B
 			Buy: domain.Buy{
 				Units:          dbBuy.Units,
 				Ticker:         dbBuy.Ticker,
+				Fee:            dbBuy.Fee,
+				Taxes:          dbBuy.Taxes,
 				Amount:         dbBuy.Amount,
 				Currency:       dbBuy.Currency,
 				IsReinvestment: dbBuy.IsReinvestment,
@@ -175,7 +182,6 @@ func (r *DividendsRepository) FindAllPreferredCurrency(userEmail string) (domain
 	INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = DIVIDENDS.CURRENCY
 	WHERE USER_EMAIL = ? AND DIVIDENDS.DELETED_AT IS NULL
 	`, userEmail, userEmail).Scan(&dbDividends).Error
-
 	if err != nil {
 		return nil, err
 	}
@@ -377,7 +383,7 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 			USER_EMAIL,
 			TICKER,
 			PREFERRED_CURRENCY,
-			SUM(UNITS) AS TOTAL_UNITS,
+			SUM(UNITS + TAXES + FEE) AS TOTAL_UNITS,
 			SUM(TOTAL_AMOUNT) AS TOTAL_AMOUNT
 		FROM _BUYS_SINGLE_CURRENCY
 		WHERE IS_REINVESTMENT = false
@@ -390,25 +396,25 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 			TICKER,
 			PREFERRED_CURRENCY,
 			SUM(UNITS) AS TOTAL_UNITS,
-			SUM(TOTAL_AMOUNT) AS TOTAL_AMOUNT
+			SUM(TOTAL_AMOUNT + TAXES + FEE) AS TOTAL_AMOUNT
 		FROM _BUYS_SINGLE_CURRENCY
 		WHERE IS_REINVESTMENT = true
 		GROUP BY USER_EMAIL, TICKER, PREFERRED_CURRENCY
 	)
 
 	SELECT
-		_BUYS.TICKER,
-		_BUYS.PREFERRED_CURRENCY AS CURRENCY,
-		_BUYS.TOTAL_AMOUNT AS BUY_VALUE,
-		_BUYS.TOTAL_UNITS AS BUY_UNITS,
+		COALESCE(_BUYS.TICKER, _REINVESTMENTS.TICKER) AS TICKER,
+		COALESCE(_BUYS.PREFERRED_CURRENCY, _REINVESTMENTS.PREFERRED_CURRENCY) AS CURRENCY,
+		COALESCE(_BUYS.TOTAL_AMOUNT, 0) AS BUY_VALUE,
+		COALESCE(_BUYS.TOTAL_UNITS, 0) AS BUY_UNITS,
 		COALESCE(_REINVESTMENTS.TOTAL_AMOUNT, 0) AS REINVESTED_BUY_VALUE,
 		COALESCE(_SOLD_UNITS.TOTAL_UNITS, 0) AS SOLD_UNITS,
 		COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) AS REINVEST_UNITS,
-		(COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + _BUYS.TOTAL_UNITS) AS UNITS,
+		COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + COALESCE(_BUYS.TOTAL_UNITS, 0) AS UNITS,
 		_BUYS_LAST_DATE.DATE AS LAST_BUY_DATE
 	FROM _BUYS
-	LEFT JOIN _REINVESTMENTS ON _BUYS.TICKER = _REINVESTMENTS.TICKER
-	LEFT JOIN _BUYS_LAST_DATE ON _BUYS.TICKER = _BUYS_LAST_DATE.TICKER
+	FULL OUTER JOIN _REINVESTMENTS ON _BUYS.TICKER = _REINVESTMENTS.TICKER
+	LEFT JOIN _BUYS_LAST_DATE ON COALESCE(_BUYS.TICKER, _REINVESTMENTS.TICKER) = _BUYS_LAST_DATE.TICKER
 	LEFT JOIN _SOLD_UNITS ON _BUYS.TICKER = _SOLD_UNITS.TICKER
 	`, *user.PreferredCurrency, userEmail, userEmail).Scan(&results).Error
 	if err != nil {
@@ -438,6 +444,9 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 	}
 
 	assets := arrayutils.Map(results, func(r assetsIterimResult) domain.Asset {
+		if r.Ticker == "LYB" {
+			fmt.Printf("%+v\n", r)
+		}
 		ownedUnits := r.Units - r.SoldUnits
 		unitsWithoutReinvest := ownedUnits - r.ReinvestUnits
 		var averageStockPrice float32
@@ -448,6 +457,17 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		if unitsWithoutReinvest > 0 {
 			averageStockPriceWithoutReinvest = r.BuyValue / float32(unitsWithoutReinvest)
 		}
+
+		var yieldOnCost float32
+		if averageStockPrice > 0 {
+			yieldOnCost = tickersInfo[r.Ticker].YearlyDividendValue / averageStockPrice
+		}
+
+		var yieldOnCostWOR float32
+		if averageStockPriceWithoutReinvest > 0 {
+			yieldOnCostWOR = tickersInfo[r.Ticker].YearlyDividendValue / averageStockPriceWithoutReinvest
+		}
+
 		return domain.Asset{
 			Ticker:                             tickersInfo[r.Ticker],
 			Name:                               tickersInfo[r.Ticker].Name,
@@ -460,8 +480,8 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 			AverageStockPrice:                  averageStockPrice,
 			AverageStockPriceWithoutReinvest:   averageStockPriceWithoutReinvest,
 			LastBuyDate:                        domain.Date(r.LastBuyDate),
-			YieldWithRespectBuy:                tickersInfo[r.Ticker].YearlyDividendValue / (r.BuyValue / float32(ownedUnits)),
-			YieldWithRespectBuyWithoutReinvest: tickersInfo[r.Ticker].YearlyDividendValue / (r.BuyValue / float32(unitsWithoutReinvest)),
+			YieldWithRespectBuy:                yieldOnCost,
+			YieldWithRespectBuyWithoutReinvest: yieldOnCostWOR,
 			YieldWithRespectValue:              tickersInfo[r.Ticker].YearlyDividendValue / tickersInfo[r.Ticker].Price,
 			Currency:                           r.Currency,
 			Country:                            tickersInfo[r.Ticker].Country,
@@ -669,6 +689,7 @@ func (r *SellsRepository) FindAll(userEmail string) (domain.Sells, error) {
 				AcquisitionValue: dbSell.AcquisitionValue,
 				Amount:           dbSell.Amount,
 				Fees:             dbSell.Fees,
+				AccumulatedFees:  dbSell.AccumulatedFees,
 				Currency:         dbSell.Currency,
 				Date:             domain.Date(dbSell.Date),
 			},
@@ -691,6 +712,7 @@ func (r *SellsRepository) FindByTicker(ticker string, userEmail string) (domain.
 				Units:            dbSell.Units,
 				Ticker:           dbSell.Ticker,
 				Amount:           dbSell.Amount,
+				AccumulatedFees:  dbSell.AccumulatedFees,
 				AcquisitionValue: dbSell.AcquisitionValue,
 				Currency:         dbSell.Currency,
 				Fees:             dbSell.Fees,

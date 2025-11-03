@@ -160,6 +160,34 @@ const CompareMontlyDividendsIncome = () => {
     ...new Set(dividends.map((dividend) => parse(dividend.date, "yyyy-MM-dd", new Date()).getFullYear())),
   ]
 
+  const selectItems = allYears.flatMap((year) => {
+    return MONTHS_NAMES.map((name, idx) => {
+      return {
+        key: `${name}-${year}`,
+        year,
+        month: idx,
+        value: `${(idx + 1).toString().padStart(2, "0")}-${year.toString()}`,
+      }
+    })
+  })
+
+  selectItems.sort((a, b) => {
+    const ay = a.year
+    const am = a.month
+    const by = b.year
+    const bm = b.month
+
+    if (ay > by) return -1
+
+    if (ay < by) return 1
+
+    if (am > bm) return -1
+
+    if (am < bm) return 1
+
+    return 1
+  })
+
   return (
     <>
       <header className="flex flex-col items-end justify-end gap-4 pt-4">
@@ -176,16 +204,11 @@ const CompareMontlyDividendsIncome = () => {
                 defaultValue={firstMonth}
                 onValueChange={(value) => setFirstMonth(value)}
               >
-                {allYears.flatMap((year) =>
-                  MONTHS_NAMES.map((name, idx) => (
-                    <SelectItem
-                      key={`${name}-${year}`}
-                      value={`${(idx + 1).toString().padStart(2, "0")}-${year.toString()}`}
-                    >
-                      {name} {year}
-                    </SelectItem>
-                  )),
-                )}
+                {selectItems.map(({ key, year, month, value }) => (
+                  <SelectItem key={key} value={value}>
+                    {MONTHS_NAMES[month]} {year}
+                  </SelectItem>
+                ))}
               </Select>
             </div>
           </div>
@@ -201,16 +224,11 @@ const CompareMontlyDividendsIncome = () => {
                 defaultValue={secondMonth}
                 onValueChange={(value) => setSecondMonth(value)}
               >
-                {MONTHS_NAMES.flatMap((name, idx) =>
-                  allYears.map((year) => (
-                    <SelectItem
-                      key={`${name}-${year}`}
-                      value={`${(idx + 1).toString().padStart(2, "0")}-${year.toString()}`}
-                    >
-                      {name} {year}
-                    </SelectItem>
-                  )),
-                )}
+                {selectItems.map(({ key, year, month, value }) => (
+                  <SelectItem key={key} value={value}>
+                    {MONTHS_NAMES[month]} {year}
+                  </SelectItem>
+                ))}
               </Select>
             </div>
           </div>
@@ -228,11 +246,6 @@ const CompareMontlyDividendsIncome = () => {
           </div>
         ))}
       </footer>
-      {/* <footer className="flex flex-row justify-end gap-4 pt-8">
-        <Button size="xs" onClick={() => {}}>
-          Compare
-        </Button>
-      </footer> */}
     </>
   )
 }

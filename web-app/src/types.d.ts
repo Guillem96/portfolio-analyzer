@@ -78,6 +78,8 @@ export interface Buy {
   date: string
   currency: CurrencyType
   amount: number
+  taxes: number
+  fee: number
   units: number
   isDividendReinvestment: boolean
   preview?: boolean
@@ -94,6 +96,7 @@ export interface Sell {
   amount: number
   units: number
   fees: number
+  accumulatedFees: number
   preview?: boolean
 }
 

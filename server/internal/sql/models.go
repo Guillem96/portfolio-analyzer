@@ -11,6 +11,8 @@ type Buy struct {
 	UserEmail      string
 	Units          float32
 	Ticker         string
+	Taxes          float32 `gorm:"default:0"`
+	Fee            float32 `gorm:"default:0"`
 	Amount         float32
 	Currency       string
 	IsReinvestment bool
@@ -27,6 +29,7 @@ type Sell struct {
 	Ticker           string
 	Amount           float32
 	Fees             float32
+	AccumulatedFees  float32
 	AcquisitionValue float32
 	Currency         string
 	Date             time.Time

@@ -19,7 +19,7 @@ import { SellWithId } from "@/types"
 
 const MAX_ITEMS_PER_PAGE = 10
 
-export default function BuyTable() {
+export default function SellTable() {
   const [sells, loading, tickerToInfo, deleteSell, privateMode] = useBoundStore((state) => [
     state.sells,
     state.sellsLoading,
@@ -102,6 +102,7 @@ export default function BuyTable() {
                   <TableHeaderCell># Shares</TableHeaderCell>
                   <TableHeaderCell>Amount</TableHeaderCell>
                   <TableHeaderCell>Share Acquisition value</TableHeaderCell>
+                  <TableHeaderCell>Purchases fees</TableHeaderCell>
                   <TableHeaderCell>Fees</TableHeaderCell>
                   <TableHeaderCell>Benefit</TableHeaderCell>
                   <TableHeaderCell>Date</TableHeaderCell>
@@ -110,51 +111,54 @@ export default function BuyTable() {
               </TableHead>
 
               <TableBody>
-                {sellsToRender.map(({ id, ticker, amount, acquisitionValue, fees, units, currency, date, preview }) => {
-                  const benefit = amount - acquisitionValue * units - fees
-                  return (
-                    <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                      <TableCell>
-                        <div className="flex flex-row items-center gap-x-2 align-middle">
-                          <img
-                            className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
-                            src={getWebsiteLogo(tickerToInfo[ticker]?.website)}
-                            alt={`${ticker} company logo`}
-                          />
-                          <p>{ticker}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{units.toFixed(3)}</TableCell>
-                      <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
-                      <TableCell>{currencyFormatter(acquisitionValue, currency, privateMode)}</TableCell>
-                      <TableCell>{currencyFormatter(fees, currency, privateMode)}</TableCell>
-                      <TableCell>
-                        <span
-                          className={` ${
-                            benefit > 0
-                              ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
-                              : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
-                          } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
-                        >
-                          {currencyFormatter(benefit, currency, privateMode)}
-                        </span>
-                      </TableCell>
-                      <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                      <TableCell className="flex flex-row justify-end gap-x-4">
-                        <Button
-                          size="xs"
-                          disabled={preview}
-                          color="red"
-                          className="hover:cursor-pointer"
-                          icon={RiDeleteBin2Line}
-                          onClick={handleDeleteSell(id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
+                {sellsToRender.map(
+                  ({ id, ticker, amount, acquisitionValue, fees, accumulatedFees, units, currency, date, preview }) => {
+                    const benefit = amount - acquisitionValue * units - fees
+                    return (
+                      <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                        <TableCell>
+                          <div className="flex flex-row items-center gap-x-2 align-middle">
+                            <img
+                              className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+                              src={getWebsiteLogo(tickerToInfo[ticker]?.website)}
+                              alt={`${ticker} company logo`}
+                            />
+                            <p>{ticker}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{units.toFixed(3)}</TableCell>
+                        <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
+                        <TableCell>{currencyFormatter(acquisitionValue, currency, privateMode)}</TableCell>
+                        <TableCell>{currencyFormatter(accumulatedFees, currency, privateMode)}</TableCell>
+                        <TableCell>{currencyFormatter(fees, currency, privateMode)}</TableCell>
+                        <TableCell>
+                          <span
+                            className={` ${
+                              benefit > 0
+                                ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
+                                : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
+                            } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+                          >
+                            {currencyFormatter(benefit, currency, privateMode)}
+                          </span>
+                        </TableCell>
+                        <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                        <TableCell className="flex flex-row justify-end gap-x-4">
+                          <Button
+                            size="xs"
+                            disabled={preview}
+                            color="red"
+                            className="hover:cursor-pointer"
+                            icon={RiDeleteBin2Line}
+                            onClick={handleDeleteSell(id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  },
+                )}
               </TableBody>
             </Table>
           </div>

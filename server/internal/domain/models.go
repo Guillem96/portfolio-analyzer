@@ -13,7 +13,9 @@ var validate *validator.Validate
 type Buy struct {
 	Units          float32 `json:"units" validate:"gt=0"`
 	Ticker         string  `json:"ticker" validate:"required"`
-	Amount         float32 `json:"amount" validate:"gt=0"`
+	Taxes          float32 `json:"taxes" validate:"gte=0"`
+	Fee            float32 `json:"fee" validate:"gte=0"`
+	Amount         float32 `json:"amount" validate:"gte=0"`
 	Currency       string  `json:"currency" validate:"required,eq=$|eq=€|eq=£"`
 	IsReinvestment bool    `json:"isDividendReinvestment"`
 	Date           Date    `json:"date" validate:"required"`
@@ -59,7 +61,8 @@ type Sell struct {
 	Amount           float32 `json:"amount" validate:"gt=0"`
 	Currency         string  `json:"currency" validate:"required,eq=$|eq=€|eq=£"`
 	Date             Date    `json:"date" validate:"required"`
-	Fees             float32 `json:"fees" validate:"gt=0"`
+	Fees             float32 `json:"fees" validate:"gte=0"`
+	AccumulatedFees  float32 `json:"accumulatedFees" validate:"gte=0"`
 }
 
 func (s Sell) ToJSON(w io.Writer) error {

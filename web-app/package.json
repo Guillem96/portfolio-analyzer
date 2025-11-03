@@ -7,7 +7,7 @@
 	"scripts": {
 		"dev": "vite --host 0.0.0.0",
 		"build": "tsc && vite build --debug",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
 		"preview": "vite preview"
 	},
 	"dependencies": {
@@ -65,5 +65,6 @@
 		"tailwindcss": "^3.4.1",
 		"typescript": "^5.5.2",
 		"vite": "^5.2.0"
-	}
+	},
+	"packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
 }

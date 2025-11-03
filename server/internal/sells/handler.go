@@ -33,6 +33,11 @@ type CreateSellRequest struct {
 	Date     domain.Date `json:"date" validate:"required"`
 }
 
+type sellFIFORuleOutput struct {
+	meanAcquisitionValue float32
+	accumulatedFees      float32
+}
+
 func (h *Handler) CreateSellHandler(w http.ResponseWriter, r *http.Request) {
 	claims := r.Context().Value(auth.UserKeyContext).(*auth.Claims)
 	user := claims.User
@@ -63,7 +68,7 @@ func (h *Handler) CreateSellHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acquisitionValue, err := computeAcquisitionValue(buys, alreadySold, csr.Units)
+	fifo, err := computeFIFOSellRule(buys, alreadySold, csr.Units)
 	if err != nil {
 		utils.SendHTTPMessage(w, http.StatusBadRequest, err.Error())
 		return
@@ -72,7 +77,8 @@ func (h *Handler) CreateSellHandler(w http.ResponseWriter, r *http.Request) {
 	sell := domain.Sell{
 		Units:            csr.Units,
 		Ticker:           csr.Ticker,
-		AcquisitionValue: acquisitionValue,
+		AcquisitionValue: fifo.meanAcquisitionValue,
+		AccumulatedFees:  fifo.accumulatedFees,
 		Amount:           csr.Amount,
 		Currency:         csr.Currency,
 		Date:             csr.Date,
@@ -135,7 +141,7 @@ func (h *Handler) DeleteSellHandler(w http.ResponseWriter, r *http.Request) {
 	utils.SendHTTPMessage(w, http.StatusOK, "Sell deleted successfully")
 }
 
-func computeAcquisitionValue(buys domain.Buys, sells domain.Sells, soldUnits float32) (float32, error) {
+func computeFIFOSellRule(buys domain.Buys, sells domain.Sells, soldUnits float32) (sellFIFORuleOutput, error) {
 	boughtUnits := arrayutils.Reduce(buys, 0, func(agg float32, b domain.BuyWithId) float32 {
 		return agg + b.Buy.Units
 	})
@@ -146,13 +152,19 @@ func computeAcquisitionValue(buys domain.Buys, sells domain.Sells, soldUnits flo
 
 	remainingUnits := boughtUnits - alreadySoldUnits
 	if remainingUnits < soldUnits {
-		return 0, fmt.Errorf("not enough units to sell")
+		return sellFIFORuleOutput{}, fmt.Errorf("not enough units to sell")
 	}
 
+	// Get all buy packets for example if in the past I did 4 purchases of 100 shares
+	// here I'll get [100, 100, 100, 100]
 	packetsRemaining := arrayutils.Map(buys, func(b domain.BuyWithId) float32 {
 		return b.Buy.Units
 	})
 
+	// In this loop we clear the already sold packets. For example, if in the past I sold 150 units
+	// the state after this loop will be
+	// packetsRemaining := [0, 50, 100, 100]
+	// startingPackageIndex := 1
 	startingPackageIndex := 0
 	i := 0
 	for alreadySoldUnits > 0 {
@@ -169,16 +181,21 @@ func computeAcquisitionValue(buys domain.Buys, sells domain.Sells, soldUnits flo
 		}
 	}
 
+	// Here starting from the startingPackageIndex we obtain the weighted cost of the purchases
 	weightedSum := 0.0
+	var accumulatedFees float32
 	j := startingPackageIndex
 	soldUnitsIt := soldUnits
 	for soldUnitsIt > 0 {
 		currentBuy := buys[j]
 		if currentBuy.Buy.Units <= soldUnitsIt {
+			// We consume the whole packet
 			weightedSum += float64(currentBuy.Buy.Amount)
 			soldUnitsIt -= currentBuy.Buy.Units
+			accumulatedFees += currentBuy.Buy.Fee
 			j++
 		} else {
+			// Partially consume the packet and exit because there's no more sold units
 			packetUnitValue := float64(currentBuy.Buy.Amount) / float64(currentBuy.Buy.Units)
 			weightedSum += float64(soldUnitsIt) * packetUnitValue
 			soldUnitsIt = 0
@@ -186,5 +203,8 @@ func computeAcquisitionValue(buys domain.Buys, sells domain.Sells, soldUnits flo
 		}
 	}
 
-	return float32(weightedSum) / float32(soldUnits), nil
+	return sellFIFORuleOutput{
+		meanAcquisitionValue: float32(weightedSum) / float32(soldUnits),
+		accumulatedFees:      accumulatedFees,
+	}, nil
 }
