@@ -97,22 +97,15 @@ func (r *BuysRepository) FindByTicker(ticker string, userEmail string) (domain.B
 	return buys, nil
 }
 
-func (r *BuysRepository) FindByTickerPreferredCurrency(ticker, userEmail string) (domain.Buys, error) {
+func (r *BuysRepository) FindByTickerAndCurrency(ticker, currency, userEmail string) (domain.Buys, error) {
 	dbBuys := []Buy{}
 	err := r.db.Raw(`
-	WITH _USER AS (
-		SELECT
-			PREFERRED_CURRENCY
-		FROM USERS
-		WHERE EMAIL = ?
-	),
-	
-	_RATES AS (
+	WITH _RATES AS (
 		SELECT
 			SOURCE_CURRENCY,
 			RATE
 		FROM EXCHANGE_RATES
-		WHERE TARGET_CURRENCY = (SELECT PREFERRED_CURRENCY FROM _USER)
+		WHERE TARGET_CURRENCY = ?
 	)
 	SELECT
 		BUYS.*,
@@ -122,7 +115,7 @@ func (r *BuysRepository) FindByTickerPreferredCurrency(ticker, userEmail string)
 	FROM BUYS
 	INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = BUYS.CURRENCY
 	WHERE USER_EMAIL = ? AND BUYS.DELETED_AT IS NULL AND TICKER = ?
-	`, userEmail, ticker).Scan(&dbBuys).Error
+	`, currency, userEmail, ticker).Scan(&dbBuys).Error
 	if err != nil {
 		return nil, err
 	}
