@@ -55,7 +55,7 @@ func (h *Handler) CreateSellHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buys, err := h.br.FindByTicker(csr.Ticker, userEmail)
+	buys, err := h.br.FindByTickerPreferredCurrency(csr.Ticker, userEmail)
 	if err != nil {
 		utils.SendHTTPMessage(w, http.StatusInternalServerError, "Failed to find buys")
 		return

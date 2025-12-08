@@ -97,6 +97,56 @@ func (r *BuysRepository) FindByTicker(ticker string, userEmail string) (domain.B
 	return buys, nil
 }
 
+func (r *BuysRepository) FindByTickerPreferredCurrency(ticker, userEmail string) (domain.Buys, error) {
+	dbBuys := []Buy{}
+	err := r.db.Raw(`
+	WITH _USER AS (
+		SELECT
+			PREFERRED_CURRENCY
+		FROM USERS
+		WHERE EMAIL = ?
+	),
+	
+	_RATES AS (
+		SELECT
+			SOURCE_CURRENCY,
+			RATE
+		FROM EXCHANGE_RATES
+		WHERE TARGET_CURRENCY = (SELECT PREFERRED_CURRENCY FROM _USER)
+	)
+	SELECT
+		BUYS.*,
+		AMOUNT * _RATES.RATE AS AMOUNT,
+		FEE * _RATES.RATE AS FEE,
+		TAXES * _RATES.RATE AS TAXES
+	FROM BUYS
+	INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = BUYS.CURRENCY
+	WHERE USER_EMAIL = ? AND BUYS.DELETED_AT IS NULL AND TICKER = ?
+	`, userEmail, ticker).Scan(&dbBuys).Error
+	if err != nil {
+		return nil, err
+	}
+
+	buys := make([]domain.BuyWithId, len(dbBuys))
+	for i, dbBuy := range dbBuys {
+		buys[i] = domain.BuyWithId{
+			Id: dbBuy.ID,
+			Buy: domain.Buy{
+				Units:          dbBuy.Units,
+				Ticker:         dbBuy.Ticker,
+				Fee:            dbBuy.Fee,
+				Taxes:          dbBuy.Taxes,
+				Amount:         dbBuy.Amount,
+				Currency:       dbBuy.Currency,
+				IsReinvestment: dbBuy.IsReinvestment,
+				Date:           domain.Date(dbBuy.Date),
+			},
+		}
+	}
+
+	return buys, nil
+}
+
 func (r *BuysRepository) Delete(id string, userEmail string) error {
 	return r.db.Where("id = ? AND user_email = ?", id, userEmail).Delete(&Buy{}).Error
 }

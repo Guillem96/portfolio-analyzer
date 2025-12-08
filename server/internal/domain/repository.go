@@ -4,6 +4,7 @@ type BuysRepository interface {
 	Create(buy Buy, userEmail string) (*BuyWithId, error)
 	FindAll(userEmail string) (Buys, error)
 	FindByTicker(ticker string, userEmail string) (Buys, error)
+	FindByTickerPreferredCurrency(ticker string, userEmail string) (Buys, error)
 	Delete(id string, userEmail string) error
 }
 
