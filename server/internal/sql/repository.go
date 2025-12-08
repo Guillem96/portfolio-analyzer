@@ -17,6 +17,18 @@ type BuysRepository struct {
 	l  *slog.Logger
 }
 
+type interimBuyResult struct {
+	ID             string    `gorm:"column:ID"`
+	Units          float32   `gorm:"column:UNITS"`
+	Ticker         string    `gorm:"column:TICKER"`
+	Taxes          float32   `gorm:"column:TOTAL_TAXES"`
+	Fee            float32   `gorm:"column:TOTAL_FEES"`
+	Amount         float32   `gorm:"column:TOTAL_AMOUNT"`
+	Currency       string    `gorm:"column:CURRENCY"`
+	IsReinvestment bool      `gorm:"column:IS_REINVESTMENT"`
+	Date           time.Time `gorm:"column:DATE"`
+}
+
 func NewBuysRepository(db *gorm.DB, logger *slog.Logger) *BuysRepository {
 	return &BuysRepository{db: db, l: logger}
 }
@@ -98,7 +110,7 @@ func (r *BuysRepository) FindByTicker(ticker string, userEmail string) (domain.B
 }
 
 func (r *BuysRepository) FindByTickerAndCurrency(ticker, currency, userEmail string) (domain.Buys, error) {
-	dbBuys := []Buy{}
+	dbBuys := []interimBuyResult{}
 	err := r.db.Raw(`
 	WITH _RATES AS (
 		SELECT
@@ -108,14 +120,20 @@ func (r *BuysRepository) FindByTickerAndCurrency(ticker, currency, userEmail str
 		WHERE TARGET_CURRENCY = ?
 	)
 	SELECT
-		BUYS.*,
-		AMOUNT * _RATES.RATE AS AMOUNT,
-		FEE * _RATES.RATE AS FEE,
-		TAXES * _RATES.RATE AS TAXES
+		BUYS.ID AS ID,
+		BUYS.UNITS AS UNITS,
+		BUYS.TICKER AS TICKER,
+		BUYS.IS_REINVESTMENT AS IS_REINVESTMENT,
+		BUYS.AMOUNT * _RATES.RATE AS TOTAL_AMOUNT,
+		BUYS.FEE * _RATES.RATE AS TOTAL_FEES,
+		BUYS.TAXES * _RATES.RATE AS TOTAL_TAXES,
+		BUYS.CURRENCY = ? AS CURRENCY,
+		BUYS.DATE AS DATE
 	FROM BUYS
 	INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = BUYS.CURRENCY
 	WHERE USER_EMAIL = ? AND BUYS.DELETED_AT IS NULL AND TICKER = ?
-	`, currency, userEmail, ticker).Scan(&dbBuys).Error
+	ORDER BY BUYS.DATE ASC
+	`, currency, currency, userEmail, ticker).Scan(&dbBuys).Error
 	if err != nil {
 		return nil, err
 	}

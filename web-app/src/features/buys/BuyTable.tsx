@@ -20,12 +20,13 @@ import { BuyWithId } from "@/types"
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function BuyTable() {
-  const [buys, loading, tickerToInfo, deleteBuy, privateMode] = useBoundStore((state) => [
+  const [buys, loading, tickerToInfo, deleteBuy, privateMode, tickersLoading] = useBoundStore((state) => [
     state.buys,
     state.buysLoading,
     state.tickerToInfo,
     state.deleteBuy,
     state.privateMode,
+    state.tickersLoading
   ])
 
   const [currentPage, setCurrentPage] = useState(-1)
@@ -76,7 +77,7 @@ export default function BuyTable() {
 
   return (
     <>
-      {(buysToRender.length === 0 && loading) || Object.keys(tickerToInfo).length === 0 ? (
+      {loading || tickersLoading ? (
         <div className="flex flex-row justify-center align-middle">
           <Icon icon={RiTimeLine} />
           <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>

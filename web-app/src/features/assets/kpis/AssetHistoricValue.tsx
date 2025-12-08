@@ -116,7 +116,7 @@ export default function AssetHistoricValue() {
         date: format(entry.date, "yyyy-MM-dd"),
         Value: entry.value,
         Rate: entry.rate,
-        RateWithoutReinvest: entry.rateWithoutReinvest,
+        // RateWithoutReinvest: entry.rateWithoutReinvest,
       }
     })
   }, [shownAssetHistoric])
@@ -165,18 +165,25 @@ export default function AssetHistoricValue() {
           <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
         </div>
       ) : null}
-      <div className="mt-2 flex items-baseline space-x-2.5">
-        <AreaChart
-          className="h-80"
-          colors={[changeType === "positive" ? "emerald" : "red", "amber"]}
-          data={chartData}
+
+      {assetsHistoric.length === 0 ? (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-tremor-content dark:text-dark-tremor-content text-xl">No data available</p>
+        </div>
+      ) : (
+        <div className="mt-2 flex items-baseline space-x-2.5">
+          <AreaChart
+            className="h-80"
+            colors={[changeType === "positive" ? "emerald" : "red", "amber"]}
+            data={chartData}
           index="date"
-          categories={["Rate", "RateWithoutReinvest"]}
+          categories={["Rate"]}
           valueFormatter={(number: number) =>
             `${number.toFixed(2)}% (${currencyFormatter((number / 100) * investmentAmount + investmentAmount, mainCurrency, privateMode)})`
           }
         />
       </div>
+      )}
     </Card>
   )
 }

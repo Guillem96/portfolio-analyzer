@@ -164,15 +164,12 @@ func computeFIFOSellRule(buys domain.Buys, sells domain.Sells, soldUnits float32
 	// In this loop we clear the already sold packets. For example, if in the past I sold 150 units
 	// the state after this loop will be
 	// packetsRemaining := [0, 50, 100, 100]
-	// startingPackageIndex := 1
-	startingPackageIndex := 0
 	i := 0
 	for alreadySoldUnits > 0 {
 		packet := packetsRemaining[i]
 		if packet <= alreadySoldUnits {
 			packetsRemaining[i] = 0
 			alreadySoldUnits -= packet
-			startingPackageIndex++
 			i++
 		} else {
 			packetsRemaining[i] -= alreadySoldUnits
@@ -181,23 +178,23 @@ func computeFIFOSellRule(buys domain.Buys, sells domain.Sells, soldUnits float32
 		}
 	}
 
-	// Here starting from the startingPackageIndex we obtain the weighted cost of the purchases
+	// Here starting from the startingPackageIndex (i) we obtain the weighted cost of the purchases
 	weightedSum := 0.0
 	var accumulatedFees float32
-	j := startingPackageIndex
+	j := i
 	soldUnitsIt := soldUnits
 	for soldUnitsIt > 0 {
 		currentBuy := buys[j]
-		if currentBuy.Buy.Units <= soldUnitsIt {
-			// We consume the whole packet
-			weightedSum += float64(currentBuy.Buy.Amount)
-			soldUnitsIt -= currentBuy.Buy.Units
+		currentBuyRemainingUnits := packetsRemaining[j]
+		packetUnitValue := float64(currentBuy.Buy.Amount) / float64(currentBuy.Buy.Units)
+		weightedSum += float64(currentBuyRemainingUnits) * packetUnitValue
+
+		if currentBuyRemainingUnits <= soldUnitsIt {
+			soldUnitsIt -= currentBuyRemainingUnits
 			accumulatedFees += currentBuy.Buy.Fee
 			j++
 		} else {
 			// Partially consume the packet and exit because there's no more sold units
-			packetUnitValue := float64(currentBuy.Buy.Amount) / float64(currentBuy.Buy.Units)
-			weightedSum += float64(soldUnitsIt) * packetUnitValue
 			soldUnitsIt = 0
 			break
 		}
