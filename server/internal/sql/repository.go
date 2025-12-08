@@ -357,6 +357,8 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 			BUYS.*,
 			USERS.PREFERRED_CURRENCY,
 			BUYS.AMOUNT * _RATES.RATE AS TOTAL_AMOUNT,
+			FEE * _RATES.RATE AS FEE,
+			TAXES * _RATES.RATE AS TAXES,
 			BUYS.DATE
 		FROM BUYS
 		INNER JOIN USERS ON BUYS.USER_EMAIL = USERS.EMAIL
