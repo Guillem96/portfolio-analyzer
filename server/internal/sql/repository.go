@@ -490,7 +490,7 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 	})
 
 	assets = arrayutils.Filter(assets, func(a domain.Asset) bool {
-		return a.Units > 0
+		return a.Units > 0.0001
 	})
 
 	return assets, nil
