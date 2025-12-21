@@ -67,11 +67,11 @@ const BuysTab = () => (
   <div className="flex flex-col gap-2">
     <BuysCard />
 
-    <div className="grid grid-cols-1 gap-2 lg:grid-cols-7">
+    <div className="flex flex-col gap-2 lg:grid lg:grid-cols-7">
       <div className="col-span-5">
         <InvestedPerMonth />
       </div>
-      <div className="col-span-2 grid grid-cols-1">
+      <div className="col-span-2 grid grid-cols-1 gap-y-2">
         <BuyGoals />
         <BuysCount />
         <InvestmentTotalAmount />

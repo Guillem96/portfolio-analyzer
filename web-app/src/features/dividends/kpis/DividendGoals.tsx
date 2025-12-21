@@ -6,28 +6,28 @@ export default function DividendGoals() {
   const { meanMonthlyAverage, nextYearDividends } = useDividedsStats()
   const mainCurrency = useBoundStore((state) => state.mainCurrency)
 
-  const nextMonthlyGoal = MONTHLY_DIVIDEND_GOALS.find((goal) => goal >= meanMonthlyAverage)
-  const nextYearlyGoal = YEARLY_DIVIDEND_GOALS.find((goal) => goal >= nextYearDividends)
+  const nextMonthlyGoalIndex = MONTHLY_DIVIDEND_GOALS.findIndex((goal) => goal >= meanMonthlyAverage)
+  const nextYearlyGoalIndex = YEARLY_DIVIDEND_GOALS.findIndex((goal) => goal >= nextYearDividends)
 
-  return (
-    <GoalsCard
-      title="Dividend Goals"
-      goals={[
-        {
-          name: "Monthly dividend",
-          amount: meanMonthlyAverage,
-          targetAmount: nextMonthlyGoal || 0,
-          currency: mainCurrency,
-          completed: nextMonthlyGoal === undefined,
-        },
-        {
-          name: "Yearly dividend",
-          amount: nextYearDividends,
-          targetAmount: nextYearlyGoal || 0,
-          currency: mainCurrency,
-          completed: nextYearlyGoal === undefined,
-        },
-      ]}
-    />
-  )
+  const monthlyTargets = MONTHLY_DIVIDEND_GOALS.slice(0, nextMonthlyGoalIndex + 1)
+  const yearlyTargets = YEARLY_DIVIDEND_GOALS.slice(0, nextYearlyGoalIndex + 1)
+
+  const monthlyGoals = monthlyTargets.map((goal) => ({
+    name: "Monthly dividend",
+    amount: meanMonthlyAverage,
+    targetAmount: goal,
+    currency: mainCurrency,
+    completed: goal <= meanMonthlyAverage,
+  }))
+
+  const yearlyGoals = yearlyTargets.map((goal) => ({
+    name: "Yearly dividend",
+    amount: nextYearDividends,
+    targetAmount: goal,
+    currency: mainCurrency,
+    completed: goal <= nextYearDividends,
+  }))
+
+  const allGoals = [...monthlyGoals, ...yearlyGoals]
+  return <GoalsCard title="Dividend Goals" goals={allGoals} />
 }

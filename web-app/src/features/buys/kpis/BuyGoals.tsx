@@ -11,20 +11,16 @@ export default function BuyGoals() {
     [assets, mainCurrency],
   )
 
-  const nextGoal = INVESTMENT_GOALS.find((goal) => goal >= investmentAmount)
+  const nextGoalIndex = INVESTMENT_GOALS.findIndex((goal) => goal >= investmentAmount)
+  const nextTargets = INVESTMENT_GOALS.slice(0, nextGoalIndex + 1)
 
-  return (
-    <GoalsCard
-      title="Purchase Goals"
-      goals={[
-        {
-          name: "Total Invested",
-          amount: investmentAmount,
-          targetAmount: nextGoal || 0,
-          currency: mainCurrency,
-          completed: nextGoal === undefined,
-        },
-      ]}
-    />
-  )
+  const goals = nextTargets.map((goal) => ({
+    name: "Total Invested",
+    amount: investmentAmount,
+    targetAmount: goal,
+    currency: mainCurrency,
+    completed: goal <= investmentAmount,
+  }))
+
+  return <GoalsCard title="Purchase Goals" goals={goals} />
 }
