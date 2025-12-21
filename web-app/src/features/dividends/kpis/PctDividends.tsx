@@ -4,9 +4,9 @@ import { Card } from "@tremor/react"
 const PctDividends = (withRespectBuys: boolean) => {
   const { yieldWithRespectToAssetValue, yieldWithRespectToInvested } = useDividedsStats()
   return (
-    <Card decoration="top">
+    <Card decoration="top" className="flex flex-col justify-between">
       <p className="text-tremor-default font-medium text-tremor-content dark:text-dark-tremor-content">
-        Dividend yield with respect to total {withRespectBuys ? "invested" : "asset value"}
+        Dividend yield {withRespectBuys ? "on cost" : ""}
       </p>
       <div className="mt-2 flex items-baseline space-x-2.5">
         <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">

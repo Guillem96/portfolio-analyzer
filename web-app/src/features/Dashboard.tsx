@@ -1,6 +1,6 @@
 import AssetsCard from "@features/assets"
 import DividendCard from "@features/dividends"
-import { InvestmentEurTotalAmount, InvestmentUsdTotalAmount, BuysCount, InvestedPerMonth } from "@/features/buys/kpis"
+import { BuysCount, InvestedPerMonth, BuyGoals, InvestmentTotalAmount } from "@/features/buys/kpis"
 import { TotalAssetValue, AssetBarList, CountryDonut, SectorDonut, AssetsCount } from "@features/assets/kpis"
 import {
   DividendsPerYear,
@@ -10,8 +10,9 @@ import {
   UpcomingDividends,
   PendingDividendsToReinvest,
   MeanMonthlyDividends,
+  DividendGoals,
 } from "@features/dividends/kpis"
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
+import { Divider, Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
 import BuysCard from "@/features/buys"
 import EventCalendar from "@/components/EventCalendar"
@@ -20,22 +21,25 @@ import TopMovers from "./assets/kpis/TopMovers"
 import SellsCard from "./sells"
 
 const DividendsTab = () => (
-  <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-    <DividendCard />
-    <div className="flex flex-col gap-2">
-      <DividendsPerYear />
-      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-        <MeanMonthlyDividends />
-        <PendingDividendsToReinvest />
-        <ExpectedDividendsEarningsNextYear />
-        <PctDividendsOverAssetValue />
-        <PctDividendsOverBuys />
+  <>
+    <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+      <DividendCard />
+      <div className="flex flex-col gap-2">
+        <DividendsPerYear />
+        <DividendGoals />
       </div>
+    </div>
+    <div className="grid grid-cols-1 gap-2 py-2 md:grid-cols-3 lg:grid-cols-5">
+      <MeanMonthlyDividends />
+      <PendingDividendsToReinvest />
+      <ExpectedDividendsEarningsNextYear />
+      <PctDividendsOverAssetValue />
+      <PctDividendsOverBuys />
     </div>
     <div className="lg:col-span-2">
       <UpcomingDividends />
     </div>
-  </div>
+  </>
 )
 
 const AssetsTab = () => (
@@ -61,17 +65,23 @@ const AssetsTab = () => (
 
 const BuysTab = () => (
   <div className="flex flex-col gap-2">
-    <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-      <BuysCard />
-      <SellsCard />
-      <div className="flex flex-col gap-2">
+    <BuysCard />
+
+    <div className="grid grid-cols-1 gap-2 lg:grid-cols-7">
+      <div className="col-span-5">
         <InvestedPerMonth />
-        <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
-          <BuysCount />
-          <InvestmentEurTotalAmount />
-          <InvestmentUsdTotalAmount />
-        </div>
       </div>
+      <div className="col-span-2 grid grid-cols-1">
+        <BuyGoals />
+        <BuysCount />
+        <InvestmentTotalAmount />
+      </div>
+    </div>
+
+    <Divider />
+
+    <div className="grid grid-cols-1">
+      <SellsCard />
     </div>
   </div>
 )

@@ -26,7 +26,7 @@ export default function BuyTable() {
     state.tickerToInfo,
     state.deleteBuy,
     state.privateMode,
-    state.tickersLoading
+    state.tickersLoading,
   ])
 
   const [currentPage, setCurrentPage] = useState(-1)

@@ -168,7 +168,7 @@ export default function AssetHistoricValue() {
 
       {assetsHistoric.length === 0 ? (
         <div className="flex items-center justify-center py-8">
-          <p className="text-tremor-content dark:text-dark-tremor-content text-xl">No data available</p>
+          <p className="text-xl text-tremor-content dark:text-dark-tremor-content">No data available</p>
         </div>
       ) : (
         <div className="mt-2 flex items-baseline space-x-2.5">
@@ -176,13 +176,13 @@ export default function AssetHistoricValue() {
             className="h-80"
             colors={[changeType === "positive" ? "emerald" : "red", "amber"]}
             data={chartData}
-          index="date"
-          categories={["Rate"]}
-          valueFormatter={(number: number) =>
-            `${number.toFixed(2)}% (${currencyFormatter((number / 100) * investmentAmount + investmentAmount, mainCurrency, privateMode)})`
-          }
-        />
-      </div>
+            index="date"
+            categories={["Rate"]}
+            valueFormatter={(number: number) =>
+              `${number.toFixed(2)}% (${currencyFormatter((number / 100) * investmentAmount + investmentAmount, mainCurrency, privateMode)})`
+            }
+          />
+        </div>
       )}
     </Card>
   )

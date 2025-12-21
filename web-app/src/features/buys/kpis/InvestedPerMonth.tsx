@@ -20,15 +20,32 @@ const BarChartBuys = ({ currency }: BarChartProps) => {
       return { ...inv, date: new Date(inv.date) }
     })
 
-    const currInv = invWithDate
-      .filter((inv) => inv.currency === currency)
-      .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
+    const recentBuys = invWithDate
       .filter(({ date }) => date.getFullYear() === year || date.getFullYear() - 1)
+      .filter((inv) => inv.currency === currency)
 
-    const barData = MONTHS.map((month) => ({ date: month, [year]: 0, [year - 1]: 0 }))
+    const currInv = recentBuys.filter(({ isDividendReinvestment }) => !isDividendReinvestment)
+    const currReInv = recentBuys.filter(({ isDividendReinvestment }) => isDividendReinvestment)
 
+    // @ts-expect-error: Don't know how to type it
+    const barData = []
+    for (let i = 0; i < MONTHS.length; i++) {
+      barData.push({
+        date: MONTHS[i],
+        [`${year} invested`]: 0,
+        [`${year - 1} invested`]: 0,
+        [`${year} reinvested`]: 0,
+        [`${year - 1} reinvested`]: 0,
+      })
+    }
     currInv.forEach(({ date, amount }) => {
-      barData[date.getMonth()][date.getFullYear()] += amount
+      // @ts-expect-error: Don't know how to type it
+      barData[date.getMonth()][`${date.getFullYear()} invested`] += amount
+    })
+
+    currReInv.forEach(({ date, amount }) => {
+      // @ts-expect-error: Don't know how to type it
+      barData[date.getMonth()][`${date.getFullYear()} reinvested`] += amount
     })
 
     return barData
@@ -54,8 +71,8 @@ const BarChartBuys = ({ currency }: BarChartProps) => {
       className="mt-6"
       data={data}
       index="date"
-      categories={[(year - 1).toString(), year.toString()]}
-      colors={["gray", "blue"]}
+      categories={[`${year - 1} invested`, `${year} invested`, `${year - 1} reinvested`, `${year} reinvested`]}
+      colors={["gray", "blue", "teal", "green"]}
       yAxisWidth={30}
       valueFormatter={(val) => currencyFormatter(val, currency, privateMode)}
     />

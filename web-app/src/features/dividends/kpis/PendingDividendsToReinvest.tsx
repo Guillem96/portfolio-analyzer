@@ -8,7 +8,7 @@ export default function PendingDividendsToReinvest() {
 
   const { pendingToReinvest } = useDividedsStats()
   return (
-    <Card decoration="top">
+    <Card decoration="top" className="flex flex-col justify-between">
       <p className="text-tremor-default font-medium text-tremor-content dark:text-dark-tremor-content">
         Pending dividends to reinvest
       </p>

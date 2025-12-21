@@ -31,7 +31,7 @@
 		"@radix-ui/react-tooltip": "^1.1.4",
 		"@react-aria/datepicker": "^3.11.4",
 		"@react-stately/datepicker": "^3.10.3",
-		"@remixicon/react": "^4.5.0",
+		"@remixicon/react": "^4.7.0",
 		"@tremor/react": "^3.18.4",
 		"clsx": "^2.1.1",
 		"date-fns": "^3.6.0",

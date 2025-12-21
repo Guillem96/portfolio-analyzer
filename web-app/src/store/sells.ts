@@ -27,7 +27,6 @@ export const createSellSlice: StateCreator<State & AssetSlice, [], [], SellSlice
     set({ sellsLoading: true })
     try {
       const sells = await externalFetchSells()
-      console.log(sells)
       set({ sells, sellsLoading: false })
     } catch (error) {
       console.error(error)

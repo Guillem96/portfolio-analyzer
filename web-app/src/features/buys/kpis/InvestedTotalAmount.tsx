@@ -3,35 +3,23 @@ import { useBoundStore } from "@/store"
 import { useMemo } from "react"
 import { currencyFormatter } from "@/services/utils"
 
-const TotalCardAmount = ({ currency }: { currency: "€" | "$" }) => {
-  const [buys, privateMode] = useBoundStore((state) => [state.buys, state.privateMode])
-  const amount = useMemo(
-    () =>
-      buys
-        .filter((inv) => inv.currency === currency)
-        .filter(({ isDividendReinvestment }) => !isDividendReinvestment)
-        .map(({ amount, taxes, fee }) => amount + fee + taxes)
-        .reduce((a, b) => a + b, 0),
-    [buys, currency],
-  )
+export const InvestmentTotalAmount = () => {
+  const [assets, privateMode, mainCurrency] = useBoundStore((state) => [
+    state.assets,
+    state.privateMode,
+    state.mainCurrency,
+  ])
+  const amount = useMemo(() => assets.map(({ buyValue }) => buyValue).reduce((a, b) => a + b, 0), [assets])
   return (
-    <Card decoration="top">
+    <Card decoration="top" className="flex flex-col justify-between">
       <p className="text-tremor-default font-medium text-tremor-content dark:text-dark-tremor-content">
-        Total Investment Amount {currency}
+        Total Investment Amount {mainCurrency}
       </p>
       <div className="mt-2 flex items-baseline space-x-2.5">
         <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-          {currencyFormatter(amount, currency, privateMode)}
+          {currencyFormatter(amount, mainCurrency, privateMode)}
         </p>
       </div>
     </Card>
   )
-}
-
-export const InvestmentEurTotalAmount = () => {
-  return <TotalCardAmount currency="€" />
-}
-
-export const InvestmentUsdTotalAmount = () => {
-  return <TotalCardAmount currency="$" />
 }

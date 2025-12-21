@@ -6,7 +6,6 @@ export const fetchBuys = async (): Promise<BuyWithId[]> => {
 }
 
 export const postBuy = async (buy: Buy): Promise<BuyWithId> => {
-  console.log(buy)
   return await request("buys/", "POST", buy)
 }
 

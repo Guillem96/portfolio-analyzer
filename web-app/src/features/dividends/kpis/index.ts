@@ -4,3 +4,4 @@ export { default as ExpectedDividendsEarningsNextYear } from "./ExpectedDividend
 export { PctDividendsOverAssetValue, PctDividendsOverBuys } from "./PctDividends"
 export { default as MeanMonthlyDividends } from "./MeanMonthlyDividends"
 export { default as PendingDividendsToReinvest } from "./PendingDividendsToReinvest"
+export { default as DividendGoals } from "./DividendGoals"

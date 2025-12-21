@@ -8,7 +8,7 @@ export default function MeanMonthlyDividends() {
 
   const { meanMonthlyAverage } = useDividedsStats()
   return (
-    <Card decoration="top">
+    <Card decoration="top" className="flex flex-col justify-between">
       <p className="text-tremor-default font-medium text-tremor-content dark:text-dark-tremor-content">
         Mean monthly dividends
       </p>

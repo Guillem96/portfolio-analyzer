@@ -41,7 +41,7 @@ export default function UpcomingDividends() {
     .sort((a, b) => a.exDividendDate.getTime() - b.exDividendDate.getTime())
 
   return (
-    <Card>
+    <Card decoration="top" className="flex flex-col justify-between">
       <h1 className="mb-4 max-w-2xl text-3xl tracking-tight text-slate-900 dark:text-neutral-300">
         Upcoming Ex Dividends
       </h1>
