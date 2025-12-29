@@ -64,7 +64,6 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     lastBuyDate,
     yieldWithRespectBuy,
     yieldWithRespectValue,
-    unitsWithoutReinvest,
     yieldWithRespectBuyWithoutReinvest,
   } = asset
 
@@ -117,7 +116,7 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
       <TableCell>
         {currencyFormatter(adjustDividends ? avgPrice : avgPriceWithoutReinvest, currency, privateMode)}
       </TableCell>
-      <TableCell>{adjustDividends ? units.toFixed(3) : unitsWithoutReinvest.toFixed(3)}</TableCell>
+      <TableCell>{units.toFixed(3)}</TableCell>
       <TableCell>{format(lastBuyDate, "yyyy-MM-dd")}</TableCell>
       <TableCell>{`${((adjustDividends ? yieldWithRespectBuy : yieldWithRespectBuyWithoutReinvest) * 100).toFixed(2)}%`}</TableCell>
       <TableCell>{`${(yieldWithRespectValue * 100).toFixed(2)}%`}</TableCell>

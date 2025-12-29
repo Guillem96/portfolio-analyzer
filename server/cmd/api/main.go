@@ -99,8 +99,8 @@ func setupRouter(l *slog.Logger, host string) http.Handler {
 	br := sql.NewBuysRepository(db, l)
 	dr := sql.NewDividendsRepository(db, l)
 	ur := sql.NewUsersRepository(db, l)
-	ar := sql.NewAssetsRepository(db, ur, tr, l)
 	sr := sql.NewSellsRepository(db, l)
+	ar := sql.NewAssetsRepository(db, ur, tr, sr, br, l)
 
 	// Handlers
 	ah := auth.New(ur, host, l)

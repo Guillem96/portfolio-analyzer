@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/sells"
 	"github.com/google/uuid"
 	"github.com/judedaryl/go-arrayutils"
 	"gorm.io/gorm"
@@ -352,6 +353,8 @@ type AssetsRepository struct {
 	db *gorm.DB
 	ur domain.UserRepository
 	tr domain.TickersRepository
+	sr domain.SellsRepository
+	br domain.BuysRepository
 	l  *slog.Logger
 }
 
@@ -377,11 +380,13 @@ type interimHistoricResult struct {
 	RateWithoutReinvest  float32 `gorm:"column:RATE_WITHOUT_REINVEST"`
 }
 
-func NewAssetsRepository(db *gorm.DB, ur domain.UserRepository, tr domain.TickersRepository, logger *slog.Logger) *AssetsRepository {
+func NewAssetsRepository(db *gorm.DB, ur domain.UserRepository, tr domain.TickersRepository, sr domain.SellsRepository, br domain.BuysRepository, logger *slog.Logger) *AssetsRepository {
 	return &AssetsRepository{
 		db: db,
 		ur: ur,
 		tr: tr,
+		sr: sr,
+		br: br,
 		l:  logger,
 	}
 }
@@ -403,12 +408,26 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		WHERE TARGET_CURRENCY = ?
 	),
 
-	_SOLD_UNITS AS (
+	_SELLS_SINGLE_CURRENCY AS (
+		SELECT
+			SELLS.*,
+			USERS.PREFERRED_CURRENCY,
+			SELLS.AMOUNT * _RATES.RATE AS TOTAL_AMOUNT,
+			FEES * _RATES.RATE AS FEES,
+			SELLS.DATE
+		FROM SELLS
+		INNER JOIN USERS ON SELLS.USER_EMAIL = USERS.EMAIL
+		INNER JOIN _RATES ON _RATES.SOURCE_CURRENCY = SELLS.CURRENCY
+		WHERE USERS.EMAIL = ? AND SELLS.DELETED_AT IS NULL
+	),
+
+	_SELLS AS (
 		SELECT
 			USER_EMAIL,
 			TICKER,
-			SUM(UNITS) AS TOTAL_UNITS
-		FROM SELLS
+			SUM(UNITS) AS TOTAL_UNITS,
+			SUM(TOTAL_AMOUNT + FEES) AS TOTAL_AMOUNT
+		FROM _SELLS_SINGLE_CURRENCY
 		WHERE USER_EMAIL = ? AND DELETED_AT IS NULL
 		GROUP BY USER_EMAIL, TICKER
 	),
@@ -468,18 +487,18 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 	SELECT
 		COALESCE(_BUYS.TICKER, _REINVESTMENTS.TICKER) AS TICKER,
 		COALESCE(_BUYS.PREFERRED_CURRENCY, _REINVESTMENTS.PREFERRED_CURRENCY) AS CURRENCY,
-		COALESCE(_BUYS.TOTAL_AMOUNT, 0) AS BUY_VALUE,
+		COALESCE(_BUYS.TOTAL_AMOUNT, 0) - COALESCE(_SELLS.TOTAL_AMOUNT, 0) AS BUY_VALUE,
 		COALESCE(_BUYS.TOTAL_UNITS, 0) AS BUY_UNITS,
 		COALESCE(_REINVESTMENTS.TOTAL_AMOUNT, 0) AS REINVESTED_BUY_VALUE,
-		COALESCE(_SOLD_UNITS.TOTAL_UNITS, 0) AS SOLD_UNITS,
+		COALESCE(_SELLS.TOTAL_UNITS, 0) AS SOLD_UNITS,
 		COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) AS REINVEST_UNITS,
 		COALESCE(_REINVESTMENTS.TOTAL_UNITS, 0) + COALESCE(_BUYS.TOTAL_UNITS, 0) AS UNITS,
 		_BUYS_LAST_DATE.DATE AS LAST_BUY_DATE
 	FROM _BUYS
 	FULL OUTER JOIN _REINVESTMENTS ON _BUYS.TICKER = _REINVESTMENTS.TICKER
 	LEFT JOIN _BUYS_LAST_DATE ON COALESCE(_BUYS.TICKER, _REINVESTMENTS.TICKER) = _BUYS_LAST_DATE.TICKER
-	LEFT JOIN _SOLD_UNITS ON _BUYS.TICKER = _SOLD_UNITS.TICKER
-	`, *user.PreferredCurrency, userEmail, userEmail).Scan(&results).Error
+	LEFT JOIN _SELLS ON _BUYS.TICKER = _SELLS.TICKER
+	`, *user.PreferredCurrency, userEmail, userEmail, userEmail).Scan(&results).Error
 	if err != nil {
 		return nil, err
 	}
@@ -506,54 +525,57 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 		}
 	}
 
-	assets := arrayutils.Map(results, func(r assetsIterimResult) domain.Asset {
-		if r.Ticker == "LYB" {
-			fmt.Printf("%+v\n", r)
-		}
-		ownedUnits := r.Units - r.SoldUnits
-		unitsWithoutReinvest := ownedUnits - r.ReinvestUnits
-		var averageStockPrice float32
-		if ownedUnits > 0 {
-			averageStockPrice = r.BuyValue / float32(ownedUnits)
-		}
-		var averageStockPriceWithoutReinvest float32
-		if unitsWithoutReinvest > 0 {
-			averageStockPriceWithoutReinvest = r.BuyValue / float32(unitsWithoutReinvest)
-		}
+	airs := arrayutils.Filter(results, func(a assetsIterimResult) bool {
+		return a.Units > 0.0001
+	})
 
+	assets := arrayutils.Map(airs, func(air assetsIterimResult) domain.Asset {
+		ownedUnits := air.Units - air.SoldUnits
+		averageStockPrice, _ := r.computeTickerAveragePurchasePrice(air, user, true)
+		averageStockPriceWithoutReinvest, _ := r.computeTickerAveragePurchasePrice(air, user, false)
+		buyValue := averageStockPriceWithoutReinvest * ownedUnits
+		buyValueWithoutReinvest := averageStockPrice * ownedUnits
+		buyReinvestedValue := buyValueWithoutReinvest - buyValue
+
+		unitsWithoutReinvest := ownedUnits - air.ReinvestUnits
+
+		if air.Ticker == "KHC" {
+			fmt.Println("buyValue", air.BuyValue)
+			fmt.Println("averageStockPrice", averageStockPrice)
+			fmt.Println("averageStockPriceWithoutReinvest", averageStockPriceWithoutReinvest)
+		}
 		var yieldOnCost float32
 		if averageStockPrice > 0 {
-			yieldOnCost = tickersInfo[r.Ticker].YearlyDividendValue / averageStockPrice
+			yieldOnCost = tickersInfo[air.Ticker].YearlyDividendValue / averageStockPrice
 		}
 
 		var yieldOnCostWOR float32
 		if averageStockPriceWithoutReinvest > 0 {
-			yieldOnCostWOR = tickersInfo[r.Ticker].YearlyDividendValue / averageStockPriceWithoutReinvest
+			yieldOnCostWOR = tickersInfo[air.Ticker].YearlyDividendValue / averageStockPriceWithoutReinvest
 		}
 
 		return domain.Asset{
-			Ticker:                             tickersInfo[r.Ticker],
-			Name:                               tickersInfo[r.Ticker].Name,
-			BuyValue:                           r.BuyValue,
-			ReinvestedBuyValue:                 r.ReinvestedBuyValue,
-			Value:                              ownedUnits * tickersInfo[r.Ticker].Price,
-			ValueWithoutReinvest:               unitsWithoutReinvest * tickersInfo[r.Ticker].Price,
+			Ticker:             tickersInfo[air.Ticker],
+			Name:               tickersInfo[air.Ticker].Name,
+			BuyValue:           buyValue,
+			ReinvestedBuyValue: buyReinvestedValue,
+			Value:              ownedUnits * tickersInfo[air.Ticker].Price,
+			// <Not used>
+			ValueWithoutReinvest: unitsWithoutReinvest * tickersInfo[air.Ticker].Price,
+			UnitsWithoutReinvest: unitsWithoutReinvest,
+			// </Not used>
+
 			Units:                              ownedUnits,
-			UnitsWithoutReinvest:               unitsWithoutReinvest,
 			AverageStockPrice:                  averageStockPrice,
 			AverageStockPriceWithoutReinvest:   averageStockPriceWithoutReinvest,
-			LastBuyDate:                        domain.Date(r.LastBuyDate),
+			LastBuyDate:                        domain.Date(air.LastBuyDate),
 			YieldWithRespectBuy:                yieldOnCost,
 			YieldWithRespectBuyWithoutReinvest: yieldOnCostWOR,
-			YieldWithRespectValue:              tickersInfo[r.Ticker].YearlyDividendValue / tickersInfo[r.Ticker].Price,
-			Currency:                           r.Currency,
-			Country:                            tickersInfo[r.Ticker].Country,
-			Sector:                             tickersInfo[r.Ticker].Sector,
+			YieldWithRespectValue:              tickersInfo[air.Ticker].YearlyDividendValue / tickersInfo[air.Ticker].Price,
+			Currency:                           *user.PreferredCurrency,
+			Country:                            tickersInfo[air.Ticker].Country,
+			Sector:                             tickersInfo[air.Ticker].Sector,
 		}
-	})
-
-	assets = arrayutils.Filter(assets, func(a domain.Asset) bool {
-		return a.Units > 0.0001
 	})
 
 	return assets, nil
@@ -791,4 +813,30 @@ func (r *SellsRepository) Delete(id string, userEmail string) error {
 		return err
 	}
 	return nil
+}
+
+func (r *AssetsRepository) computeTickerAveragePurchasePrice(air assetsIterimResult, user *domain.UserWithId, reinvestmentsAsFree bool) (float32, error) {
+	ownedUnits := air.Units - air.SoldUnits
+	buyValue := air.BuyValue
+	if reinvestmentsAsFree {
+		buyValue += air.ReinvestedBuyValue
+	}
+	if ownedUnits > 0 && air.SoldUnits == 0 {
+		return buyValue / float32(ownedUnits), nil
+	} else if ownedUnits > 1e-4 && air.SoldUnits > 0 {
+		tbs, err := r.br.FindByTickerAndCurrency(air.Ticker, *user.PreferredCurrency, user.Email)
+		if err != nil {
+			return 0, err
+		}
+		tss, err := r.sr.FindByTicker(air.Ticker, user.Email)
+		if err != nil {
+			return 0, err
+		}
+		averageStockPrice, err := sells.ComputeFIFORuleAvgPurchasePrice(tbs, tss, reinvestmentsAsFree)
+		if err != nil {
+			return 0, err
+		}
+		return averageStockPrice, nil
+	}
+	return 0, nil
 }

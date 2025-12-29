@@ -54,7 +54,9 @@ func task() error {
 	cr := sql.NewExchangeRatesRepository(db, l)
 	tr := infra_http.NewTickerRepository(tickerInfoUrl, cr, l)
 	ur := sql.NewUsersRepository(db, l)
-	ar := sql.NewAssetsRepository(db, ur, tr, l)
+	sr := sql.NewSellsRepository(db, l)
+	br := sql.NewBuysRepository(db, l)
+	ar := sql.NewAssetsRepository(db, ur, tr, sr, br, l)
 
 	historics := make([]*sql.PortfolioHistoric, 0)
 	for _, user := range users {
