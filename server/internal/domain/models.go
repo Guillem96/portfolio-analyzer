@@ -202,8 +202,8 @@ func (as Assets) ToJSON(w io.Writer) error {
 }
 
 type PriceRange struct {
-	Min float32 `json:"min"`
-	Max float32 `json:"max"`
+	Min float32 `json:"low"`
+	Max float32 `json:"high"`
 }
 
 type HistoricalEntry struct {

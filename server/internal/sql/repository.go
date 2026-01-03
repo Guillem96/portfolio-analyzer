@@ -536,7 +536,7 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 	}
 
 	airs := arrayutils.Filter(results, func(a assetsIterimResult) bool {
-		return a.Units - a.SoldUnits > 0.0001
+		return a.Units-a.SoldUnits > 0.0001
 	})
 
 	assets := arrayutils.Map(airs, func(air assetsIterimResult) domain.Asset {
@@ -888,6 +888,7 @@ func (r *TickersRepository) Create(ticker domain.Ticker) error {
 		YearlyPriceRangeMin:  ticker.YearlyPriceRange.Min,
 		YearlyPriceRangeMax:  ticker.YearlyPriceRange.Max,
 		HistoricalData:       b.String(),
+		Currency:             ticker.Currency,
 	}
 
 	if ticker.ExDividendDate != nil {
