@@ -536,7 +536,7 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 	}
 
 	airs := arrayutils.Filter(results, func(a assetsIterimResult) bool {
-		return a.Units > 0.0001
+		return a.Units - a.SoldUnits > 0.0001
 	})
 
 	assets := arrayutils.Map(airs, func(air assetsIterimResult) domain.Asset {

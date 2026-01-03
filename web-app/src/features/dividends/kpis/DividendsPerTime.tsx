@@ -15,7 +15,7 @@ import { useBoundStore } from "@/store"
 import { RiTimeLine } from "@remixicon/react"
 import { currencyFormatter } from "@/services/utils"
 import { useDividedsStats } from "@/hooks/dividends"
-import { format, parse, subMonths } from "date-fns"
+import { format, parse, subYears } from "date-fns"
 import { MONTHS_NAMES, PASTEL_VIVID_COLORS } from "@/constants"
 import { useState } from "react"
 
@@ -137,7 +137,7 @@ const CompareMontlyDividendsIncome = () => {
 
   const today = new Date()
   const currentMonth = format(today, "MM-yyyy")
-  const lastMonth = format(subMonths(today, 1), "MM-yyyy")
+  const lastMonth = format(subYears(today, 1), "MM-yyyy")
   const [firstMonth, setFirstMonth] = useState<string>(lastMonth)
   const [secondMonth, setSecondMonth] = useState<string>(currentMonth)
   const tickers = [
