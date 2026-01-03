@@ -21,6 +21,7 @@ func InitDB() {
 	db.AutoMigrate(&ExchangeRate{})
 	db.AutoMigrate(&PortfolioHistoric{})
 	db.AutoMigrate(&Sell{})
+	db.AutoMigrate(&Ticker{})
 }
 
 func GetDB() *gorm.DB {

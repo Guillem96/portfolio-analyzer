@@ -23,7 +23,7 @@ func NewTickerRepository(baseUrl string, currencyRepository domain.CurrencyRepos
 	return &TickerRepository{baseUrl: baseUrl, cr: currencyRepository, l: logger}
 }
 
-func (r *TickerRepository) FindByTicker(ticker string, currency string) (domain.Ticker, error) {
+func (r *TickerRepository) FindByTicker(ticker string, currency *string) (domain.Ticker, error) {
 	lastYear := time.Now().AddDate(-1, 0, 0)
 	firstDayOfLastYearMonth := time.Date(lastYear.Year(), lastYear.Month(), 1, 0, 0, 0, 0, lastYear.Location())
 	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, ticker, firstDayOfLastYearMonth.Format(time.DateOnly))
@@ -50,7 +50,7 @@ func (r *TickerRepository) FindByTicker(ticker string, currency string) (domain.
 	return r.mapper(*t, currency)
 }
 
-func (r *TickerRepository) FindMultipleTickers(tickers []string, currency string) (map[string]domain.Ticker, error) {
+func (r *TickerRepository) FindMultipleTickers(tickers []string, currency *string) (map[string]domain.Ticker, error) {
 	lastYear := time.Now().AddDate(-1, 0, 0)
 	firstDayOfLastYearMonth := time.Date(lastYear.Year(), lastYear.Month(), 1, 0, 0, 0, 0, lastYear.Location())
 	url := fmt.Sprintf("%s/%s?history_resample=month&history_start=%s", r.baseUrl, strings.Join(tickers, ","), firstDayOfLastYearMonth.Format(time.DateOnly))
@@ -86,7 +86,7 @@ func (r *TickerRepository) FindMultipleTickers(tickers []string, currency string
 	return tickersMap, nil
 }
 
-func (r *TickerRepository) mapper(ticker domain.Ticker, currency string) (domain.Ticker, error) {
+func (r *TickerRepository) mapper(ticker domain.Ticker, currency *string) (domain.Ticker, error) {
 	if ticker.Country == "United States" {
 		ticker.Country = "US"
 	}
@@ -114,12 +114,12 @@ func (r *TickerRepository) mapper(ticker domain.Ticker, currency string) (domain
 		return domain.Ticker{}, err
 	}
 
-	if currency == ticker.Currency {
+	if currency == nil || *currency == ticker.Currency {
 		return ticker, nil
 	}
 
-	er := exchangeRates[ticker.Currency][currency]
-	ticker.Currency = currency
+	er := exchangeRates[ticker.Currency][*currency]
+	ticker.Currency = *currency
 	ticker.Price = ticker.Price * er
 	ticker.NextDividendValue = ticker.NextDividendValue * er
 	ticker.YearlyDividendValue = ticker.YearlyDividendValue * er
@@ -138,13 +138,14 @@ func NewCurrencyRepository(baseUrl string, logger *slog.Logger) *CurrencyReposit
 
 func (r *CurrencyRepository) FindExchangeRates(baseCurrency string) (map[string]float32, error) {
 	var currency string
-	if baseCurrency == domain.USD {
+	switch baseCurrency {
+	case domain.USD:
 		currency = "USD"
-	} else if baseCurrency == domain.EUR {
+	case domain.EUR:
 		currency = "EUR"
-	} else if baseCurrency == domain.GBP {
+	case domain.GBP:
 		currency = "GBP"
-	} else {
+	default:
 		return nil, errors.New("currency not supported")
 	}
 

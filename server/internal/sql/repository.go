@@ -1,9 +1,12 @@
 package sql
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
@@ -11,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/judedaryl/go-arrayutils"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type BuysRepository struct {
@@ -157,6 +161,12 @@ func (r *BuysRepository) FindByTickerAndCurrency(ticker, currency, userEmail str
 	}
 
 	return buys, nil
+}
+
+func (r *BuysRepository) FindAllTickers() ([]string, error) {
+	var tickers []string
+	err := r.db.Model(&Buy{}).Select("ticker").Distinct().Pluck("ticker", &tickers).Error
+	return tickers, err
 }
 
 func (r *BuysRepository) Delete(id string, userEmail string) error {
@@ -513,13 +523,13 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 
 	var tickersInfo map[string]domain.Ticker
 	if len(allTickers) == 1 {
-		ticker, err := r.tr.FindByTicker(allTickers[0], *user.PreferredCurrency)
+		ticker, err := r.tr.FindByTicker(allTickers[0], user.PreferredCurrency)
 		if err != nil {
 			return nil, err
 		}
 		tickersInfo = map[string]domain.Ticker{allTickers[0]: ticker}
 	} else {
-		tickersInfo, err = r.tr.FindMultipleTickers(allTickers, *user.PreferredCurrency)
+		tickersInfo, err = r.tr.FindMultipleTickers(allTickers, user.PreferredCurrency)
 		if err != nil {
 			return nil, err
 		}
@@ -839,4 +849,168 @@ func (r *AssetsRepository) computeTickerAveragePurchasePrice(air assetsIterimRes
 		return averageStockPrice, nil
 	}
 	return 0, nil
+}
+
+type TickersRepository struct {
+	db *gorm.DB
+	l  *slog.Logger
+}
+
+func NewTickersRepository(db *gorm.DB, logger *slog.Logger) *TickersRepository {
+	return &TickersRepository{db: db, l: logger}
+}
+
+func (r *TickersRepository) Create(ticker domain.Ticker) error {
+	b := &bytes.Buffer{}
+	err := json.NewEncoder(b).Encode(ticker.HistoricalData)
+	if err != nil {
+		return err
+	}
+
+	dateFmt := "2006-01-02"
+	dateKey, _ := time.Parse(dateFmt, time.Now().Format(dateFmt))
+	dbTicker := Ticker{
+		Ticker:               ticker.Ticker,
+		DateKey:              dateKey,
+		Name:                 ticker.Name,
+		ChangeRate:           ticker.ChangeRate,
+		YearlyDividendValue:  ticker.YearlyDividendValue,
+		YearlyDividendYield:  ticker.YearlyDividendYield,
+		NextDividendValue:    ticker.NextDividendValue,
+		NextDividendYield:    ticker.NextDividendYield,
+		Website:              ticker.Website,
+		Sector:               ticker.Sector,
+		Country:              ticker.Country,
+		Industry:             ticker.Industry,
+		IsEtf:                ticker.IsEtf,
+		MonthlyPriceRangeMin: ticker.MonthlyPriceRange.Min,
+		MonthlyPriceRangeMax: ticker.MonthlyPriceRange.Max,
+		YearlyPriceRangeMin:  ticker.YearlyPriceRange.Min,
+		YearlyPriceRangeMax:  ticker.YearlyPriceRange.Max,
+		HistoricalData:       b.String(),
+	}
+
+	if ticker.ExDividendDate != nil {
+		edd := time.Time(*ticker.ExDividendDate)
+		dbTicker.ExDividendDate = &edd
+	}
+	if ticker.DividendPaymentDate != nil {
+		dpd := time.Time(*ticker.DividendPaymentDate)
+		dbTicker.DividendPaymentDate = &dpd
+	}
+	earningDates := []time.Time{}
+	for _, ed := range ticker.EarningDates {
+		t := time.Time(ed)
+		earningDates = append(earningDates, t)
+	}
+	dbTicker.EarningDates = earningDates
+
+	if err := r.db.Clauses(clause.OnConflict{
+		UpdateAll: true,
+	}).Create(&dbTicker).Error; err != nil {
+		r.l.Error("Failed to create ticker", "error", err.Error())
+		return err
+	}
+	return nil
+}
+
+const findTickersQuery = `
+WITH _RATES AS (
+	SELECT
+		SOURCE_CURRENCY,
+		RATE
+	FROM EXCHANGE_RATES
+	WHERE TARGET_CURRENCY = ?
+),
+_TICKERS_W_RN AS (
+	SELECT
+		TICKERS.*,
+		ROW_NUMBER() OVER (PARTITION BY TICKER ORDER BY DATE_KEY DESC) AS RN
+	FROM TICKERS
+),
+SELECT
+	_TICKERS_W_RN.*,
+	? AS CURRENCY,
+	_TICKERS_W_RN.PRICE * _RATES.RATE AS PRICE,
+	_TICKERS_W_RN.NEXT_DIVIDEND_VALUE * _RATES.RATE AS NEXT_DIVIDEND_VALUE,
+	_TICKERS_W_RN.YEARLY_DIVIDEND_VALUE * _RATES.RATE AS YEARLY_DIVIDEND_VALUE
+FROM _TICKERS_W_RN
+LEFT JOIN _RATES ON _RATES.SOURCE_CURRENCY = _TICKERS_W_RN.CURRENCY
+WHERE _TICKERS_W_RN.TICKER IN ? AND _TICKERS_W_RN.RN = 1;
+`
+
+func (r *TickersRepository) FindByTicker(ticker string, preferredCurrency *string) (domain.Ticker, error) {
+	var dbTickers []Ticker
+	if err := r.db.Raw(findTickersQuery, preferredCurrency, preferredCurrency, []string{ticker}).Scan(&dbTickers).Error; err != nil {
+		return domain.Ticker{}, err
+	}
+	if len(dbTickers) != 1 {
+		return domain.Ticker{}, fmt.Errorf("ticker %s not found", ticker)
+	}
+
+	dbTicker := dbTickers[0]
+
+	return dbTickerToDomain(dbTicker)
+}
+
+func (r *TickersRepository) FindMultipleTickers(tickers []string, preferredCurrency *string) (map[string]domain.Ticker, error) {
+	var dbTickers []Ticker
+	if err := r.db.Raw(findTickersQuery, preferredCurrency, preferredCurrency, tickers).Scan(&dbTickers).Error; err != nil {
+		return nil, err
+	}
+
+	tickersMap := make(map[string]domain.Ticker, len(dbTickers))
+	for _, dbTicker := range dbTickers {
+		ticker, err := dbTickerToDomain(dbTicker)
+		if err != nil {
+			return nil, err
+		}
+		tickersMap[ticker.Ticker] = ticker
+	}
+	return tickersMap, nil
+}
+
+func dbTickerToDomain(dbTicker Ticker) (domain.Ticker, error) {
+	var historicalData []domain.HistoricalEntry
+	if err := json.NewDecoder(strings.NewReader(dbTicker.HistoricalData)).Decode(&historicalData); err != nil {
+		return domain.Ticker{}, err
+	}
+
+	var exDividendDate *domain.Date
+	if dbTicker.ExDividendDate != nil {
+		edd := domain.Date(*dbTicker.ExDividendDate)
+		exDividendDate = &edd
+	}
+
+	var dividendPaymentDate *domain.Date
+	if dbTicker.DividendPaymentDate != nil {
+		dpd := domain.Date(*dbTicker.DividendPaymentDate)
+		dividendPaymentDate = &dpd
+	}
+
+	earningDates := []domain.DateWithTime{}
+	for _, ed := range dbTicker.EarningDates {
+		earningDates = append(earningDates, domain.DateWithTime(ed))
+	}
+
+	return domain.Ticker{
+		Ticker:              dbTicker.Ticker,
+		Name:                dbTicker.Name,
+		ChangeRate:          dbTicker.ChangeRate,
+		YearlyDividendValue: dbTicker.YearlyDividendValue,
+		YearlyDividendYield: dbTicker.YearlyDividendYield,
+		NextDividendValue:   dbTicker.NextDividendValue,
+		NextDividendYield:   dbTicker.NextDividendYield,
+		Website:             dbTicker.Website,
+		Sector:              dbTicker.Sector,
+		Country:             dbTicker.Country,
+		Industry:            dbTicker.Industry,
+		IsEtf:               dbTicker.IsEtf,
+		MonthlyPriceRange:   domain.PriceRange{Min: dbTicker.MonthlyPriceRangeMin, Max: dbTicker.MonthlyPriceRangeMax},
+		YearlyPriceRange:    domain.PriceRange{Min: dbTicker.YearlyPriceRangeMin, Max: dbTicker.YearlyPriceRangeMax},
+		HistoricalData:      historicalData,
+		ExDividendDate:      exDividendDate,
+		DividendPaymentDate: dividendPaymentDate,
+		EarningDates:        earningDates,
+	}, nil
 }

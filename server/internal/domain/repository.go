@@ -5,6 +5,7 @@ type BuysRepository interface {
 	FindAll(userEmail string) (Buys, error)
 	FindByTicker(ticker string, userEmail string) (Buys, error)
 	FindByTickerAndCurrency(ticker string, currency string, userEmail string) (Buys, error)
+	FindAllTickers() ([]string, error)
 	Delete(id string, userEmail string) error
 }
 
@@ -35,8 +36,12 @@ type CurrencyRepository interface {
 }
 
 type TickersRepository interface {
-	FindByTicker(ticker string, currency string) (Ticker, error)
-	FindMultipleTickers(tickers []string, currency string) (map[string]Ticker, error)
+	FindByTicker(ticker string, currency *string) (Ticker, error)
+	FindMultipleTickers(tickers []string, currency *string) (map[string]Ticker, error)
+}
+
+type WritableTickersRepository interface {
+	Create(ticker Ticker) error
 }
 
 type SellsRepository interface {

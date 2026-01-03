@@ -80,3 +80,29 @@ type PortfolioHistoric struct {
 	Currency             string
 	CreatedAt            time.Time
 }
+
+type Ticker struct {
+	Ticker               string    `gorm:"primarykey"`
+	DateKey              time.Time `gorm:"primarykey"`
+	CreatedAt            time.Time
+	Name                 string
+	ChangeRate           float32
+	YearlyDividendYield  float32
+	YearlyDividendValue  float32
+	NextDividendYield    float32
+	NextDividendValue    float32
+	Website              string
+	Currency             string
+	ExDividendDate       *time.Time
+	DividendPaymentDate  *time.Time
+	EarningDates         CSVDates `gorm:"type:text"`
+	Sector               string
+	Country              string
+	Industry             string
+	IsEtf                bool
+	MonthlyPriceRangeMin float32
+	MonthlyPriceRangeMax float32
+	YearlyPriceRangeMin  float32
+	YearlyPriceRangeMax  float32
+	HistoricalData       string `gorm:"type:text"`
+}

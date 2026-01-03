@@ -18,10 +18,14 @@ RUN go build -ldflags='-s -w -extldflags "-static"' \
 RUN go build -ldflags='-s -w -extldflags "-static"' \
     -tags lambda.norpc -o exchange-rates-task ./cmd/exchange_rates_task
 
+RUN go build -ldflags='-s -w -extldflags "-static"' \
+    -tags lambda.norpc -o cache-tickers-task ./cmd/cache_tickers_task
+
 FROM alpine:3.20
 COPY --from=build /build/main /main
 COPY --from=build /build/compute-value-task /compute-value-task
 COPY --from=build /build/exchange-rates-task /exchange-rates-task
+COPY --from=build /build/cache-tickers-task /cache-tickers-task
 COPY static/dist /static/dist
 
 ENTRYPOINT [ "/main" ]

@@ -234,6 +234,12 @@ type Ticker struct {
 	HistoricalData      []HistoricalEntry `json:"historical_data"`
 }
 
+type SimplifiedTicker struct {
+	Ticker  string `json:"ticker"`
+	Name    string `json:"name"`
+	Website string `json:"website"`
+}
+
 type Tickers []Ticker
 
 func (t Ticker) ToJSON(w io.Writer) error {

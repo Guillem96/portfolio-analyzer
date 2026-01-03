@@ -57,7 +57,12 @@ locals {
       name        = "compute-value-task"
       entry_point = "/compute-value-task"
       rate        = "rate(24 hours)"
-    }
+    },
+    {
+      name        = "cache-tickers-task"
+      entry_point = "/cache-tickers-task"
+      rate        = "rate(24 hours)"
+    },
   ]
 }
 
