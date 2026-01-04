@@ -6,19 +6,22 @@ import (
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/auth"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/tickers"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	repo domain.BuysRepository
-	l    *slog.Logger
+	repo         domain.BuysRepository
+	tickersCache *tickers.CacheManager
+	l            *slog.Logger
 }
 
-func New(repo domain.BuysRepository, logger *slog.Logger) *Handler {
+func New(repo domain.BuysRepository, tickersCache *tickers.CacheManager, logger *slog.Logger) *Handler {
 	return &Handler{
-		repo: repo,
-		l:    logger,
+		repo:         repo,
+		tickersCache: tickersCache,
+		l:            logger,
 	}
 }
 
@@ -37,6 +40,12 @@ func (bh *Handler) CreateBuyHandler(w http.ResponseWriter, r *http.Request) {
 	if err := buy.Validate(); err != nil {
 		bh.l.Error("Invalid buy", "error", err.Error())
 		utils.SendHTTPMessage(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := bh.tickersCache.WriteToCache(buy.Ticker); err != nil {
+		bh.l.Error("Failed to write ticker to cache", "error", err.Error())
+		utils.SendHTTPMessage(w, http.StatusInternalServerError, "Failed to process ticker information")
 		return
 	}
 

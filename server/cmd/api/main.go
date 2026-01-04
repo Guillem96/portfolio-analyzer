@@ -15,6 +15,7 @@ import (
 	"github.com/Guillem96/portfolio-analyzer-server/internal/sells"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/server"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/sql"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/tickers"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -96,15 +97,19 @@ func setupRouter(l *slog.Logger, host string) http.Handler {
 
 	cr := sql.NewExchangeRatesRepository(db, l)
 	tr := infra_http.NewTickerRepository(tickerInfoUrl, cr, l)
-	br := sql.NewBuysRepository(db, l)
-	dr := sql.NewDividendsRepository(db, l)
+	sqltr := sql.NewTickersRepository(db, l)
+	br := sql.NewBuysRepository(db, sqltr, l)
+	dr := sql.NewDividendsRepository(db, sqltr, l)
 	ur := sql.NewUsersRepository(db, l)
-	sr := sql.NewSellsRepository(db, l)
-	ar := sql.NewAssetsRepository(db, ur, tr, sr, br, l)
+	sr := sql.NewSellsRepository(db, sqltr, l)
+	ar := sql.NewAssetsRepository(db, ur, sqltr, sr, br, l)
+
+	// Tickers Cache Manager
+	tcm := tickers.NewCacheManager(tr, sqltr)
 
 	// Handlers
 	ah := auth.New(ur, host, l)
-	bh := buys.New(br, l)
+	bh := buys.New(br, tcm, l)
 	sh := sells.New(sr, br, l)
 	dh := dividends.New(dr, l)
 	assetsHandler := assets.New(ar, l)
