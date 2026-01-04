@@ -46,8 +46,8 @@ func task() error {
 
 	cr := sql.NewExchangeRatesRepository(db, l)
 	tr := infra_http.NewTickerRepository(tickerInfoUrl, cr, l)
-	br := sql.NewBuysRepository(db, l)
 	sqltr := sql.NewTickersRepository(db, l)
+	br := sql.NewBuysRepository(db, sqltr, l)
 
 	tickers, err := br.FindAllTickers()
 	if err != nil {
