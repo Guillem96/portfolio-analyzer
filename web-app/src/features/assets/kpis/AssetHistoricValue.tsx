@@ -18,16 +18,16 @@ const LoadingSkeleton = () => {
 }
 
 export default function AssetHistoricValue() {
-  const [fetchHistoric, assetsHistoric, assetsHistoricLoading, assets, privateMode, mainCurrency] = useBoundStore(
-    (state) => [
+  const [fetchHistoric, assetsHistoric, assetsHistoricLoading, assets, assetsLoading, privateMode, mainCurrency] =
+    useBoundStore((state) => [
       state.fetchHistoric,
       state.assetsHistoric,
       state.assetsHistoricLoading,
       state.assets,
+      state.assetsLoading,
       state.privateMode,
       state.mainCurrency,
-    ],
-  )
+    ])
 
   const [showAbsolute, setShowAbsolute] = useState(false)
   const [shownAssetHistoric, setShownAssetHistoric] = useState<PortfolioHistoricEntry[]>([])
@@ -103,7 +103,7 @@ export default function AssetHistoricValue() {
       }
     })
     setShownAssetHistoric(rateRelativeToFirstEntry)
-  }, [assetsHistoric, selectedPeriod])
+  }, [assetsHistoric, selectedPeriod, assets])
 
   const chartData = useMemo(() => {
     return shownAssetHistoric.map((entry) => {
@@ -115,7 +115,7 @@ export default function AssetHistoricValue() {
     })
   }, [shownAssetHistoric])
 
-  if (assetsHistoricLoading) {
+  if (assetsHistoricLoading || assetsLoading) {
     return (
       <Card>
         <LoadingSkeleton />
