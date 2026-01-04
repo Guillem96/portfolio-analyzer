@@ -1,32 +1,21 @@
 import { useEffect, useMemo, useState } from "react"
 import { useBoundStore } from "../../store"
-import {
-  Button,
-  Icon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-  TextInput,
-} from "@tremor/react"
+import { Button, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextInput } from "@tremor/react"
 import { RiDeleteBin2Line } from "@remixicon/react"
-import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { BuyWithId } from "@/types"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function BuyTable() {
-  const [buys, loading, tickerToInfo, deleteBuy, privateMode, tickersLoading] = useBoundStore((state) => [
+  const [buys, loading, deleteBuy, privateMode, fetchAssets] = useBoundStore((state) => [
     state.buys,
     state.buysLoading,
-    state.tickerToInfo,
     state.deleteBuy,
     state.privateMode,
-    state.tickersLoading,
+    state.fetchAssets,
   ])
 
   const [currentPage, setCurrentPage] = useState(-1)
@@ -46,7 +35,7 @@ export default function BuyTable() {
   }, [buys])
 
   const handleDeleteBuy = (buyId: string) => () => {
-    deleteBuy(buyId)
+    deleteBuy(buyId).then(() => fetchAssets())
   }
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +46,7 @@ export default function BuyTable() {
     if (search !== "") {
       filteredBuys = filteredBuys.filter((buy) => {
         const tickerText = buy.ticker.toLowerCase()
-        const nameText = (tickerToInfo[buy.ticker]?.name || "").toLowerCase()
+        const nameText = (buy.tickerData?.name || "").toLowerCase()
         return (
           tickerText.includes((search as string).toLowerCase()) || nameText.includes((search as string).toLowerCase())
         )
@@ -77,17 +66,6 @@ export default function BuyTable() {
 
   return (
     <>
-      {loading || tickersLoading ? (
-        <div className="flex flex-row justify-center align-middle">
-          <Icon icon={RiTimeLine} />
-          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-        </div>
-      ) : null}
-
-      {buysToRender.length === 0 && !loading ? (
-        <p className="text-tremor-content dark:text-dark-tremor-content">No buys yet available</p>
-      ) : null}
-
       <div className="flex flex-col gap-4">
         <form onSubmit={handleSearch} className="flex flex-row justify-between gap-2">
           <TextInput placeholder="Search ticker or name" name="search" />
@@ -96,65 +74,88 @@ export default function BuyTable() {
             Reset
           </Button>
         </form>
-        {buysToRender.length > 0 && Object.keys(tickerToInfo).length > 0 ? (
-          <div className="mb-4 min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll">
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableHeaderCell>Ticker</TableHeaderCell>
-                  <TableHeaderCell>Amount</TableHeaderCell>
-                  <TableHeaderCell>Fee</TableHeaderCell>
-                  <TableHeaderCell>Taxes</TableHeaderCell>
-                  <TableHeaderCell>Total Amount</TableHeaderCell>
-                  <TableHeaderCell># Shares</TableHeaderCell>
-                  <TableHeaderCell>Share price</TableHeaderCell>
-                  <TableHeaderCell># Is Reinvestment?</TableHeaderCell>
-                  <TableHeaderCell>Date</TableHeaderCell>
-                  <TableHeaderCell className="text-right">Actions</TableHeaderCell>
-                </TableRow>
-              </TableHead>
+        <div className="mb-4 min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Ticker</TableHeaderCell>
+                <TableHeaderCell>Amount</TableHeaderCell>
+                <TableHeaderCell>Fee</TableHeaderCell>
+                <TableHeaderCell>Taxes</TableHeaderCell>
+                <TableHeaderCell>Total Amount</TableHeaderCell>
+                <TableHeaderCell># Shares</TableHeaderCell>
+                <TableHeaderCell>Share price</TableHeaderCell>
+                <TableHeaderCell># Is Reinvestment?</TableHeaderCell>
+                <TableHeaderCell>Date</TableHeaderCell>
+                <TableHeaderCell className="text-right">Actions</TableHeaderCell>
+              </TableRow>
+            </TableHead>
 
-              <TableBody>
-                {buysToRender.map(
-                  ({ id, ticker, amount, taxes, fee, units, currency, date, isDividendReinvestment, preview }) => (
-                    <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                      <TableCell>
-                        <div className="flex flex-row items-center gap-x-2 align-middle">
-                          <img
-                            className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
-                            src={getWebsiteLogo(tickerToInfo[ticker]?.website ?? null)}
-                            alt={`${ticker} company logo`}
-                          />
-                          <p>{ticker}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
-                      <TableCell>{currencyFormatter(fee, currency, privateMode)}</TableCell>
-                      <TableCell>{currencyFormatter(taxes, currency, privateMode)}</TableCell>
-                      <TableCell>{currencyFormatter(fee + amount + taxes, currency, privateMode)}</TableCell>
-                      <TableCell>{units.toFixed(3)}</TableCell>
-                      <TableCell>{currencyFormatter(amount / units, currency, privateMode)}</TableCell>
-                      <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>
-                      <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                      <TableCell className="flex flex-row justify-end gap-x-4">
-                        <Button
-                          size="xs"
-                          disabled={preview}
-                          color="red"
-                          className="hover:cursor-pointer"
-                          icon={RiDeleteBin2Line}
-                          onClick={handleDeleteBuy(id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
+            <TableBody>
+              {loading
+                ? Array.from({ length: 10 }, (_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 10 }, (_, j) => (
+                        <TableCell key={`loading-j${j}`}>
+                          <Skeleton height={28} />
+                        </TableCell>
+                      ))}
                     </TableRow>
-                  ),
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        ) : null}
+                  ))
+                : buysToRender.map(
+                    ({
+                      id,
+                      ticker,
+                      tickerData,
+                      amount,
+                      taxes,
+                      fee,
+                      units,
+                      currency,
+                      date,
+                      isDividendReinvestment,
+                      preview,
+                    }) => (
+                      <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                        <TableCell>
+                          <div className="flex flex-row items-center gap-x-2 align-middle">
+                            <img
+                              className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+                              src={getWebsiteLogo(tickerData?.website ?? null)}
+                              alt={`${ticker} company logo`}
+                            />
+                            <p>{ticker}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
+                        <TableCell>{currencyFormatter(fee, currency, privateMode)}</TableCell>
+                        <TableCell>{currencyFormatter(taxes, currency, privateMode)}</TableCell>
+                        <TableCell>{currencyFormatter(fee + amount + taxes, currency, privateMode)}</TableCell>
+                        <TableCell>{units.toFixed(3)}</TableCell>
+                        <TableCell>{currencyFormatter(amount / units, currency, privateMode)}</TableCell>
+                        <TableCell>{isDividendReinvestment ? "✅" : "❌"}</TableCell>
+                        <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                        <TableCell className="flex flex-row justify-end gap-x-4">
+                          <Button
+                            size="xs"
+                            disabled={preview}
+                            color="red"
+                            className="hover:cursor-pointer"
+                            icon={RiDeleteBin2Line}
+                            onClick={handleDeleteBuy(id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ),
+                  )}
+              {buysToRender.length === 0 && !loading ? (
+                <p className="text-tremor-content dark:text-dark-tremor-content">No buys yet available</p>
+              ) : null}
+            </TableBody>
+          </Table>
+        </div>
         <PaginationNav
           currentPage={currentPage}
           nPages={nPages}

@@ -2,10 +2,12 @@ import { Card } from "@tremor/react"
 import { useBoundStore } from "@/store"
 import { useMemo } from "react"
 import { currencyFormatter } from "@/services/utils"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 export const InvestmentTotalAmount = () => {
-  const [assets, privateMode, mainCurrency] = useBoundStore((state) => [
+  const [assets, assetsLoading, privateMode, mainCurrency] = useBoundStore((state) => [
     state.assets,
+    state.assetsLoading,
     state.privateMode,
     state.mainCurrency,
   ])
@@ -17,7 +19,7 @@ export const InvestmentTotalAmount = () => {
       </p>
       <div className="mt-2 flex items-baseline space-x-2.5">
         <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-          {currencyFormatter(amount, mainCurrency, privateMode)}
+          {assetsLoading ? <Skeleton height={32} width={64} /> : currencyFormatter(amount, mainCurrency, privateMode)}
         </p>
       </div>
     </Card>

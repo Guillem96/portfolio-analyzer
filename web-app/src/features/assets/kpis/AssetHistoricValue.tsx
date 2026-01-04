@@ -1,11 +1,21 @@
-import { Button, Card, Icon } from "@tremor/react"
+import { Button, Card } from "@tremor/react"
 import { useBoundStore } from "@/store"
 import { useEffect, useMemo, useState } from "react"
-import { RiTimeLine } from "@remixicon/react"
 import { format, isAfter, startOfYear, subDays, subMonths, subYears } from "date-fns"
 import { currencyFormatter } from "@/services/utils"
 import { AreaChart } from "@/components/ui/AreaChart"
 import { PortfolioHistoricEntry } from "@/types"
+import { Skeleton } from "@/components/ui/Skeleton"
+
+const LoadingSkeleton = () => {
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <Skeleton height={40} width={"20%"} />
+      <Skeleton height={26} width={"10%"} />
+      <Skeleton height={250} className="mt-4" />
+    </div>
+  )
+}
 
 export default function AssetHistoricValue() {
   const [fetchHistoric, assetsHistoric, assetsHistoricLoading, assets, privateMode, mainCurrency] = useBoundStore(
@@ -121,6 +131,14 @@ export default function AssetHistoricValue() {
     })
   }, [shownAssetHistoric])
 
+  if (assetsHistoricLoading) {
+    return (
+      <Card>
+        <LoadingSkeleton />
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <div className="flex flex-col items-start gap-4">
@@ -158,13 +176,6 @@ export default function AssetHistoricValue() {
           ))}
         </ul>
       </div>
-
-      {assetsHistoricLoading ? (
-        <div className="flex items-center justify-center">
-          <Icon icon={RiTimeLine} />
-          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-        </div>
-      ) : null}
 
       {assetsHistoric.length === 0 ? (
         <div className="flex items-center justify-center py-8">

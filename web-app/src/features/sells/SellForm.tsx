@@ -5,11 +5,12 @@ import { useBoundStore } from "@/store"
 import { format } from "date-fns"
 
 export default function SellForm() {
-  const [loading, addSell, assets, forceLoadingSells] = useBoundStore((state) => [
-    state.sellsLoading,
+  const [loading, addSell, assets, forceLoadingSells, fetchAssets] = useBoundStore((state) => [
+    state.addSellLoading,
     state.addSell,
     state.assets,
     state.forceLoadingSells,
+    state.fetchAssets,
   ])
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"))
   const [selectedTicker, setSelectedTicker] = useState<string>("")
@@ -88,7 +89,7 @@ export default function SellForm() {
       currency,
       date: selectedDate,
       fees,
-    })
+    }).then(() => fetchAssets())
   }
 
   const handleDateChange = (value: DatePickerValue) => {

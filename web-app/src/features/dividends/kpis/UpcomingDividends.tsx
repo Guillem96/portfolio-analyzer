@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/Skeleton"
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Country } from "@/types.d"
@@ -12,9 +13,20 @@ const TAX_RATE: Record<Country, number> = {
   [Country.UK]: 0,
 }
 
+const LoadingSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-2 overflow-scroll md:grid md:grid-cols-4">
+      {Array.from({ length: 20 }, (_, i) => (
+        <Skeleton height={96} width={250} key={`upcoming-dividends-skeleton-${i}`} />
+      ))}
+    </div>
+  )
+}
+
 export default function UpcomingDividends() {
-  const [assets, mainCurrency, privateMode, selectDividend] = useBoundStore((state) => [
+  const [assets, assetsLoading, mainCurrency, privateMode, selectDividend] = useBoundStore((state) => [
     state.assets,
+    state.assetsLoading,
     state.mainCurrency,
     state.privateMode,
     state.selectDividend,
@@ -45,54 +57,58 @@ export default function UpcomingDividends() {
       <h1 className="mb-4 max-w-2xl text-3xl tracking-tight text-slate-900 dark:text-neutral-300">
         Upcoming Ex Dividends
       </h1>
-      <div className="flex flex-col gap-2 overflow-scroll md:grid md:grid-cols-4">
-        {nextExDividends.map(
-          (
-            { ticker, exDividendDate, dividendPaymentDate, units, nextDividendValue, expectedAmount, country },
-            index,
-          ) => (
-            <Callout
-              key={`exdiv-${ticker}-${index}`}
-              className="next-dividend-card"
-              title={`${exDividendDate.toLocaleDateString("es")} - ${ticker} (${currencyFormatter(nextDividendValue, mainCurrency, privateMode)})`}
-              color={getCardColor(exDividendDate, dividendPaymentDate)}
-            >
-              <div className="flex h-full flex-col justify-end">
-                {dividendPaymentDate ? (
-                  <p className="mb-2">Dividend payment: {dividendPaymentDate.toLocaleDateString("es")}</p>
-                ) : null}
+      {assetsLoading ? (
+        <LoadingSkeleton />
+      ) : (
+        <div className="flex flex-col gap-2 overflow-scroll md:grid md:grid-cols-4">
+          {nextExDividends.map(
+            (
+              { ticker, exDividendDate, dividendPaymentDate, units, nextDividendValue, expectedAmount, country },
+              index,
+            ) => (
+              <Callout
+                key={`exdiv-${ticker}-${index}`}
+                className="next-dividend-card"
+                title={`${exDividendDate.toLocaleDateString("es")} - ${ticker} (${currencyFormatter(nextDividendValue, mainCurrency, privateMode)})`}
+                color={getCardColor(exDividendDate, dividendPaymentDate)}
+              >
+                <div className="flex h-full flex-col justify-end">
+                  {dividendPaymentDate ? (
+                    <p className="mb-2">Dividend payment: {dividendPaymentDate.toLocaleDateString("es")}</p>
+                  ) : null}
 
-                <div className="flex items-end justify-between">
-                  <span>
-                    <p>Approx. amount: </p>
-                    {`${units} shares x ${currencyFormatter(nextDividendValue, mainCurrency, privateMode)} = `}
-                    <b>{currencyFormatter(expectedAmount, mainCurrency, privateMode)}</b>
-                  </span>
-                  <Button
-                    variant="light"
-                    size="sm"
-                    color={getCardColor(exDividendDate, dividendPaymentDate)}
-                    onClick={() =>
-                      selectDividend({
-                        company: ticker,
-                        amount: expectedAmount,
-                        date: format(exDividendDate, "yyyy-MM-dd"),
-                        country,
-                        doubleTaxationOrigin: TAX_RATE[country],
-                        doubleTaxationDestination: 0,
-                        currency: mainCurrency,
-                        isReinvested: false,
-                      })
-                    }
-                  >
-                    Add
-                  </Button>
+                  <div className="flex items-end justify-between">
+                    <span>
+                      <p>Approx. amount: </p>
+                      {`${units} shares x ${currencyFormatter(nextDividendValue, mainCurrency, privateMode)} = `}
+                      <b>{currencyFormatter(expectedAmount, mainCurrency, privateMode)}</b>
+                    </span>
+                    <Button
+                      variant="light"
+                      size="sm"
+                      color={getCardColor(exDividendDate, dividendPaymentDate)}
+                      onClick={() =>
+                        selectDividend({
+                          company: ticker,
+                          amount: expectedAmount,
+                          date: format(exDividendDate, "yyyy-MM-dd"),
+                          country,
+                          doubleTaxationOrigin: TAX_RATE[country],
+                          doubleTaxationDestination: 0,
+                          currency: mainCurrency,
+                          isReinvested: false,
+                        })
+                      }
+                    >
+                      Add
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Callout>
-          ),
-        )}
-      </div>
+              </Callout>
+            ),
+          )}
+        </div>
+      )}
     </Card>
   )
 }

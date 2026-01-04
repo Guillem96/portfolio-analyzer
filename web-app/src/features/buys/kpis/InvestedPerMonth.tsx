@@ -1,8 +1,8 @@
-import { BarChart, Card, Icon, Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
+import { BarChart, Card, Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { useBoundStore } from "@/store"
 import { useMemo } from "react"
-import { RiTimeLine } from "@remixicon/react"
 import { currencyFormatter } from "@/services/utils"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 interface BarChartProps {
@@ -51,18 +51,24 @@ const BarChartBuys = ({ currency }: BarChartProps) => {
     return barData
   }, [buys, currency, loading])
 
-  if (loading)
-    return (
-      <div className="flex flex-row justify-center align-middle">
-        <Icon icon={RiTimeLine} />
-        <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-      </div>
-    )
-
-  if (buys.length === 0)
+  if (!loading && buys.length === 0)
     return (
       <div className="flex flex-row justify-center align-middle">
         <p className="text-tremor-content dark:text-dark-tremor-content">No buys registered</p>
+      </div>
+    )
+
+  if (loading)
+    return (
+      <div className="flex grid h-96 w-full grid-cols-12">
+        {Array.from({ length: 12 }, (_, i) => (
+          <div key={`invested-per-month-loading-${i}`} className="mx-1 flex h-full flex-row items-end gap-1 py-4">
+            <Skeleton width={10} height={"100%"} />
+            <Skeleton width={10} height={"80%"} />
+            <Skeleton width={10} height={"60%"} />
+            <Skeleton width={10} height={"40%"} />
+          </div>
+        ))}
       </div>
     )
 

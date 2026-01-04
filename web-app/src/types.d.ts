@@ -14,6 +14,12 @@ export enum Risk {
   HIGH_RISK = "high",
 }
 
+export interface TickerSimple {
+  ticker: string
+  name: string
+  website: string
+}
+
 export interface PriceRange {
   min: number
   max: number
@@ -87,6 +93,7 @@ export interface Buy {
 
 export interface BuyWithId extends Buy {
   id: string
+  tickerData: TickerSimple
 }
 
 export interface Sell {
@@ -102,6 +109,7 @@ export interface Sell {
 
 export interface SellWithId extends Sell {
   id: string
+  tickerData: TickerSimple
   acquisitionValue: number
 }
 
@@ -119,6 +127,7 @@ export interface Dividend {
 
 export interface DividendWithId extends Dividend {
   id: string
+  tickerData: TickerSimple
 }
 
 export interface Asset {

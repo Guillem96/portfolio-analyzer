@@ -4,20 +4,16 @@ import { BuySlice, createBuySlice } from "./buys"
 import { SettingSlice, createSettingsSlice } from "./settings"
 import { persist } from "zustand/middleware"
 import { createDividendSlice, DividendSlice } from "./dividends"
-import { createTickerSlice, TickerSlice } from "./tickers"
 import { createUserSlice, UserSlice } from "./user"
 import { createSellSlice, SellSlice } from "./sells"
 
-export const useBoundStore = create<
-  AssetSlice & BuySlice & SettingSlice & DividendSlice & TickerSlice & UserSlice & SellSlice
->()(
+export const useBoundStore = create<AssetSlice & BuySlice & SettingSlice & DividendSlice & UserSlice & SellSlice>()(
   persist(
     (...a) => ({
       ...createSettingsSlice(...a),
       ...createBuySlice(...a),
       ...createAssetsSlice(...a),
       ...createDividendSlice(...a),
-      ...createTickerSlice(...a),
       ...createUserSlice(...a),
       ...createSellSlice(...a),
     }),

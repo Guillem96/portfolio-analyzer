@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { format, subDays, getDay, lastDayOfMonth, differenceInDays, subMonths, addMonths } from "date-fns"
-import { Button, Card, Divider, Icon } from "@tremor/react"
+import { Button, Card, Divider } from "@tremor/react"
 import {
   Drawer,
   DrawerBody,
@@ -13,10 +13,10 @@ import {
   DrawerTrigger,
 } from "./ui/Drawer"
 import { currencyFormatter, getWebsiteLogo, showErrorToast } from "@/services/utils"
-import { RiArrowLeftSLine, RiArrowRightSLine, RiInformation2Line, RiTimeLine } from "@remixicon/react"
+import { RiArrowLeftSLine, RiArrowRightSLine, RiInformation2Line } from "@remixicon/react"
 import { fetchEvents } from "@/services/assets"
 import { Event } from "@/types.d"
-
+import { Skeleton } from "./ui/Skeleton"
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 interface Props {
@@ -38,6 +38,28 @@ const COLORS_MAPPING = {
 
 const MAX_EVENTS_TO_SHOW = 3
 
+const LoadingSkeleton = () => {
+  return (
+    <>
+      <div className="hidden h-full grid-cols-7 gap-2 gap-y-4 md:hidden">
+        {Array.from({ length: 30 }, (_, i) => (
+          <div key={i}>
+            <Skeleton height={150} width={150} />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex h-full w-full flex-col gap-y-2 md:flex">
+        {Array.from({ length: 30 }, (_, i) => (
+          <div className="m-auto w-[80%]" key={i}>
+            <Skeleton height={32} />
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function EventCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(false)
@@ -58,12 +80,7 @@ export default function EventCalendar() {
   }, [])
 
   if (loading) {
-    return (
-      <div className="grid min-h-dvh content-center text-center text-xl">
-        <Icon size="xl" icon={RiTimeLine} />
-        <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-      </div>
-    )
+    return <LoadingSkeleton />
   }
 
   return (

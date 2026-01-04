@@ -6,9 +6,10 @@ import { fetchTicker } from "@/services/ticker"
 import { format } from "date-fns"
 
 export default function BuyForm() {
-  const [loading, addBuy, forceLoadingBuys] = useBoundStore((state) => [
-    state.buysLoading,
+  const [loading, addBuy, fetchAssets, forceLoadingBuys] = useBoundStore((state) => [
+    state.addBuyLoading,
     state.addBuy,
+    state.fetchAssets,
     state.forceLoadingBuys,
   ])
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"))
@@ -87,7 +88,7 @@ export default function BuyForm() {
       currency,
       isDividendReinvestment,
       date: selectedDate,
-    })
+    }).then(() => fetchAssets())
   }
 
   const handleDateChange = (value: DatePickerValue) => {

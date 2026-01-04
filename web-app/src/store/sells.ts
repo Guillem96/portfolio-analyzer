@@ -6,6 +6,7 @@ import { AssetSlice } from "./assets"
 interface State {
   sells: SellWithId[]
   sellsLoading: boolean
+  addSellLoading: boolean
   sellsError: string | null
 }
 
@@ -21,8 +22,9 @@ export type SellSlice = State & Actions
 export const createSellSlice: StateCreator<State & AssetSlice, [], [], SellSlice> = (set, get) => ({
   sells: [],
   sellsLoading: false,
+  addSellLoading: false,
   sellsError: null,
-  forceLoadingSells: (isLoading) => set({ sellsLoading: isLoading }),
+  forceLoadingSells: (isLoading) => set({ addSellLoading: isLoading }),
   fetchSells: async () => {
     set({ sellsLoading: true })
     try {
@@ -39,15 +41,25 @@ export const createSellSlice: StateCreator<State & AssetSlice, [], [], SellSlice
 
     // Optimistic update in preview
     set({
-      sells: [...prevInv, { ...inv, id: "tmp", accumulatedFees: 0, preview: true, acquisitionValue: 0 }],
-      sellsLoading: true,
+      sells: [
+        ...prevInv,
+        {
+          ...inv,
+          id: "tmp",
+          tickerData: { ticker: inv.ticker, website: "", name: "" },
+          accumulatedFees: 0,
+          preview: true,
+          acquisitionValue: 0,
+        },
+      ],
+      addSellLoading: true,
     })
     try {
       const newInv = await postSell(inv)
       // Finalize the optimistic update by dropping the preview field
       set({
         sells: [...prevInv, newInv],
-        sellsLoading: false,
+        addSellLoading: false,
         assets: prevAssets.map((asset) => {
           if (asset.ticker.ticker === inv.ticker) {
             return { ...asset, units: asset.units - inv.units }
@@ -58,7 +70,7 @@ export const createSellSlice: StateCreator<State & AssetSlice, [], [], SellSlice
     } catch (error) {
       // Rollback
       console.error(error)
-      set({ sells: [...prevInv], sellsLoading: false, sellsError: getErrorMessage(error) })
+      set({ sells: [...prevInv], addSellLoading: false, sellsError: getErrorMessage(error) })
       showErrorToast("Error posting investment...", () => set({ sellsError: null }))
     }
   },

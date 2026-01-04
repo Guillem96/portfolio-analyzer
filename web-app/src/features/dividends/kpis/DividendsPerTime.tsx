@@ -18,24 +18,29 @@ import { useDividedsStats } from "@/hooks/dividends"
 import { format, parse, subYears } from "date-fns"
 import { MONTHS_NAMES, PASTEL_VIVID_COLORS } from "@/constants"
 import { useState } from "react"
+import { Skeleton } from "@/components/ui/Skeleton"
+
+const LoadingSkeleton = () => {
+  return (
+    <div className="grid h-96 grid-cols-3 flex-row items-end justify-center gap-2">
+      <Skeleton height={"30%"} />
+      <Skeleton height={"50%"} />
+      <Skeleton height={"80%"} />
+    </div>
+  )
+}
 
 const BarChartDividendsPerYear = () => {
   const [dividends, mainCurrency, dividendsLoading, privateMode] = useBoundStore((state) => [
     state.dividendsPreferredCurrency,
     state.mainCurrency,
-    state.dividendLoading,
+    state.dividendsPreferredCurrencyLoading,
     state.privateMode,
   ])
 
   const { dividendsPerYear } = useDividedsStats()
 
-  if (dividendsLoading)
-    return (
-      <div className="flex flex-row justify-center align-middle">
-        <Icon icon={RiTimeLine} />
-        <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-      </div>
-    )
+  if (dividendsLoading) return <LoadingSkeleton />
 
   if (dividends.length === 0)
     return (

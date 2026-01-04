@@ -1,39 +1,60 @@
-import { useBoundStore } from "@/store"
 import { Card, Icon, List, ListItem } from "@tremor/react"
 import { useMemo } from "react"
 import { getWebsiteLogo } from "@/services/utils"
 import { RiTimeLine } from "@remixicon/react"
+import { useTickersInfo } from "@/hooks/tickers"
+import { Skeleton } from "@/components/ui/Skeleton"
+
+const LoadingSkeleton = () => {
+  return (
+    <Card>
+      <div className="flex flex-col gap-y-4">
+        <article>
+          <h1 className="mb-4 max-w-2xl text-3xl tracking-tight text-slate-900 dark:text-neutral-300">Top Gainers</h1>
+
+          <List className="flex flex-col gap-2">
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+          </List>
+        </article>
+
+        <article>
+          <h1 className="mb-4 max-w-2xl text-3xl tracking-tight text-slate-900 dark:text-neutral-300">Top Losers</h1>
+
+          <List className="flex flex-col gap-2">
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={30}></Skeleton>
+          </List>
+        </article>
+      </div>
+    </Card>
+  )
+}
 
 export default function TopMovers() {
-  const [tickerToInfo, assetsLoading] = useBoundStore((state) => [state.tickerToInfo, state.assetsLoading])
-
+  const { tickerToInfo, loading } = useTickersInfo()
   const topGainers = useMemo(() => {
-    return Object.entries(tickerToInfo)
+    return Object.entries(tickerToInfo || {})
       .sort(([, a], [, b]) => b.changeRate - a.changeRate)
       .slice(0, 5)
       .map(([ticker, info]) => ({ ...info, ticker }))
   }, [tickerToInfo])
 
   const topLosers = useMemo(() => {
-    return Object.entries(tickerToInfo)
+    return Object.entries(tickerToInfo || {})
       .sort(([, a], [, b]) => a.changeRate - b.changeRate)
       .slice(0, 5)
       .map(([ticker, info]) => ({ ...info, ticker }))
   }, [tickerToInfo])
 
-  if (topGainers.length === 0 && topLosers.length === 0) {
-    return <div>No data</div>
-  }
-
-  if (assetsLoading) {
-    return (
-      <Card>
-        <div className="flex flex-row justify-center align-middle">
-          <Icon icon={RiTimeLine} />
-          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-        </div>
-      </Card>
-    )
+  if (loading) {
+    return <LoadingSkeleton />
   }
 
   if (topGainers.length === 0 && topLosers.length === 0) {

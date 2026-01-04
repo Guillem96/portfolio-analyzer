@@ -2,12 +2,11 @@ import { StateCreator } from "zustand"
 import type { Buy, BuyWithId } from "@/types.d"
 import { deleteBuyById, fetchBuys as externalFetchBuys, postBuy } from "@services/buys"
 import { getErrorMessage, showErrorToast } from "@services/utils"
-import { fetchTicker } from "@/services/ticker"
-import { TickerSlice } from "./tickers"
 
 interface State {
   buys: BuyWithId[]
   buysLoading: boolean
+  addBuyLoading: boolean
   buysError: string | null
 }
 
@@ -20,11 +19,12 @@ interface Actions {
 
 export type BuySlice = State & Actions
 
-export const createBuySlice: StateCreator<State & TickerSlice, [], [], BuySlice> = (set, get) => ({
+export const createBuySlice: StateCreator<State, [], [], BuySlice> = (set, get) => ({
   buys: [],
   buysLoading: false,
+  addBuyLoading: false,
   buysError: null,
-  forceLoadingBuys: (isLoading) => set({ buysLoading: isLoading }),
+  forceLoadingBuys: (isLoading) => set({ addBuyLoading: isLoading }),
   fetchBuys: async () => {
     set({ buysLoading: true })
     try {
@@ -37,28 +37,33 @@ export const createBuySlice: StateCreator<State & TickerSlice, [], [], BuySlice>
     }
   },
   addBuy: async (inv: Buy) => {
-    const { buys: prevInv, tickerToInfo: prevTickerToInfo } = get()
+    const { buys: prevInv } = get()
 
-    // Optimistic update in preview
-    set({ buys: [...prevInv, { ...inv, id: "tmp", preview: true }], buysLoading: true })
-
-    if (prevTickerToInfo[inv.ticker] === undefined) {
-      const tickerInfo = await fetchTicker(inv.ticker)
-      if (tickerInfo === null) {
-        set({ buys: prevInv, buysLoading: false, buysError: "Ticker not found" })
-        return
-      }
-      set({ tickerToInfo: { ...prevTickerToInfo, [inv.ticker]: tickerInfo } })
-    }
+    set({
+      buys: [
+        ...prevInv,
+        {
+          ...inv,
+          id: "tmp",
+          preview: true,
+          tickerData: {
+            ticker: inv.ticker,
+            website: "",
+            name: "",
+          },
+        },
+      ],
+      addBuyLoading: true,
+    })
 
     try {
       const newInv = await postBuy(inv)
       // Finalize the optimistic update by dropping the preview field
-      set({ buys: [...prevInv, newInv], buysLoading: false })
+      set({ buys: [...prevInv, newInv], addBuyLoading: false })
     } catch (error) {
       // Rollback
       console.error(error)
-      set({ buys: [...prevInv], buysLoading: false, buysError: getErrorMessage(error) })
+      set({ buys: [...prevInv], addBuyLoading: false, buysError: getErrorMessage(error) })
       showErrorToast("Error posting investment...", () => set({ buysError: null }))
     }
   },

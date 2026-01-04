@@ -4,9 +4,10 @@ import { Button, Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, 
 import { RiDeleteBin2Line } from "@remixicon/react"
 import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
-import { currencyFormatter } from "@/services/utils"
+import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
 import { Checkbox } from "@/components/ui/Checkbox"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 const MAX_ITEMS_PER_PAGE = 10
 
@@ -105,55 +106,73 @@ export default function DividendTable() {
               </TableHead>
 
               <TableBody>
-                {dividendsToRender.map(
-                  ({
-                    id,
-                    company,
-                    amount,
-                    doubleTaxationOrigin,
-                    doubleTaxationDestination,
-                    country,
-                    currency,
-                    date,
-                    preview,
-                    isReinvested,
-                  }) => (
-                    <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                      <TableCell>{company}</TableCell>
-                      <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
-                      <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
-                      <TableCell>
-                        {doubleTaxationOrigin} % - {doubleTaxationDestination} %
-                      </TableCell>
-                      <TableCell>
-                        {currencyFormatter(
-                          amount * (1 - doubleTaxationOrigin / 100) * (1 - doubleTaxationDestination / 100),
-                          currency,
-                          privateMode,
-                        )}
-                      </TableCell>
-                      <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                      <TableCell>
-                        <Checkbox
-                          checked={markReinvested[id] === undefined ? isReinvested : markReinvested[id]}
-                          onClick={handleCheckboxChange(id)}
-                        />
-                      </TableCell>
-                      <TableCell className="flex flex-row justify-end gap-x-4">
-                        <Button
-                          size="xs"
-                          disabled={preview}
-                          color="red"
-                          className="hover:cursor-pointer"
-                          icon={RiDeleteBin2Line}
-                          onClick={handleDeleteDividend(id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ),
-                )}
+                {loading
+                  ? Array.from({ length: 10 }, (_, i) => (
+                      <TableRow key={i}>
+                        {Array.from({ length: 8 }, (_, j) => (
+                          <TableCell key={`loading-j${j}`}>
+                            <Skeleton height={28} />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  : dividendsToRender.map(
+                      ({
+                        id,
+                        company,
+                        amount,
+                        tickerData,
+                        doubleTaxationOrigin,
+                        doubleTaxationDestination,
+                        country,
+                        currency,
+                        date,
+                        preview,
+                        isReinvested,
+                      }) => (
+                        <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                          <div className="flex flex-row items-center gap-x-2 align-middle">
+                            <img
+                              className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+                              src={getWebsiteLogo(tickerData?.website ?? null)}
+                              alt={`${company} company logo`}
+                            />
+                            <p>{company}</p>
+                          </div>
+                          <TableCell className="text-center">{COUNTRY_EMOJI[country]}</TableCell>
+                          <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
+                          <TableCell>
+                            {doubleTaxationOrigin} % - {doubleTaxationDestination} %
+                          </TableCell>
+                          <TableCell>
+                            {currencyFormatter(
+                              amount * (1 - doubleTaxationOrigin / 100) * (1 - doubleTaxationDestination / 100),
+                              currency,
+                              privateMode,
+                            )}
+                          </TableCell>
+                          <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                          <TableCell>
+                            <Checkbox
+                              checked={markReinvested[id] === undefined ? isReinvested : markReinvested[id]}
+                              onClick={handleCheckboxChange(id)}
+                            />
+                          </TableCell>
+                          <TableCell className="flex flex-row justify-end gap-x-4">
+                            <Button
+                              size="xs"
+                              disabled={preview}
+                              color="red"
+                              className="hover:cursor-pointer"
+                              icon={RiDeleteBin2Line}
+                              onClick={handleDeleteDividend(id)}
+                            >
+                              Delete
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )}
               </TableBody>
             </Table>
           </div>

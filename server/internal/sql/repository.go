@@ -58,8 +58,19 @@ func (r *BuysRepository) Create(buy domain.Buy, userEmail string) (*domain.BuyWi
 		r.l.Error("Failed to create buy", "error", err.Error())
 		return nil, err
 	}
+
+	nt, err := r.tr.FindByTicker(buy.Ticker, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	return &domain.BuyWithId{
-		Id:  id,
+		Id: id,
+		TickerData: &domain.SimplifiedTicker{
+			Name:    nt.Name,
+			Ticker:  nt.Ticker,
+			Website: nt.Website,
+		},
 		Buy: buy,
 	}, nil
 }
@@ -191,7 +202,7 @@ func (r *BuysRepository) Delete(id string, userEmail string) error {
 
 type DividendsRepository struct {
 	db *gorm.DB
-	tr *TickersRepository
+	tr domain.TickersRepository
 	l  *slog.Logger
 }
 
@@ -215,8 +226,19 @@ func (r *DividendsRepository) Create(dividend domain.Dividend, userEmail string)
 	if err := r.db.Create(&dbDividend).Error; err != nil {
 		return nil, err
 	}
+
+	nt, err := r.tr.FindByTicker(dividend.Company, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	return &domain.DividendWithId{
-		Id:       id,
+		Id: id,
+		TickerData: &domain.SimplifiedTicker{
+			Name:    nt.Name,
+			Website: nt.Website,
+			Ticker:  nt.Ticker,
+		},
 		Dividend: dividend,
 	}, nil
 }
@@ -778,7 +800,7 @@ func (r *ExchangeRatesRepository) FindAllExchangeRates() (map[string]map[string]
 
 type SellsRepository struct {
 	db *gorm.DB
-	tr *TickersRepository
+	tr domain.TickersRepository
 	l  *slog.Logger
 }
 
@@ -802,8 +824,18 @@ func (r *SellsRepository) Create(sell domain.Sell, userEmail string) (*domain.Se
 	if err := r.db.Create(&dbSell).Error; err != nil {
 		return nil, err
 	}
+
+	nt, err := r.tr.FindByTicker(sell.Ticker, nil)
+	if err != nil {
+		return nil, err
+	}
 	return &domain.SellWithId{
-		Id:   id,
+		Id: id,
+		TickerData: &domain.SimplifiedTicker{
+			Ticker:  nt.Ticker,
+			Website: nt.Ticker,
+			Name:    nt.Ticker,
+		},
 		Sell: sell,
 	}, nil
 }

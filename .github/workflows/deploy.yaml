@@ -119,6 +119,9 @@ jobs:
           --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG && \
           aws lambda update-function-code \
           --function-name ${{ steps.terraform-apply.outputs.task_compute_value_lambda_name }} \
+          --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG && \
+          aws lambda update-function-code \
+          --function-name ${{ steps.terraform-apply.outputs.task_cache_tickers_lambda_name }} \
           --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   # build-landing-page:

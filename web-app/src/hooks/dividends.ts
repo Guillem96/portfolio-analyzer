@@ -75,10 +75,11 @@ const useDividendsPerMonth = (
 }
 
 export const useDividedsStats = () => {
-  const [assets, dividends, dividendLoading] = useBoundStore((state) => [
+  const [assets, dividends, dividendLoading, dividendsPreferredCurrencyLoading] = useBoundStore((state) => [
     state.assets,
     state.dividendsPreferredCurrency,
     state.dividendLoading,
+    state.dividendsPreferredCurrencyLoading,
   ])
 
   const totalInvested = useMemo(() => assets.map(({ buyValue }) => buyValue).reduce((a, b) => a + b, 0), [assets])
@@ -128,5 +129,6 @@ export const useDividedsStats = () => {
     leftDividendsYear,
     meanMonthlyAverage: nextYearDividends / 12,
     pendingToReinvest,
+    loading: dividendLoading || dividendsPreferredCurrencyLoading,
   }
 }

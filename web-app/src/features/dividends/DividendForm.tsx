@@ -7,10 +7,11 @@ import { COUNTRY_EMOJI } from "@/constants"
 import { format } from "date-fns"
 
 export default function DividendForm() {
-  const [loading, selectedDividend, addDividend] = useBoundStore((state) => [
-    state.dividendLoading,
+  const [loading, selectedDividend, addDividend, fetchDividendsPreferredCurrency] = useBoundStore((state) => [
+    state.addDividendLoading,
     state.selectedDividend,
     state.addDividend,
+    state.fetchDividendsPreferredCurrency,
   ])
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"))
   const [amountErrorMessage, setAmountErrorMessage] = useState<string | null>()
@@ -58,6 +59,8 @@ export default function DividendForm() {
       doubleTaxationDestination,
       date: selectedDate,
       isReinvested: false,
+    }).then(() => {
+      fetchDividendsPreferredCurrency()
     })
   }
 

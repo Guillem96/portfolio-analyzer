@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/Skeleton"
 import { useBoundStore } from "@/store"
 import { RiLineChartLine, RiTimeLine } from "@remixicon/react"
 import { BarList, Card, Icon } from "@tremor/react"
@@ -46,7 +47,17 @@ export default function AssetBarList({ className = "" }: Props) {
         <span>Source</span>
         <span>% (approx.)</span>
       </p>
-      <BarList valueFormatter={(val: number) => `${(val * 100).toFixed()}%`} data={data} className="mt-2" />
+      {assetsLoading ? (
+        <div className="flex w-full flex-col gap-y-2 pt-1">
+          <Skeleton height={28} width={"90%"} />
+          <Skeleton height={28} width={"80%"} />
+          <Skeleton height={28} width={"70%"} />
+          <Skeleton height={28} width={"60%"} />
+          <Skeleton height={28} width={"50%"} />
+        </div>
+      ) : (
+        <BarList valueFormatter={(val: number) => `${(val * 100).toFixed()}%`} data={data} className="mt-2" />
+      )}
     </Card>
   )
 }

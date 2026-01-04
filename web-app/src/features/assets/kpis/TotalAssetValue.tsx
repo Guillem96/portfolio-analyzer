@@ -1,11 +1,13 @@
+import { Skeleton } from "@/components/ui/Skeleton"
 import { currencyFormatter } from "@/services/utils"
 import { useBoundStore } from "@/store"
 import { Card } from "@tremor/react"
 import { useMemo, useState } from "react"
 
 export default function TotalAssetValue() {
-  const [assets, privateMode, mainCurrency] = useBoundStore((state) => [
+  const [assets, assetsLoading, privateMode, mainCurrency] = useBoundStore((state) => [
     state.assets,
+    state.assetsLoading,
     state.privateMode,
     state.mainCurrency,
   ])
@@ -34,11 +36,17 @@ export default function TotalAssetValue() {
               : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
           } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
-          {showAbsolute ? currencyFormatter(absolute, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
+          {assetsLoading ? <Skeleton height={16} width={32} /> : null}
+          {showAbsolute && !assetsLoading ? currencyFormatter(absolute, mainCurrency, privateMode) : null}
+          {!showAbsolute && !assetsLoading ? `${rate.toFixed(2)} %` : null}
         </span>
       </div>
       <p className="text-tremor-metric font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-        {currencyFormatter(assetAmount, mainCurrency, privateMode)}
+        {assetsLoading ? (
+          <Skeleton height={32} width={64} />
+        ) : (
+          currencyFormatter(assetAmount, mainCurrency, privateMode)
+        )}
       </p>
     </Card>
   )

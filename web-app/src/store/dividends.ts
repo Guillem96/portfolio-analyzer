@@ -9,12 +9,15 @@ import {
 } from "@services/dividends"
 import { getErrorMessage, showErrorToast } from "@services/utils"
 import { SettingSlice } from "./settings"
+import { PREVIEW_EXANGE_RATES } from "@/constants"
 
 interface State {
   dividends: DividendWithId[]
   dividendsPreferredCurrency: DividendWithId[]
   selectedDividend: Dividend | null
   dividendLoading: boolean
+  addDividendLoading: boolean
+  dividendsPreferredCurrencyLoading: boolean
   dividendError: string | null
 }
 
@@ -34,6 +37,8 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
   dividendsPreferredCurrency: [],
   selectedDividend: null,
   dividendLoading: false,
+  addDividendLoading: false,
+  dividendsPreferredCurrencyLoading: false,
   dividendError: null,
   fetchDividends: async () => {
     set({ dividendLoading: true })
@@ -47,41 +52,71 @@ export const createDividendSlice: StateCreator<State & SettingSlice, [], [], Div
     }
   },
   fetchDividendsPreferredCurrency: async () => {
-    set({ dividendLoading: true })
+    set({ dividendsPreferredCurrencyLoading: true })
     try {
       const dividendsPreferredCurrency = await fetchDividendsPreferredCurrency()
-      set({ dividendsPreferredCurrency, dividendLoading: false })
+      set({ dividendsPreferredCurrency, dividendsPreferredCurrencyLoading: false })
     } catch (error) {
       console.error(error)
       showErrorToast("Error fetching the dividends...", () => set({ dividendError: null }))
-      set({ dividendError: getErrorMessage(error), dividendLoading: false })
+      set({ dividendError: getErrorMessage(error), dividendsPreferredCurrencyLoading: false })
     }
   },
   addDividend: async (inv: Dividend) => {
-    const { dividends: prevDividends } = get()
+    const { dividends: prevDividends, dividendsPreferredCurrency: prevDividendsPreferredCurrency, mainCurrency } = get()
 
     // Optimistic update in preview
-    set({ dividends: [...prevDividends, { ...inv, id: "tmp", preview: true }], dividendLoading: true })
+    set({
+      dividends: [
+        ...prevDividends,
+        { ...inv, id: "tmp", preview: true, tickerData: { ticker: inv.company, website: "", name: "" } },
+      ],
+      dividendsPreferredCurrency: [
+        ...prevDividendsPreferredCurrency,
+        {
+          ...inv,
+          id: "tmp",
+          amount: inv.amount * PREVIEW_EXANGE_RATES[inv.currency][mainCurrency],
+          currency: mainCurrency,
+          preview: true,
+          tickerData: { ticker: inv.company, website: "", name: "" },
+        },
+      ],
+      addDividendLoading: true,
+    })
     try {
       const newDividend = await postDividend(inv)
       // Finalize the optimistic update by dropping the preview field
-      set({ dividends: [...prevDividends, newDividend], dividendLoading: false })
+      set({ dividends: [...prevDividends, newDividend], addDividendLoading: false })
     } catch (error) {
       // Rollback
       console.error(error)
-      set({ dividends: [...prevDividends], dividendLoading: false, dividendError: getErrorMessage(error) })
+      set({
+        dividends: [...prevDividends],
+        dividendsPreferredCurrency: [...prevDividendsPreferredCurrency],
+        addDividendLoading: false,
+        dividendError: getErrorMessage(error),
+      })
       showErrorToast("Error posting dividend...", () => set({ dividendError: null }))
     }
   },
   deleteDividend: async (invId: string) => {
-    const { dividends: prevDividends } = get()
-    set({ dividends: prevDividends.filter(({ id }) => id !== invId) })
+    const { dividends: prevDividends, dividendsPreferredCurrency: prevDividendsPreferredCurrency } = get()
+    set({
+      dividends: prevDividends.filter(({ id }) => id !== invId),
+      dividendsPreferredCurrency: prevDividendsPreferredCurrency.filter(({ id }) => id !== invId),
+    })
     try {
       await deleteDividendById(invId)
     } catch (error) {
       // Rollback
       console.error(error)
-      set({ dividends: [...prevDividends], dividendLoading: false, dividendError: getErrorMessage(error) })
+      set({
+        dividends: [...prevDividends],
+        dividendsPreferredCurrency: [...prevDividendsPreferredCurrency],
+        dividendLoading: false,
+        dividendError: getErrorMessage(error),
+      })
       showErrorToast("Error deleting dividend...", () => set({ dividendError: null }))
     }
   },

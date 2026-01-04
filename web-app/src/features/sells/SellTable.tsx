@@ -1,32 +1,21 @@
 import { useEffect, useMemo, useState } from "react"
 import { useBoundStore } from "../../store"
-import {
-  Button,
-  Icon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-  TextInput,
-} from "@tremor/react"
+import { Button, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextInput } from "@tremor/react"
 import { RiDeleteBin2Line } from "@remixicon/react"
-import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
 import { SellWithId } from "@/types"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 const MAX_ITEMS_PER_PAGE = 10
 
 export default function SellTable() {
-  const [sells, loading, tickerToInfo, deleteSell, privateMode, tickersLoading] = useBoundStore((state) => [
+  const [sells, loading, deleteSell, privateMode, fetchAssets] = useBoundStore((state) => [
     state.sells,
     state.sellsLoading,
-    state.tickerToInfo,
     state.deleteSell,
     state.privateMode,
-    state.tickersLoading,
+    state.fetchAssets,
   ])
 
   const [currentPage, setCurrentPage] = useState(-1)
@@ -46,7 +35,7 @@ export default function SellTable() {
   }, [sells])
 
   const handleDeleteSell = (sellId: string) => () => {
-    deleteSell(sellId)
+    deleteSell(sellId).then(() => fetchAssets())
   }
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +47,7 @@ export default function SellTable() {
       filteredSells = filteredSells.filter(
         (sell) =>
           sell.ticker.toLowerCase().includes((search as string).toLowerCase()) ||
-          tickerToInfo[sell.ticker].name.toLowerCase().includes((search as string).toLowerCase()),
+          sell.tickerData?.name.toLowerCase().includes((search as string).toLowerCase()),
       )
     }
     setFilteredSells(filteredSells)
@@ -75,13 +64,6 @@ export default function SellTable() {
 
   return (
     <>
-      {loading || tickersLoading ? (
-        <div className="flex flex-row justify-center align-middle">
-          <Icon icon={RiTimeLine} />
-          <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-        </div>
-      ) : null}
-
       {sellsToRender.length === 0 && !loading ? (
         <p className="text-tremor-content dark:text-dark-tremor-content">No sells yet available</p>
       ) : null}
@@ -94,7 +76,7 @@ export default function SellTable() {
             Reset
           </Button>
         </form>
-        {sellsToRender.length > 0 && Object.keys(tickerToInfo).length > 0 ? (
+        {sellsToRender.length > 0 ? (
           <div className="mb-4 min-h-[30em] lg:max-h-[30em] lg:overflow-y-scroll">
             <Table>
               <TableHead>
@@ -112,54 +94,76 @@ export default function SellTable() {
               </TableHead>
 
               <TableBody>
-                {sellsToRender.map(
-                  ({ id, ticker, amount, acquisitionValue, fees, accumulatedFees, units, currency, date, preview }) => {
-                    const benefit = amount - acquisitionValue * units - fees
-                    return (
-                      <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
-                        <TableCell>
-                          <div className="flex flex-row items-center gap-x-2 align-middle">
-                            <img
-                              className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
-                              src={getWebsiteLogo(tickerToInfo[ticker]?.website)}
-                              alt={`${ticker} company logo`}
-                            />
-                            <p>{ticker}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>{units.toFixed(3)}</TableCell>
-                        <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
-                        <TableCell>{currencyFormatter(acquisitionValue, currency, privateMode)}</TableCell>
-                        <TableCell>{currencyFormatter(accumulatedFees, currency, privateMode)}</TableCell>
-                        <TableCell>{currencyFormatter(fees, currency, privateMode)}</TableCell>
-                        <TableCell>
-                          <span
-                            className={` ${
-                              benefit > 0
-                                ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
-                                : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
-                            } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
-                          >
-                            {currencyFormatter(benefit, currency, privateMode)}
-                          </span>
-                        </TableCell>
-                        <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
-                        <TableCell className="flex flex-row justify-end gap-x-4">
-                          <Button
-                            size="xs"
-                            disabled={preview}
-                            color="red"
-                            className="hover:cursor-pointer"
-                            icon={RiDeleteBin2Line}
-                            onClick={handleDeleteSell(id)}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
+                {loading
+                  ? Array.from({ length: 10 }, (_, i) => (
+                      <TableRow key={i}>
+                        {Array.from({ length: 9 }, (_, j) => (
+                          <TableCell key={`loading-j${j}`}>
+                            <Skeleton height={28} />
+                          </TableCell>
+                        ))}
                       </TableRow>
-                    )
-                  },
-                )}
+                    ))
+                  : sellsToRender.map(
+                      ({
+                        id,
+                        ticker,
+                        tickerData,
+                        amount,
+                        acquisitionValue,
+                        fees,
+                        accumulatedFees,
+                        units,
+                        currency,
+                        date,
+                        preview,
+                      }) => {
+                        const benefit = amount - acquisitionValue * units - fees
+                        return (
+                          <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
+                            <TableCell>
+                              <div className="flex flex-row items-center gap-x-2 align-middle">
+                                <img
+                                  className="d-block h-8 w-8 rounded-full bg-transparent bg-white"
+                                  src={getWebsiteLogo(tickerData?.website)}
+                                  alt={`${ticker} company logo`}
+                                />
+                                <p>{ticker}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>{units.toFixed(3)}</TableCell>
+                            <TableCell>{currencyFormatter(amount, currency, privateMode)}</TableCell>
+                            <TableCell>{currencyFormatter(acquisitionValue, currency, privateMode)}</TableCell>
+                            <TableCell>{currencyFormatter(accumulatedFees, currency, privateMode)}</TableCell>
+                            <TableCell>{currencyFormatter(fees, currency, privateMode)}</TableCell>
+                            <TableCell>
+                              <span
+                                className={` ${
+                                  benefit > 0
+                                    ? "bg-emerald-100 text-emerald-800 ring-emerald-600/10 dark:bg-emerald-400/10 dark:text-emerald-500 dark:ring-emerald-400/20"
+                                    : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
+                                } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
+                              >
+                                {currencyFormatter(benefit, currency, privateMode)}
+                              </span>
+                            </TableCell>
+                            <TableCell>{new Date(date).toLocaleDateString("es")}</TableCell>
+                            <TableCell className="flex flex-row justify-end gap-x-4">
+                              <Button
+                                size="xs"
+                                disabled={preview}
+                                color="red"
+                                className="hover:cursor-pointer"
+                                icon={RiDeleteBin2Line}
+                                onClick={handleDeleteSell(id)}
+                              >
+                                Delete
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      },
+                    )}
               </TableBody>
             </Table>
           </div>

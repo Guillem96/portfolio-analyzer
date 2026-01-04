@@ -4,6 +4,7 @@ import { Asset, CurrencyType } from "@/types.d"
 import { DonutChart, List, ListItem } from "@tremor/react"
 import { useMemo } from "react"
 import { PASTEL_VIVID_COLORS } from "@/constants"
+import { Skeleton } from "./ui/Skeleton"
 
 interface Props {
   by: keyof Asset
@@ -14,8 +15,9 @@ const currFmt = (currency: CurrencyType, privateMode: boolean) => (num: number) 
   currencyFormatter(num, currency, privateMode)
 
 export default function AssetDonut({ by, colorMapping = null }: Props) {
-  const [assets, privateMode, mainCurrency] = useBoundStore((state) => [
+  const [assets, assetsLoading, privateMode, mainCurrency] = useBoundStore((state) => [
     state.assets,
+    state.assetsLoading,
     state.privateMode,
     state.mainCurrency,
   ])
@@ -44,6 +46,17 @@ export default function AssetDonut({ by, colorMapping = null }: Props) {
       .sort((a, b) => b.amount - a.amount)
   }, [assets, by, colorMapping, uniqueBys])
 
+  if (assetsLoading)
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-12 pt-4">
+        <Skeleton isCircle width={200} height={200} />
+        <div className="flex w-full flex-col gap-2">
+          {Array.from({ length: 5 }, (_, i) => (
+            <Skeleton height={32} key={`donut-assets-loading-${i}`} />
+          ))}
+        </div>
+      </div>
+    )
   return (
     <>
       <DonutChart

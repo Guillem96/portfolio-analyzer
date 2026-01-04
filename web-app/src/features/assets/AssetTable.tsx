@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import {
   Button,
-  Icon,
   Select,
   SelectItem,
   SparkAreaChart,
@@ -13,7 +12,6 @@ import {
   TableRow,
   TextInput,
 } from "@tremor/react"
-import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
 import { useBoundStore } from "@/store"
 import { Asset } from "@/types.d"
@@ -22,6 +20,7 @@ import { COUNTRY_EMOJI } from "@/constants"
 import { addMonths, format, startOfMonth, startOfToday } from "date-fns"
 import { Switch } from "@/components/ui/Switch"
 import { Label } from "@/components/ui/Label"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 interface RowProps {
   asset: Asset
@@ -280,53 +279,56 @@ export default function AssetTable() {
       <>
         <div className="mb-4 flex flex-col gap-4">
           <Filters availableSectors={availableSectors} onFilter={handleFilter} />
-          {assetsToRender.length === 0 && loading ? (
-            <div className="flex flex-row justify-center align-middle">
-              <Icon icon={RiTimeLine} />
-              <p className="text-tremor-content dark:text-dark-tremor-content">Loading...</p>
-            </div>
-          ) : null}
-
           {assetsToRender.length === 0 && !loading ? (
             <p className="py-4 text-center text-tremor-content dark:text-dark-tremor-content">No assets available</p>
           ) : null}
-          {assetsToRender.length > 0 ? (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableHeaderCell onClick={onClickSortHandler("name")}>Name</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("gain")}>Gain</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("sector")}>Sector</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("country")}>Country</TableHeaderCell>
-                  <TableHeaderCell>Price Evolution</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("num-shares")}>Unit Value</TableHeaderCell>
-                  <TableHeaderCell>Avg. Price</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("ywrb")}>Yield w.r.t buy</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("ywrv")}>Yield w.r.t value</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("weight")}>Weight</TableHeaderCell>
-                  <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
-                </TableRow>
-              </TableHead>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell onClick={onClickSortHandler("name")}>Name</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("gain")}>Gain</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("sector")}>Sector</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("country")}>Country</TableHeaderCell>
+                <TableHeaderCell>Price Evolution</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("num-shares")}>Unit Value</TableHeaderCell>
+                <TableHeaderCell>Avg. Price</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("ywrb")}>Yield w.r.t buy</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("ywrv")}>Yield w.r.t value</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("weight")}>Weight</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
+              </TableRow>
+            </TableHead>
 
-              <TableBody>
-                {assetsToRender.map((asset) => (
-                  <AssetTableRow
-                    key={`${asset.ticker.ticker}-${asset.currency}`}
-                    asset={asset}
-                    totalAssetValue={totalAssetValue}
-                    adjustDividends={adjustDividends}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          ) : null}
+            <TableBody>
+              {loading
+                ? Array.from({ length: 10 }, (_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 13 }, (_, j) => (
+                        <TableCell key={`loading-j${j}`}>
+                          <Skeleton height={28} />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                : assetsToRender.map((asset) => (
+                    <AssetTableRow
+                      key={`${asset.ticker.ticker}-${asset.currency}`}
+                      asset={asset}
+                      totalAssetValue={totalAssetValue}
+                      adjustDividends={adjustDividends}
+                    />
+                  ))}
+            </TableBody>
+          </Table>
+
           <div className="flex items-center justify-center gap-2">
             <Switch id="adjust-dividends" checked={adjustDividends} onCheckedChange={setAdjustDividends} />
             <Label htmlFor="adjust-dividends">Show yields adjusted to dividends</Label>
           </div>
         </div>
+
         <PaginationNav
           currentPage={currentPage}
           nPages={nPages}

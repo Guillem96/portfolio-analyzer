@@ -1,4 +1,22 @@
-import { Risk, Country } from "@/types.d"
+import { Risk, Country, CurrencyType } from "@/types.d"
+
+export const PREVIEW_EXANGE_RATES: Record<CurrencyType, Record<CurrencyType, number>> = {
+  "€": {
+    $: 1.1,
+    "£": 0.9,
+    "€": 1,
+  },
+  $: {
+    "€": 0.9,
+    "£": 0.8,
+    $: 1,
+  },
+  "£": {
+    "€": 1.2,
+    $: 1.3,
+    "£": 1,
+  },
+}
 
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 export const MONTHS_NAMES = [
