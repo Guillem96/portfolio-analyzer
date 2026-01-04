@@ -61,7 +61,7 @@ locals {
     {
       name        = "cache-tickers-task"
       entry_point = "/cache-tickers-task"
-      rate        = "rate(24 hours)"
+      rate        = "rate(6 hours)"
     },
   ]
 }
@@ -161,7 +161,7 @@ resource "aws_lambda_function" "handler" {
   image_uri     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-2.amazonaws.com/portfolio-analyzer:latest"
   role          = aws_iam_role.lambda.arn
   memory_size   = 1024
-  timeout       = 60
+  timeout       = 120
 
   depends_on = [
     aws_iam_role_policy_attachment.logs,

@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/judedaryl/go-arrayutils"
+	"gorm.io/gorm/clause"
 )
 
 // This script computes dailty the value of user's portfolios and stores them in the database.
@@ -81,7 +82,9 @@ func task() error {
 		})
 	}
 
-	if err := db.Create(historics).Error; err != nil {
+	if err := db.Clauses(clause.OnConflict{
+		UpdateAll: true,
+	}).Create(historics).Error; err != nil {
 		l.Error("Failed to create portfolio historic", "error", err.Error())
 		return err
 	}

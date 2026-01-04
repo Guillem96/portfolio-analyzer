@@ -29,7 +29,7 @@ func (r *TickersRepository) Create(ticker domain.Ticker) error {
 		return err
 	}
 
-	dateFmt := "2006-01-02"
+	dateFmt := "2006-01-02 15:04"
 	dateKey, _ := time.Parse(dateFmt, time.Now().Format(dateFmt))
 	dbTicker := Ticker{
 		Ticker:               ticker.Ticker,
