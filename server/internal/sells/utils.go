@@ -1,8 +1,6 @@
 package sells
 
 import (
-	"fmt"
-
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
 	"github.com/judedaryl/go-arrayutils"
 )
@@ -45,7 +43,7 @@ func ComputeFIFORuleAvgPurchasePrice(buys domain.Buys, sells domain.Sells, reinv
 	packetsRemaining := arrayutils.Map(buys, func(b domain.BuyWithId) float32 {
 		return b.Buy.Units
 	})
-	fmt.Println("packetsRemaining", packetsRemaining)
+
 	// In this loop we clear the already sold packets. For example, if in the past I sold 150 units
 	// the state after this loop will be
 	// packetsRemaining := [0, 50, 100, 100]
@@ -62,14 +60,12 @@ func ComputeFIFORuleAvgPurchasePrice(buys domain.Buys, sells domain.Sells, reinv
 			break
 		}
 	}
-	fmt.Println("packetsRemaining", packetsRemaining)
 	totalRemainingUnits := arrayutils.Reduce(packetsRemaining[i:], 0, func(agg float32, p float32) float32 {
 		return agg + p
 	})
-	fmt.Println("totalRemainingUnits", totalRemainingUnits)
+
 	// Here starting from the startingPackageIndex (i) we obtain the weighted cost of the purchases
 	weightedSum := 0.0
-	fmt.Println("i", i)
 	for j := i; j < len(buys); j++ {
 		currentBuy := buys[j]
 		currentBuyRemainingUnits := packetsRemaining[j]

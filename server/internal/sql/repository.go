@@ -11,6 +11,7 @@ import (
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/sells"
+	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
 	"github.com/google/uuid"
 	"github.com/judedaryl/go-arrayutils"
 	"gorm.io/gorm"
@@ -19,6 +20,7 @@ import (
 
 type BuysRepository struct {
 	db *gorm.DB
+	tr domain.TickersRepository
 	l  *slog.Logger
 }
 
@@ -34,8 +36,8 @@ type interimBuyResult struct {
 	Date           time.Time `gorm:"column:DATE"`
 }
 
-func NewBuysRepository(db *gorm.DB, logger *slog.Logger) *BuysRepository {
-	return &BuysRepository{db: db, l: logger}
+func NewBuysRepository(db *gorm.DB, tr domain.TickersRepository, logger *slog.Logger) *BuysRepository {
+	return &BuysRepository{db: db, tr: tr, l: logger}
 }
 
 func (r *BuysRepository) Create(buy domain.Buy, userEmail string) (*domain.BuyWithId, error) {
@@ -68,10 +70,24 @@ func (r *BuysRepository) FindAll(userEmail string) (domain.Buys, error) {
 		return nil, err
 	}
 
+	uts := utils.ArrayUnique(arrayutils.Map(dbBuys, func(b Buy) string {
+		return b.Ticker
+	}))
+
+	tickersInfo, err := r.tr.FindMultipleTickers(uts, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	buys := make([]domain.BuyWithId, len(dbBuys))
 	for i, dbBuy := range dbBuys {
 		buys[i] = domain.BuyWithId{
 			Id: dbBuy.ID,
+			TickerData: &domain.SimplifiedTicker{
+				Ticker:  tickersInfo[dbBuy.Ticker].Ticker,
+				Name:    tickersInfo[dbBuy.Ticker].Name,
+				Website: tickersInfo[dbBuy.Ticker].Website,
+			},
 			Buy: domain.Buy{
 				Units:          dbBuy.Units,
 				Ticker:         dbBuy.Ticker,
@@ -175,11 +191,12 @@ func (r *BuysRepository) Delete(id string, userEmail string) error {
 
 type DividendsRepository struct {
 	db *gorm.DB
+	tr *TickersRepository
 	l  *slog.Logger
 }
 
-func NewDividendsRepository(db *gorm.DB, logger *slog.Logger) *DividendsRepository {
-	return &DividendsRepository{db: db, l: logger}
+func NewDividendsRepository(db *gorm.DB, tr *TickersRepository, logger *slog.Logger) *DividendsRepository {
+	return &DividendsRepository{db: db, tr: tr, l: logger}
 }
 
 func (r *DividendsRepository) Create(dividend domain.Dividend, userEmail string) (*domain.DividendWithId, error) {
@@ -210,10 +227,24 @@ func (r *DividendsRepository) FindAll(userEmail string) (domain.Dividends, error
 		return nil, err
 	}
 
+	uts := utils.ArrayUnique(arrayutils.Map(dbDividends, func(d Dividend) string {
+		return d.Company
+	}))
+
+	tickersInfo, err := r.tr.FindMultipleTickers(uts, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	dividends := make([]domain.DividendWithId, len(dbDividends))
 	for i, dbDividend := range dbDividends {
 		dividends[i] = domain.DividendWithId{
 			Id: dbDividend.ID,
+			TickerData: &domain.SimplifiedTicker{
+				Ticker:  tickersInfo[dbDividend.Company].Ticker,
+				Name:    tickersInfo[dbDividend.Company].Name,
+				Website: tickersInfo[dbDividend.Company].Website,
+			},
 			Dividend: domain.Dividend{
 				Company:                   dbDividend.Company,
 				Amount:                    dbDividend.Amount,
@@ -258,10 +289,23 @@ func (r *DividendsRepository) FindAllPreferredCurrency(userEmail string) (domain
 		return nil, err
 	}
 
+	uts := utils.ArrayUnique(arrayutils.Map(dbDividends, func(d Dividend) string {
+		return d.Company
+	}))
+
+	tickersInfo, err := r.tr.FindMultipleTickers(uts, nil)
+	if err != nil {
+		return nil, err
+	}
 	dividends := make([]domain.DividendWithId, len(dbDividends))
 	for i, dbDividend := range dbDividends {
 		dividends[i] = domain.DividendWithId{
 			Id: dbDividend.ID,
+			TickerData: &domain.SimplifiedTicker{
+				Ticker:  tickersInfo[dbDividend.Company].Ticker,
+				Name:    tickersInfo[dbDividend.Company].Name,
+				Website: tickersInfo[dbDividend.Company].Website,
+			},
 			Dividend: domain.Dividend{
 				Company:                   dbDividend.Company,
 				Amount:                    dbDividend.Amount,
@@ -549,11 +593,6 @@ func (r *AssetsRepository) FindAll(userEmail string) (domain.Assets, error) {
 
 		unitsWithoutReinvest := ownedUnits - air.ReinvestUnits
 
-		if air.Ticker == "KHC" {
-			fmt.Println("buyValue", air.BuyValue)
-			fmt.Println("averageStockPrice", averageStockPrice)
-			fmt.Println("averageStockPriceWithoutReinvest", averageStockPriceWithoutReinvest)
-		}
 		var yieldOnCost float32
 		if averageStockPrice > 0 {
 			yieldOnCost = tickersInfo[air.Ticker].YearlyDividendValue / averageStockPrice
@@ -739,11 +778,12 @@ func (r *ExchangeRatesRepository) FindAllExchangeRates() (map[string]map[string]
 
 type SellsRepository struct {
 	db *gorm.DB
+	tr *TickersRepository
 	l  *slog.Logger
 }
 
-func NewSellsRepository(db *gorm.DB, logger *slog.Logger) *SellsRepository {
-	return &SellsRepository{db: db, l: logger}
+func NewSellsRepository(db *gorm.DB, tr *TickersRepository, logger *slog.Logger) *SellsRepository {
+	return &SellsRepository{db: db, tr: tr, l: logger}
 }
 
 func (r *SellsRepository) Create(sell domain.Sell, userEmail string) (*domain.SellWithId, error) {
@@ -774,9 +814,23 @@ func (r *SellsRepository) FindAll(userEmail string) (domain.Sells, error) {
 		return nil, err
 	}
 
+	uts := utils.ArrayUnique(arrayutils.Map(dbSells, func(s Sell) string {
+		return s.Ticker
+	}))
+
+	tickersInfo, err := r.tr.FindMultipleTickers(uts, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	sells := make([]domain.SellWithId, len(dbSells))
 	for i, dbSell := range dbSells {
 		sells[i] = domain.SellWithId{
+			TickerData: &domain.SimplifiedTicker{
+				Ticker:  tickersInfo[dbSell.Ticker].Ticker,
+				Name:    tickersInfo[dbSell.Ticker].Name,
+				Website: tickersInfo[dbSell.Ticker].Website,
+			},
 			Id: dbSell.ID,
 			Sell: domain.Sell{
 				Units:            dbSell.Units,
@@ -874,6 +928,7 @@ func (r *TickersRepository) Create(ticker domain.Ticker) error {
 		DateKey:              dateKey,
 		Name:                 ticker.Name,
 		ChangeRate:           ticker.ChangeRate,
+		Price:                ticker.Price,
 		YearlyDividendValue:  ticker.YearlyDividendValue,
 		YearlyDividendYield:  ticker.YearlyDividendYield,
 		NextDividendValue:    ticker.NextDividendValue,
@@ -928,13 +983,31 @@ _TICKERS_W_RN AS (
 		TICKERS.*,
 		ROW_NUMBER() OVER (PARTITION BY TICKER ORDER BY DATE_KEY DESC) AS RN
 	FROM TICKERS
-),
+)
 SELECT
-	_TICKERS_W_RN.*,
-	? AS CURRENCY,
-	_TICKERS_W_RN.PRICE * _RATES.RATE AS PRICE,
-	_TICKERS_W_RN.NEXT_DIVIDEND_VALUE * _RATES.RATE AS NEXT_DIVIDEND_VALUE,
-	_TICKERS_W_RN.YEARLY_DIVIDEND_VALUE * _RATES.RATE AS YEARLY_DIVIDEND_VALUE
+	_TICKERS_W_RN.TICKER AS ticker,
+	_TICKERS_W_RN.DATE_KEY AS date_key,
+	_TICKERS_W_RN.PRICE * _RATES.RATE AS price,
+	_TICKERS_W_RN.NAME AS name,
+	_TICKERS_W_RN.CHANGE_RATE AS change_rate,
+	_TICKERS_W_RN.YEARLY_DIVIDEND_YIELD AS yearly_dividend_yield,
+	_TICKERS_W_RN.NEXT_DIVIDEND_YIELD AS next_dividend_yield,
+	_TICKERS_W_RN.NEXT_DIVIDEND_VALUE * _RATES.RATE AS next_dividend_value,
+	_TICKERS_W_RN.YEARLY_DIVIDEND_VALUE * _RATES.RATE AS yearly_dividend_value,
+	_TICKERS_W_RN.WEBSITE AS website,
+	? AS currency,
+	_TICKERS_W_RN.EX_DIVIDEND_DATE AS ex_dividend_date,
+	_TICKERS_W_RN.DIVIDEND_PAYMENT_DATE AS dividend_payment_date,
+	_TICKERS_W_RN.EARNING_DATES AS earning_dates,
+	_TICKERS_W_RN.SECTOR AS sector,
+	_TICKERS_W_RN.COUNTRY AS country,
+	_TICKERS_W_RN.INDUSTRY AS industry,
+	_TICKERS_W_RN.IS_ETF AS is_ETF,
+	_TICKERS_W_RN.MONTHLY_PRICE_RANGE_MIN * _RATES.RATE AS monthly_price_range_min,
+	_TICKERS_W_RN.MONTHLY_PRICE_RANGE_MAX * _RATES.RATE AS monthly_price_range_max,
+	_TICKERS_W_RN.YEARLY_PRICE_RANGE_MIN * _RATES.RATE AS yearly_price_range_min,
+	_TICKERS_W_RN.YEARLY_PRICE_RANGE_MAX * _RATES.RATE AS yearly_price_range_max,
+	_TICKERS_W_RN.HISTORICAL_DATA AS historical_data
 FROM _TICKERS_W_RN
 LEFT JOIN _RATES ON _RATES.SOURCE_CURRENCY = _TICKERS_W_RN.CURRENCY
 WHERE _TICKERS_W_RN.TICKER IN ? AND _TICKERS_W_RN.RN = 1;
@@ -971,6 +1044,14 @@ func (r *TickersRepository) FindMultipleTickers(tickers []string, preferredCurre
 	return tickersMap, nil
 }
 
+func (r *TickersRepository) Exists(ticker string) (bool, error) {
+	var count int64
+	if err := r.db.Model(&Ticker{}).Where("ticker = ?", ticker).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 func dbTickerToDomain(dbTicker Ticker) (domain.Ticker, error) {
 	var historicalData []domain.HistoricalEntry
 	if err := json.NewDecoder(strings.NewReader(dbTicker.HistoricalData)).Decode(&historicalData); err != nil {
@@ -997,6 +1078,7 @@ func dbTickerToDomain(dbTicker Ticker) (domain.Ticker, error) {
 	return domain.Ticker{
 		Ticker:              dbTicker.Ticker,
 		Name:                dbTicker.Name,
+		Price:               dbTicker.Price,
 		ChangeRate:          dbTicker.ChangeRate,
 		YearlyDividendValue: dbTicker.YearlyDividendValue,
 		YearlyDividendYield: dbTicker.YearlyDividendYield,

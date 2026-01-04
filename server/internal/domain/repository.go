@@ -41,6 +41,7 @@ type TickersRepository interface {
 }
 
 type WritableTickersRepository interface {
+	Exists(ticker string) (bool, error)
 	Create(ticker Ticker) error
 }
 

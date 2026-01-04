@@ -38,7 +38,8 @@ func (b Buy) Validate() error {
 }
 
 type BuyWithId struct {
-	Id string `json:"id"`
+	Id         string            `json:"id"`
+	TickerData *SimplifiedTicker `json:"tickerData,omitempty"`
 	Buy
 }
 
@@ -82,7 +83,8 @@ func (s Sell) Validate() error {
 }
 
 type SellWithId struct {
-	Id string `json:"id"`
+	Id         string            `json:"id"`
+	TickerData *SimplifiedTicker `json:"tickerData,omitempty"`
 	Sell
 }
 
@@ -126,7 +128,8 @@ func (d Dividend) Validate() error {
 }
 
 type DividendWithId struct {
-	Id string `json:"id"`
+	Id         string            `json:"id"`
+	TickerData *SimplifiedTicker `json:"tickerData,omitempty"`
 	Dividend
 }
 

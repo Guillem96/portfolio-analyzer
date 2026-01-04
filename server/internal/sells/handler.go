@@ -61,6 +61,11 @@ func (h *Handler) CreateSellHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(buys) == 0 {
+		utils.SendHTTPMessage(w, http.StatusBadRequest, "No buys found for the given ticker and currency")
+		return
+	}
+
 	alreadySold, err := h.sr.FindByTicker(csr.Ticker, userEmail)
 	if err != nil {
 		h.l.Error("Failed to find previous sells", "error", err.Error())
