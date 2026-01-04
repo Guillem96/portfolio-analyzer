@@ -40,10 +40,6 @@ export default function AssetHistoricValue() {
   )
 
   const assetAmount = useMemo(() => assets.map(({ value }) => value).reduce((a, b) => a + b, 0), [assets, mainCurrency])
-  const assetAmountWithoutReinvest = useMemo(
-    () => assets.map(({ valueWithoutReinvest }) => valueWithoutReinvest).reduce((a, b) => a + b, 0),
-    [assets, mainCurrency],
-  )
   const absolute = useMemo(() => {
     if (shownAssetHistoric.length === 0) {
       return 0
@@ -91,30 +87,19 @@ export default function AssetHistoricValue() {
     assetHistoricToShow = assetHistoricToShow.filter(filterFn).concat({
       date: new Date(),
       value: assetAmount,
-      valueWithoutReinvest: assetAmountWithoutReinvest,
       buyValue: investmentAmount,
       currency: mainCurrency,
       rate: 0,
-      rateWithoutReinvest: 0,
     })
 
     // adjust rate relative to the first entry
     const firstEntry = assetHistoricToShow[0]
-    const firstEntryWithoutReinvest = assetHistoricToShow.find((entry) => entry.valueWithoutReinvest !== 0)
     const rateRelativeToFirstEntry = assetHistoricToShow.map((entry) => {
       const buyAmount = entry.buyValue - firstEntry.buyValue
       const rate = ((entry.value - firstEntry.value - buyAmount) / firstEntry.value) * 100
-      const rateWithoutReinvest =
-        entry.valueWithoutReinvest !== 0 && firstEntryWithoutReinvest
-          ? ((entry.valueWithoutReinvest - firstEntryWithoutReinvest.valueWithoutReinvest - buyAmount) /
-              firstEntryWithoutReinvest.valueWithoutReinvest) *
-            100
-          : 0
       return {
         ...entry,
         rate,
-        rateWithoutReinvest,
-        "Rate Without Reinvest": rateWithoutReinvest,
       }
     })
     setShownAssetHistoric(rateRelativeToFirstEntry)
@@ -126,7 +111,6 @@ export default function AssetHistoricValue() {
         date: format(entry.date, "yyyy-MM-dd"),
         Value: entry.value,
         Rate: entry.rate,
-        // RateWithoutReinvest: entry.rateWithoutReinvest,
       }
     })
   }, [shownAssetHistoric])

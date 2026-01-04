@@ -153,11 +153,9 @@ export interface Asset {
 export interface PortfolioHistoricEntry {
   date: Date
   value: number
-  valueWithoutReinvest: number
   buyValue: number
   currency: CurrencyType
   rate: number
-  rateWithoutReinvest: number
 }
 
 export interface User {
