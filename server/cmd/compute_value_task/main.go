@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/Guillem96/portfolio-analyzer-server/internal/domain"
-	"github.com/Guillem96/portfolio-analyzer-server/internal/infra_http"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/sql"
 	"github.com/Guillem96/portfolio-analyzer-server/internal/utils"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -46,17 +45,11 @@ func task() error {
 		return errors.New("failed to fetch users")
 	}
 
-	tickerInfoUrl, present := os.LookupEnv("TICKER_INFO_API")
-	if !present {
-		l.Error("TICKER_INFO_API not found")
-	}
-
-	cr := sql.NewExchangeRatesRepository(db, l)
-	tr := infra_http.NewTickerRepository(tickerInfoUrl, cr, l)
+	sqltr := sql.NewTickersRepository(db, l)
 	ur := sql.NewUsersRepository(db, l)
-	sr := sql.NewSellsRepository(db, l)
-	br := sql.NewBuysRepository(db, l)
-	ar := sql.NewAssetsRepository(db, ur, tr, sr, br, l)
+	sr := sql.NewSellsRepository(db, sqltr, l)
+	br := sql.NewBuysRepository(db, sqltr, l)
+	ar := sql.NewAssetsRepository(db, ur, sqltr, sr, br, l)
 
 	historics := make([]*sql.PortfolioHistoric, 0)
 	for _, user := range users {
