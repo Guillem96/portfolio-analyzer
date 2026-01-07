@@ -46,8 +46,8 @@ func (r *SellsRepository) Create(sell domain.Sell, userEmail string) (*domain.Se
 		Id: id,
 		TickerData: &domain.SimplifiedTicker{
 			Ticker:  nt.Ticker,
-			Website: nt.Ticker,
-			Name:    nt.Ticker,
+			Website: nt.Website,
+			Name:    nt.Name,
 		},
 		Sell: sell,
 	}, nil
