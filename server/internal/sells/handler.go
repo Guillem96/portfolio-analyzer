@@ -189,6 +189,11 @@ func computeFIFOSellRule(buys domain.Buys, sells domain.Sells, soldUnits float32
 	j := i
 	soldUnitsIt := soldUnits
 	for soldUnitsIt > 0 {
+		if soldUnitsIt < 0.001 {
+			soldUnitsIt = 0
+			break
+		}
+
 		currentBuy := buys[j]
 		currentBuyRemainingUnits := packetsRemaining[j]
 		packetUnitValue := float64(currentBuy.Buy.Amount) / float64(currentBuy.Buy.Units)
@@ -203,7 +208,6 @@ func computeFIFOSellRule(buys domain.Buys, sells domain.Sells, soldUnits float32
 			soldUnitsIt = 0
 			break
 		}
-		fmt.Println(soldUnitsIt)
 	}
 
 	return sellFIFORuleOutput{
