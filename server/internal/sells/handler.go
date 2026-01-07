@@ -203,6 +203,7 @@ func computeFIFOSellRule(buys domain.Buys, sells domain.Sells, soldUnits float32
 			soldUnitsIt = 0
 			break
 		}
+		fmt.Println(soldUnitsIt)
 	}
 
 	return sellFIFORuleOutput{
