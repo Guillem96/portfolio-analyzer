@@ -28,7 +28,15 @@ export const createAssetsSlice: StateCreator<AssetSlice, [], [], AssetSlice> = (
   fetchAssets: async () => {
     set({ assetsLoading: true })
     try {
-      const assets = await fetchAssets()
+      // TODO: Address this issue with GOOGL
+      const assets = (await fetchAssets()).map((data) => ({
+        ...data,
+        ticker: {
+          ...data.ticker,
+          yearlyDividendValue: data.ticker.ticker === "GOOGL" ? 0.6 * 4 : data.ticker.yearlyDividendValue,
+        },
+      }))
+
       set({ assets, assetsLoading: false })
     } catch (error) {
       console.error(error)

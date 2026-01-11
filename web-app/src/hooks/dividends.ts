@@ -1,6 +1,6 @@
 import { MONTHS } from "@/constants"
 import { useBoundStore } from "@/store"
-import { Dividend } from "@/types"
+import { Asset, Dividend } from "@/types"
 import { useMemo } from "react"
 
 const useDividendsPerYear = (
@@ -74,6 +74,22 @@ const useDividendsPerMonth = (
   return data
 }
 
+const useDividendsPerTickerPct = (assets: Asset[]) => {
+  return useMemo(() => {
+    const totalDividends = assets
+      .map(({ ticker, units }) => (ticker.yearlyDividendValue || 0) * units)
+      .reduce((a, b) => a + b, 0)
+
+    return assets
+      .map(({ ticker, units }) => ({
+        dividend: (ticker.yearlyDividendValue || 0) * units,
+        pct: ((ticker.yearlyDividendValue || 0) * units) / totalDividends,
+        ticker,
+      }))
+      .sort((a, b) => b.pct - a.pct)
+  }, [assets])
+}
+
 export const useDividedsStats = () => {
   const [assets, dividends, dividendLoading, dividendsPreferredCurrencyLoading] = useBoundStore((state) => [
     state.assets,
@@ -122,6 +138,7 @@ export const useDividedsStats = () => {
 
   return {
     nextYearDividends,
+    yearlyDividendsPerTicker: useDividendsPerTickerPct(assets),
     yieldWithRespectToInvested: ((nextYearDividends / totalInvested) * 100).toFixed(2),
     yieldWithRespectToAssetValue: ((nextYearDividends / totalAssetValue) * 100).toFixed(2),
     dividendsPerYear,

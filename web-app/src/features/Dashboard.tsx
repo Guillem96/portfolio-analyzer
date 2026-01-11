@@ -19,9 +19,13 @@ import EventCalendar from "@/components/EventCalendar"
 import AssetHistoricValue from "./assets/kpis/AssetHistoricValue"
 import TopMovers from "./assets/kpis/TopMovers"
 import SellsCard from "./sells"
+import YearlyDividendsPerTicker from "./dividends/kpis/YearlyDividendsPerTicker"
 
 const DividendsTab = () => (
   <>
+    <div className="mb-2 w-full">
+      <YearlyDividendsPerTicker />
+    </div>
     <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
       <DividendCard />
       <div className="flex flex-col gap-2">
