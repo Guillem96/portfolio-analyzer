@@ -21,7 +21,7 @@ export default function YearlyDividendsPerTicker() {
   return (
     <Card className="flex flex-col">
       <h1 className="mb-4 max-w-2xl text-4xl tracking-tight text-slate-900 dark:text-neutral-300">Dividends</h1>
-      <div className="flex flex-col items-center justify-center py-8 md:flex-row gap-4 md:gap-8">
+      <div className="flex flex-col items-center justify-center gap-4 py-8 md:flex-row md:gap-8">
         {loading ? (
           <Skeleton isCircle width={300} height={300} />
         ) : (

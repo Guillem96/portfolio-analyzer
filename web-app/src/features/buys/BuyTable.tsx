@@ -1,9 +1,19 @@
 import { useEffect, useMemo, useState } from "react"
 import { useBoundStore } from "../../store"
-import { Button, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TextInput } from "@tremor/react"
+import {
+  Button,
+  DatePicker,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TextInput,
+} from "@tremor/react"
 import { RiDeleteBin2Line } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
-import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
+import { currencyFormatter, getWebsiteLogo, showErrorToast } from "@/services/utils"
 import { BuyWithId } from "@/types"
 import { Skeleton } from "@/components/ui/Skeleton"
 
@@ -21,7 +31,8 @@ export default function BuyTable() {
   const [currentPage, setCurrentPage] = useState(-1)
   const [nPages, setNPages] = useState(Math.ceil(buys.length / MAX_ITEMS_PER_PAGE))
   const [filteredBuys, setFilteredBuys] = useState<BuyWithId[]>([])
-
+  const [startDateRange, setStartDateRange] = useState<Date | null>(null)
+  const [endDateRange, setEndDateRange] = useState<Date | null>(null)
   useEffect(() => {
     const nPages = Math.max(1, Math.ceil(filteredBuys.length / MAX_ITEMS_PER_PAGE))
     setNPages(nPages)
@@ -42,6 +53,12 @@ export default function BuyTable() {
     event.preventDefault()
     const formData = new FormData(event.target as HTMLFormElement)
     const search = formData.get("search")
+
+    if (startDateRange !== null && endDateRange !== null && startDateRange >= endDateRange) {
+      showErrorToast("Invalid date range. End date, is earlier then start date", () => {})
+      return
+    }
+
     let filteredBuys = [...buys]
     if (search !== "") {
       filteredBuys = filteredBuys.filter((buy) => {
@@ -52,6 +69,15 @@ export default function BuyTable() {
         )
       })
     }
+
+    if (startDateRange !== null) {
+      filteredBuys = filteredBuys.filter((buy) => new Date(buy.date) >= startDateRange)
+    }
+
+    if (endDateRange !== null) {
+      filteredBuys = filteredBuys.filter((buy) => new Date(buy.date) <= endDateRange)
+    }
+
     setFilteredBuys(filteredBuys)
   }
 
@@ -69,8 +95,20 @@ export default function BuyTable() {
       <div className="flex flex-col gap-4">
         <form onSubmit={handleSearch} className="flex flex-row justify-between gap-2">
           <TextInput placeholder="Search ticker or name" name="search" />
+          <DatePicker
+            className="hidden md:block"
+            placeholder="Start Date"
+            disabled={loading}
+            onValueChange={(d) => setStartDateRange(d ?? null)}
+          />
+          <DatePicker
+            className="hidden md:block"
+            placeholder="End Date"
+            disabled={loading}
+            onValueChange={(d) => setEndDateRange(d ?? null)}
+          />
           <Button type="submit">Search</Button>
-          <Button type="button" onClick={() => setFilteredBuys(buys)}>
+          <Button type="button" variant="secondary" onClick={() => setFilteredBuys(buys)}>
             Reset
           </Button>
         </form>
