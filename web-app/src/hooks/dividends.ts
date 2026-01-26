@@ -84,6 +84,7 @@ const useDividendsPerTickerPct = (assets: Asset[]) => {
       .map(({ ticker, units }) => ({
         dividend: (ticker.yearlyDividendValue || 0) * units,
         pct: ((ticker.yearlyDividendValue || 0) * units) / totalDividends,
+        tickerName: ticker.ticker,
         ticker,
       }))
       .sort((a, b) => b.pct - a.pct)
