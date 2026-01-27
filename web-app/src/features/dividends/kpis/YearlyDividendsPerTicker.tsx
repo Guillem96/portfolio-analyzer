@@ -28,7 +28,7 @@ export default function YearlyDividendsPerTicker() {
           <Skeleton isCircle width={300} height={300} />
         ) : (
           <DonutChart
-            className="h-64 md:h-96"
+            className="h-64 w-64 md:h-96 md:w-96"
             data={yearlyDividendsPerTicker}
             value="dividend"
             category="tickerName"
