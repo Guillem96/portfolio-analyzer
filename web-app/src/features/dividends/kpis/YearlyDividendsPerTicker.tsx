@@ -17,10 +17,7 @@ export default function YearlyDividendsPerTicker() {
 
   const tableData = useMemo(() => {
     const elementsToShow = showMore ? yearlyDividendsPerTicker.length : 5
-    return yearlyDividendsPerTicker.slice(0, elementsToShow).map((tickerData) => ({
-      tickerName: tickerData.ticker.ticker,
-      ...tickerData,
-    }))
+    return yearlyDividendsPerTicker.slice(0, elementsToShow)
   }, [yearlyDividendsPerTicker, showMore])
 
   return (
