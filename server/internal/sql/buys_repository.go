@@ -185,7 +185,7 @@ func (r *BuysRepository) FindByTickerAndCurrency(ticker, currency, userEmail str
 
 func (r *BuysRepository) FindAllTickers() ([]string, error) {
 	var tickers []string
-	err := r.db.Model(&Buy{}).Select("ticker").Distinct().Pluck("ticker", &tickers).Error
+	err := r.db.Model(&Buy{}).Select("ticker").Where("ticker <> ?", "GCO.MC").Distinct().Pluck("ticker", &tickers).Error
 	return tickers, err
 }
 
