@@ -52,7 +52,7 @@ jobs:
           name: web-app
           path: ./server/static/dist
       - name: Build Docker image
-        run: docker build -t portfolio-analyzer .
+        run: docker buildx build --provenance=false -t portfolio-analyzer .
       - name: Export image
         run: docker save portfolio-analyzer > portfolio-analyzer.tar
       - name: Export artifact
