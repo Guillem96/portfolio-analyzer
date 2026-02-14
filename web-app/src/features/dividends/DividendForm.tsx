@@ -29,7 +29,7 @@ export default function DividendForm() {
     if (company.length < 1) return
 
     const currency = data.get("dividend-currency")?.toString() ?? ""
-    if (currency !== "€" && currency !== "$") return
+    if (currency !== "€" && currency !== "$" && currency !== "£") return
 
     const amount = Number(data.get("dividend-value")?.toString() ?? "")
     if (isNaN(amount)) {
@@ -170,6 +170,7 @@ export default function DividendForm() {
             <Select id="dividend-currency" name="dividend-currency" disabled={loading} defaultValue="€">
               <SelectItem value="€">€</SelectItem>
               <SelectItem value="$">$</SelectItem>
+              <SelectItem value="£">£</SelectItem>
             </Select>
           </div>
 

@@ -39,7 +39,7 @@ export default function BuyForm() {
     }
 
     const currency = data.get("currency")?.toString() ?? ""
-    if (currency !== "€" && currency !== "$") {
+    if (currency !== "€" && currency !== "$" && currency !== "£") {
       forceLoadingBuys(false)
       return
     }
