@@ -346,10 +346,10 @@ func (r *AssetsRepository) FindHistoric(userEmail string, startDate, endDate dom
 func (r *AssetsRepository) computeTickerAveragePurchasePrice(air assetsIterimResult, user *domain.UserWithId, reinvestmentsAsFree bool) (float32, error) {
 	ownedUnits := air.Units - air.SoldUnits
 	buyValue := air.BuyValue
-	if reinvestmentsAsFree {
+	if !reinvestmentsAsFree {
 		buyValue += air.ReinvestedBuyValue
 	}
-	if ownedUnits > 0 && air.SoldUnits == 0 {
+	if ownedUnits > 1e-4 && air.SoldUnits == 0 {
 		return buyValue / float32(ownedUnits), nil
 	} else if ownedUnits > 1e-4 && air.SoldUnits > 0 {
 		tbs, err := r.br.FindByTickerAndCurrency(air.Ticker, *user.PreferredCurrency, user.Email)
