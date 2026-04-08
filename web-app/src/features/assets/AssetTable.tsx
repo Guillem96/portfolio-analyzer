@@ -294,7 +294,7 @@ export default function AssetTable() {
                 <TableHeaderCell>Avg. Price</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
-                <TableHeaderCell onClick={onClickSortHandler("ywrb")}>Yield w.r.t buy</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("ywrb")}>YOC</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("ywrv")}>Yield w.r.t value</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("weight")}>Weight</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>
