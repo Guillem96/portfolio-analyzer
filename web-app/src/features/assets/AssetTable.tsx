@@ -52,8 +52,6 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     name,
     ticker,
     value,
-    buyValue,
-    reinvestedBuyValue,
     units,
     sector,
     country,
