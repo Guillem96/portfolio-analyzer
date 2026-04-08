@@ -66,9 +66,9 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     yieldWithRespectBuyWithoutReinvest,
   } = asset
 
-  const paid = adjustDividends ? buyValue : buyValue + reinvestedBuyValue
-  const benefit = value - paid
-  const rate = (benefit / paid) * 100
+  const avg = adjustDividends ? avgPrice : avgPriceWithoutReinvest
+  const benefit = ticker.price - avg
+  const rate = (benefit / avg) * 100
   const changeType = rate > 0 ? "positive" : "negative"
 
   return (
