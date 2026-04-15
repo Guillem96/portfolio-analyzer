@@ -92,7 +92,7 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
               : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
           } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
-          {showAbsolute ? currencyFormatter(benefit, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
+          {showAbsolute ? currencyFormatter(benefit * units, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
         </span>
       </TableCell>
       <TableCell>{sector}</TableCell>
