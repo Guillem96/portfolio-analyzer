@@ -128,7 +128,7 @@ WHERE _LATEST_TICKERS.TICKER IN ? AND _LATEST_TICKERS.RN = 1;
 
 func (r *TickersRepository) FindByTicker(ticker string, preferredCurrency *string) (domain.Ticker, error) {
 	var dbTickers []Ticker
-	if err := r.db.Raw(findTickersQuery, preferredCurrency, preferredCurrency, []string{ticker}).Scan(&dbTickers).Error; err != nil {
+	if err := r.db.Raw(findTickersQuery, preferredCurrency, []string{ticker}, preferredCurrency).Scan(&dbTickers).Error; err != nil {
 		return domain.Ticker{}, err
 	}
 	if len(dbTickers) != 1 {
@@ -142,7 +142,7 @@ func (r *TickersRepository) FindByTicker(ticker string, preferredCurrency *strin
 
 func (r *TickersRepository) FindMultipleTickers(tickers []string, preferredCurrency *string) (map[string]domain.Ticker, error) {
 	var dbTickers []Ticker
-	if err := r.db.Raw(findTickersQuery, preferredCurrency, preferredCurrency, tickers).Scan(&dbTickers).Error; err != nil {
+	if err := r.db.Raw(findTickersQuery, preferredCurrency, tickers, preferredCurrency).Scan(&dbTickers).Error; err != nil {
 		return nil, err
 	}
 
