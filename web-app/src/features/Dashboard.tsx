@@ -11,6 +11,7 @@ import {
   PendingDividendsToReinvest,
   MeanMonthlyDividends,
   DividendGoals,
+  DividendsPerShare,
 } from "@features/dividends/kpis"
 import { Divider, Tab, TabGroup, TabList, TabPanel, TabPanels } from "@tremor/react"
 import { RiDashboard3Line } from "@remixicon/react"
@@ -42,6 +43,9 @@ const DividendsTab = () => (
     </div>
     <div className="lg:col-span-2">
       <UpcomingDividends />
+    </div>
+    <div className="mt-2 w-full">
+      <DividendsPerShare />
     </div>
   </>
 )

@@ -60,11 +60,11 @@ export default function AssetHistoricValue() {
     const firstEntry = shownAssetHistoric[0]
     const lastEntry = shownAssetHistoric[shownAssetHistoric.length - 1]
     const buyAmount = lastEntry.buyValue - firstEntry.buyValue
-    const gainDuringPeriod = (lastEntry.value - lastEntry.buyValue) - (firstEntry.value - firstEntry.buyValue);
-    const capitalAtRisk = firstEntry.value + buyAmount;
+    const gainDuringPeriod = lastEntry.value - lastEntry.buyValue - (firstEntry.value - firstEntry.buyValue)
+    const capitalAtRisk = firstEntry.value + buyAmount
     if (capitalAtRisk === 0) {
-      setRateRelativeToFirstEntry(0);
-      return;
+      setRateRelativeToFirstEntry(0)
+      return
     }
     setRateRelativeToFirstEntry((gainDuringPeriod / capitalAtRisk) * 100)
   }, [shownAssetHistoric])
@@ -102,9 +102,9 @@ export default function AssetHistoricValue() {
     const firstEntry = assetHistoricToShow[0]
     const rateRelativeToFirstEntry = assetHistoricToShow.map((entry) => {
       const buyAmount = entry.buyValue - firstEntry.buyValue
-      const gainDuringPeriod = (entry.value - entry.buyValue) - (firstEntry.value - firstEntry.buyValue);
-      const capitalAtRisk = firstEntry.value + buyAmount;
-      const rate = capitalAtRisk === 0 ? 0 : (gainDuringPeriod / capitalAtRisk) * 100;
+      const gainDuringPeriod = entry.value - entry.buyValue - (firstEntry.value - firstEntry.buyValue)
+      const capitalAtRisk = firstEntry.value + buyAmount
+      const rate = capitalAtRisk === 0 ? 0 : (gainDuringPeriod / capitalAtRisk) * 100
       return {
         ...entry,
         rate,
