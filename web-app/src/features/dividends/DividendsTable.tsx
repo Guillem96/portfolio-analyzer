@@ -1,13 +1,25 @@
 import { useEffect, useId, useMemo, useState } from "react"
 import { useBoundStore } from "../../store"
-import { Button, Icon, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@tremor/react"
+import {
+  Button,
+  DatePicker,
+  Icon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TextInput,
+} from "@tremor/react"
 import { RiDeleteBin2Line } from "@remixicon/react"
 import { RiTimeLine } from "@remixicon/react"
 import PaginationNav from "@components/PaginationNav"
-import { currencyFormatter, getWebsiteLogo } from "@/services/utils"
+import { currencyFormatter, getWebsiteLogo, showErrorToast } from "@/services/utils"
 import { COUNTRY_EMOJI } from "@/constants"
 import { Checkbox } from "@/components/ui/Checkbox"
 import { Skeleton } from "@/components/ui/Skeleton"
+import { DividendWithId } from "@/types"
 
 const MAX_ITEMS_PER_PAGE = 10
 
@@ -26,9 +38,20 @@ export default function DividendTable() {
   const [currentPage, setCurrentPage] = useState(-1)
   const [nPages, setNPages] = useState(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
   const [markReinvested, setMarkReinvested] = useState<Record<string, boolean>>({})
+  const [filteredDividends, setFilteredDividends] = useState<DividendWithId[]>([])
+  const [startDateRange, setStartDateRange] = useState<Date | null>(null)
+  const [endDateRange, setEndDateRange] = useState<Date | null>(null)
 
   useEffect(() => {
-    setNPages(Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE))
+    const nPages = Math.max(1, Math.ceil(filteredDividends.length / MAX_ITEMS_PER_PAGE))
+    setNPages(nPages)
+    if (currentPage > nPages) {
+      setCurrentPage(nPages)
+    }
+  }, [filteredDividends])
+
+  useEffect(() => {
+    setFilteredDividends(dividends)
   }, [dividends])
 
   useEffect(() => {
@@ -66,17 +89,72 @@ export default function DividendTable() {
     }
   }, [markReinvested])
 
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.target as HTMLFormElement)
+    const search = formData.get("search")
+
+    if (startDateRange !== null && endDateRange !== null && startDateRange >= endDateRange) {
+      showErrorToast("Invalid date range. End date is earlier than start date", () => {})
+      return
+    }
+
+    let filtered = [...dividends]
+
+    if (search !== "") {
+      filtered = filtered.filter((dividend) => {
+        const companyText = dividend.company.toLowerCase()
+        const nameText = (dividend.tickerData?.name || "").toLowerCase()
+        return (
+          companyText.includes((search as string).toLowerCase()) || nameText.includes((search as string).toLowerCase())
+        )
+      })
+    }
+
+    if (startDateRange !== null) {
+      filtered = filtered.filter((dividend) => new Date(dividend.date) >= startDateRange)
+    }
+
+    if (endDateRange !== null) {
+      filtered = filtered.filter((dividend) => new Date(dividend.date) <= endDateRange)
+    }
+
+    setFilteredDividends(filtered)
+  }
+
   const dividendsToRender = useMemo(() => {
     let cp = currentPage
     if (currentPage === -1) {
-      cp = Math.ceil(dividends.length / MAX_ITEMS_PER_PAGE)
+      cp = Math.ceil(filteredDividends.length / MAX_ITEMS_PER_PAGE)
     }
     const start = (cp - 1) * MAX_ITEMS_PER_PAGE
-    return dividends.slice(start, start + MAX_ITEMS_PER_PAGE)
-  }, [dividends, currentPage])
+    return filteredDividends.slice(start, start + MAX_ITEMS_PER_PAGE)
+  }, [filteredDividends, currentPage])
 
   return (
     <>
+      {dividends.length > 0 ? (
+        <form onSubmit={handleSearch} className="mb-4 flex flex-row justify-between gap-2">
+          <TextInput placeholder="Search company or name" name="search" />
+          <DatePicker
+            className="hidden md:block"
+            placeholder="Start Date"
+            disabled={loading}
+            onValueChange={(d) => setStartDateRange(d ?? null)}
+          />
+          <DatePicker
+            className="hidden md:block"
+            placeholder="End Date"
+            disabled={loading}
+            onValueChange={(d) => setEndDateRange(d ?? null)}
+          />
+          <Button type="submit">Search</Button>
+          <Button type="button" variant="secondary" onClick={() => setFilteredDividends(dividends)}>
+            Reset
+          </Button>
+        </form>
+      ) : null}
+
       {dividendsToRender.length === 0 && loading ? (
         <div className="flex flex-row justify-center align-middle">
           <Icon icon={RiTimeLine} />
