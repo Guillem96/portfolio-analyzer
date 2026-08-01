@@ -52,8 +52,6 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     name,
     ticker,
     value,
-    buyValue,
-    reinvestedBuyValue,
     units,
     sector,
     country,
@@ -66,9 +64,9 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
     yieldWithRespectBuyWithoutReinvest,
   } = asset
 
-  const paid = adjustDividends ? buyValue : buyValue + reinvestedBuyValue
-  const benefit = value - paid
-  const rate = (benefit / paid) * 100
+  const avg = adjustDividends ? avgPrice : avgPriceWithoutReinvest
+  const benefit = ticker.price - avg
+  const rate = (benefit / avg) * 100
   const changeType = rate > 0 ? "positive" : "negative"
 
   return (
@@ -94,7 +92,7 @@ const AssetTableRow = ({ asset, totalAssetValue, adjustDividends }: RowProps) =>
               : "bg-red-100 text-red-800 ring-red-600/10 dark:bg-red-400/10 dark:text-red-500 dark:ring-red-400/20"
           } inline-flex items-center rounded-tremor-small px-2 py-1 text-tremor-label font-medium ring-1 ring-inset`}
         >
-          {showAbsolute ? currencyFormatter(benefit, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
+          {showAbsolute ? currencyFormatter(benefit * units, mainCurrency, privateMode) : `${rate.toFixed(2)} %`}
         </span>
       </TableCell>
       <TableCell>{sector}</TableCell>
@@ -294,7 +292,7 @@ export default function AssetTable() {
                 <TableHeaderCell>Avg. Price</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("num-shares")}># Shares</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("last-buy")}>Last buy</TableHeaderCell>
-                <TableHeaderCell onClick={onClickSortHandler("ywrb")}>Yield w.r.t buy</TableHeaderCell>
+                <TableHeaderCell onClick={onClickSortHandler("ywrb")}>YOC</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("ywrv")}>Yield w.r.t value</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("weight")}>Weight</TableHeaderCell>
                 <TableHeaderCell onClick={onClickSortHandler("amount")}>Amount</TableHeaderCell>

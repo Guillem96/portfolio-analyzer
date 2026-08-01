@@ -7,22 +7,22 @@ import (
 
 func ComputeFIFORuleAvgPurchasePrice(buys domain.Buys, sells domain.Sells, reinvestmentsAsFree bool) (float32, error) {
 	buys = arrayutils.Map(buys, func(b domain.BuyWithId) domain.BuyWithId {
-		if !reinvestmentsAsFree || !b.Buy.IsReinvestment {
-			return b
+		if reinvestmentsAsFree && b.Buy.IsReinvestment {
+			return domain.BuyWithId{
+				Id: b.Id,
+				Buy: domain.Buy{
+					Units:          b.Buy.Units,
+					Amount:         0,
+					Fee:            b.Buy.Fee,
+					Taxes:          b.Buy.Taxes,
+					Ticker:         b.Buy.Ticker,
+					Currency:       b.Buy.Currency,
+					IsReinvestment: b.Buy.IsReinvestment,
+					Date:           b.Buy.Date,
+				},
+			}
 		}
-		return domain.BuyWithId{
-			Id: b.Id,
-			Buy: domain.Buy{
-				Units:          b.Buy.Units,
-				Amount:         0,
-				Fee:            b.Buy.Fee,
-				Taxes:          b.Buy.Taxes,
-				Ticker:         b.Buy.Ticker,
-				Currency:       b.Buy.Currency,
-				IsReinvestment: b.Buy.IsReinvestment,
-				Date:           b.Buy.Date,
-			},
-		}
+		return b
 	})
 	totalUnits := arrayutils.Reduce(buys, 0, func(agg float32, b domain.BuyWithId) float32 {
 		return agg + b.Buy.Units

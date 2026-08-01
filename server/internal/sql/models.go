@@ -82,8 +82,8 @@ type PortfolioHistoric struct {
 }
 
 type Ticker struct {
-	Ticker               string    `gorm:"primarykey"`
-	DateKey              time.Time `gorm:"primarykey"`
+	Ticker               string    `gorm:"primaryKey;index:idx_ticker_date_desc,priority:1"`
+    DateKey              time.Time `gorm:"primaryKey;index:idx_ticker_date_desc,priority:2,desc"`
 	Price                float32
 	CreatedAt            time.Time
 	Name                 string
