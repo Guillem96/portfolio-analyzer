@@ -1,6 +1,11 @@
 import { useMemo } from "react"
-import { RiArrowLeftDoubleLine, RiArrowRightDoubleLine, RiSkipLeftLine, RiSkipRightLine } from "@remixicon/react"
-import { Button } from "@tremor/react"
+import {
+  RiArrowLeftDoubleLine,
+  RiArrowRightDoubleLine,
+  RiSkipLeftLine,
+  RiSkipRightLine,
+} from "@remixicon/react"
+import { Button } from "@/components/ui/button"
 
 interface Props {
   nPages: number
@@ -13,62 +18,71 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
   const pageButtons = useMemo(() => {
     if (nPages <= 1) return []
 
-    if (currentPage < 0) {
-      currentPage = nPages + currentPage + 1
+    let activePage = currentPage
+    if (activePage < 0) {
+      activePage = nPages + activePage + 1
     }
 
-    const pagesToShow = [currentPage]
+    const pagesToShow = [activePage]
     for (let left = 1; left < maxPagesToShow && pagesToShow.length < maxPagesToShow; left++) {
-      if (currentPage - left > 0) pagesToShow.push(currentPage - left)
+      if (activePage - left > 0) pagesToShow.push(activePage - left)
 
-      if (currentPage + left <= nPages && pagesToShow.length < maxPagesToShow) pagesToShow.push(currentPage + left)
+      if (activePage + left <= nPages && pagesToShow.length < maxPagesToShow) pagesToShow.push(activePage + left)
     }
     pagesToShow.sort((a, b) => a - b)
 
     const leading = [
       <Button
         key="first-page-btn"
-        variant="light"
+        variant="ghost"
+        size="icon"
         onClick={() => onPageNavigation(1)}
-        disabled={currentPage === 1}
-        icon={RiSkipLeftLine}
-      ></Button>,
+        disabled={activePage === 1}
+      >
+        <RiSkipLeftLine />
+      </Button>,
       <Button
         key="leading-btn"
-        variant="light"
-        onClick={() => onPageNavigation(currentPage - 1)}
-        disabled={pagesToShow[0] == 1}
-        icon={RiArrowLeftDoubleLine}
-      ></Button>,
+        variant="ghost"
+        size="icon"
+        onClick={() => onPageNavigation(activePage - 1)}
+        disabled={pagesToShow[0] === 1}
+      >
+        <RiArrowLeftDoubleLine />
+      </Button>,
     ]
 
     const trailing = [
       <Button
         key="trailing-btn"
-        variant="light"
-        onClick={() => onPageNavigation(currentPage + 1)}
-        icon={RiArrowRightDoubleLine}
+        variant="ghost"
+        size="icon"
+        onClick={() => onPageNavigation(activePage + 1)}
         disabled={pagesToShow[pagesToShow.length - 1] === nPages}
-      ></Button>,
+      >
+        <RiArrowRightDoubleLine />
+      </Button>,
       <Button
         key="last-page-btn"
-        variant="light"
+        variant="ghost"
+        size="icon"
         onClick={() => onPageNavigation(nPages)}
-        disabled={currentPage === nPages}
-        icon={RiSkipRightLine}
-      ></Button>,
+        disabled={activePage === nPages}
+      >
+        <RiSkipRightLine />
+      </Button>,
     ]
 
     return leading
       .concat(
-        pagesToShow.map((i) =>
-          i === currentPage ? (
-            <Button key={i} className="pointer-events-none" variant="primary" onClick={() => {}}>
-              {i.toString()}
+        pagesToShow.map((page) =>
+          page === activePage ? (
+            <Button key={page} className="pointer-events-none" variant="default">
+              {page.toString()}
             </Button>
           ) : (
-            <Button key={i} variant="secondary" onClick={() => onPageNavigation(i)}>
-              {i.toString()}
+            <Button key={page} variant="secondary" onClick={() => onPageNavigation(page)}>
+              {page.toString()}
             </Button>
           ),
         ),
@@ -76,5 +90,5 @@ export default function PaginationNav({ nPages, currentPage, maxPagesToShow, onP
       .concat(trailing)
   }, [currentPage, nPages, maxPagesToShow, onPageNavigation])
 
-  return nPages > 1 ? <div className="flex flex-row justify-center gap-x-2">{pageButtons}</div> : null
+  return nPages > 1 ? <div className="flex flex-row justify-center gap-2">{pageButtons}</div> : null
 }

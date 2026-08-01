@@ -1,87 +1,33 @@
-// Tremor Checkbox [v0.0.3]
+"use client"
 
-import React from "react"
-import * as CheckboxPrimitives from "@radix-ui/react-checkbox"
+import * as React from "react"
+import { Checkbox as CheckboxPrimitive } from "radix-ui"
 
-import { cx, focusRing } from "@/lib/utils"
+import { cn } from "@/lib/utils"
+import { CheckIcon } from "lucide-react"
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitives.Root>
->(({ className, checked, ...props }, forwardedRef) => {
+function Checkbox({
+  className,
+  ...props
+}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
-    <CheckboxPrimitives.Root
-      ref={forwardedRef}
-      {...props}
-      checked={checked}
-      className={cx(
-        // base
-        "relative inline-flex size-4 shrink-0 appearance-none items-center justify-center rounded shadow-sm outline-none ring-1 ring-inset transition duration-100 enabled:cursor-pointer",
-        // text color
-        "text-white dark:text-gray-50",
-        // background color
-        "bg-white dark:bg-gray-950",
-        // ring color
-        "ring-gray-300 dark:ring-gray-800",
-        // disabled
-        "data-[disabled]:bg-gray-100 data-[disabled]:text-gray-400 data-[disabled]:ring-gray-300",
-        "data-[disabled]:dark:bg-gray-800 data-[disabled]:dark:text-gray-500 data-[disabled]:dark:ring-gray-700",
-        // checked and enabled
-        "enabled:data-[state=checked]:bg-blue-500 enabled:data-[state=checked]:ring-0 enabled:data-[state=checked]:ring-transparent",
-        // indeterminate
-        "enabled:data-[state=indeterminate]:bg-blue-500 enabled:data-[state=indeterminate]:ring-0 enabled:data-[state=indeterminate]:ring-transparent",
-        // focus
-        focusRing,
-        className,
+    <CheckboxPrimitive.Root
+      data-slot="checkbox"
+      className={cn(
+        "peer relative flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input transition-colors outline-none group-has-disabled/field:opacity-50 after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary",
+        className
       )}
-      tremor-id="tremor-raw"
+      {...props}
     >
-      <CheckboxPrimitives.Indicator
-        asChild
-        className="flex size-full items-center justify-center"
+      <CheckboxPrimitive.Indicator
+        data-slot="checkbox-indicator"
+        className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
       >
-        {checked === "indeterminate" ? (
-          <svg
-            aria-hidden="true"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <line
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="2"
-              x1="4"
-              x2="12"
-              y1="8"
-              y2="8"
-            ></line>
-          </svg>
-        ) : (
-          <svg
-            aria-hidden="true"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M11.2 5.59998L6.79999 9.99998L4.79999 7.99998"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            ></path>
-          </svg>
-        )}
-      </CheckboxPrimitives.Indicator>
-    </CheckboxPrimitives.Root>
+        <CheckIcon
+        />
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
   )
-})
-
-Checkbox.displayName = "Checkbox"
+}
 
 export { Checkbox }

@@ -1,15 +1,17 @@
-import { Card } from "@tremor/react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import BuyForm from "./BuyForm"
 import BuyTable from "./BuyTable"
 
 export default function BuysCard() {
   return (
     <Card>
-      <h1 className="mb-4 max-w-2xl text-3xl tracking-tight text-slate-900 dark:text-neutral-300">Buys</h1>
-      <article className="mb-8">
+      <CardHeader>
+        <CardTitle className="text-3xl font-normal tracking-tight">Buys</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-8">
         <BuyTable />
-      </article>
-      <BuyForm />
+        <BuyForm />
+      </CardContent>
     </Card>
   )
 }

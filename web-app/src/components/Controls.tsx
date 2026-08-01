@@ -1,7 +1,13 @@
 import { useBoundStore } from "@/store"
-import { RiDashboard3Line, RiEyeLine, RiEyeOffLine, RiLogoutCircleLine, RiSettingsLine } from "@remixicon/react"
-import { Button } from "@tremor/react"
+import {
+  RiDashboard3Line,
+  RiEyeLine,
+  RiEyeOffLine,
+  RiLogoutCircleLine,
+  RiSettingsLine,
+} from "@remixicon/react"
 import LightDarkThemeSwitch from "./LightDarkThemeSwitch"
+import { IconTooltipButton } from "./IconTooltipButton"
 
 export default function Control() {
   const [user, logout, inSettingsScreen, setInSettingsScreen, privateMode, togglePrivateMode] = useBoundStore(
@@ -15,41 +21,33 @@ export default function Control() {
     ],
   )
 
-  const handleLogout = () => {
-    logout()
-  }
-
   return (
-    <div className="flex w-full flex-row justify-end gap-x-4 p-4">
+    <div className="flex w-full flex-row justify-end gap-2 p-4">
       {inSettingsScreen ? (
-        <Button
-          variant="light"
+        <IconTooltipButton
           tooltip="Back to dashboard"
-          size="lg"
           icon={RiDashboard3Line}
           onClick={() => setInSettingsScreen(false)}
         />
       ) : null}
-      <Button
-        variant="light"
-        disabled={inSettingsScreen}
-        size="lg"
+      <IconTooltipButton
         tooltip="Open settings screen"
         icon={RiSettingsLine}
+        disabled={inSettingsScreen}
         onClick={() => setInSettingsScreen(true)}
       />
       <LightDarkThemeSwitch />
-      <Button
-        variant="light"
+      <IconTooltipButton
         tooltip="Toggle private mode"
-        size="lg"
         icon={privateMode ? RiEyeOffLine : RiEyeLine}
         onClick={togglePrivateMode}
       />
       {user !== null ? (
-        <Button variant="light" tooltip="Logout" size="lg" icon={RiLogoutCircleLine} onClick={handleLogout} />
+        <IconTooltipButton tooltip="Logout" icon={RiLogoutCircleLine} onClick={() => logout()} />
       ) : null}
-      {user !== null ? <img alt={`${user.name} avatar`} src={user.picture} className="w-10 rounded-full" /> : null}
+      {user !== null ? (
+        <img alt={`${user.name} avatar`} src={user.picture} className="size-10 rounded-full" />
+      ) : null}
     </div>
   )
 }

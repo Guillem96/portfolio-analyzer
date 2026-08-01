@@ -1,5 +1,5 @@
 import React from "react"
-import { cx } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface SkeletonProps {
   width?: string | number
@@ -16,7 +16,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
     return (
       <div
         ref={ref}
-        className={cx("skeleton-loading", isCircle && "rounded-full", !isCircle && "rounded", className)}
+        className={cn("skeleton-loading", isCircle && "rounded-full", !isCircle && "rounded-md", className)}
         style={{
           width: widthClass,
           height: heightClass,

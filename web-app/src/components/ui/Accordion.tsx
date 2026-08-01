@@ -1,97 +1,79 @@
-// Tremor Accordion [v1.0.0]
+import * as React from "react"
+import { Accordion as AccordionPrimitive } from "radix-ui"
 
-import React from "react"
-import * as AccordionPrimitives from "@radix-ui/react-accordion"
-import { RiAddLine } from "@remixicon/react"
+import { cn } from "@/lib/utils"
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
-import { cx } from "@/lib/utils"
-
-const Accordion = AccordionPrimitives.Root
-
-Accordion.displayName = "AccordionItem"
-
-const AccordionTrigger = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitives.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitives.Trigger>
->(({ className, children, ...props }, forwardedRef) => (
-  <AccordionPrimitives.Header className="flex">
-    <AccordionPrimitives.Trigger
-      className={cx(
-        // base
-        "group flex flex-1 cursor-pointer items-center justify-between py-3 text-left text-sm font-medium leading-none",
-        // text color
-        "text-gray-900 dark:text-gray-50",
-        // disabled
-        "data-disabled:cursor-default data-disabled:text-gray-400 dark:data-disabled:text-gray-600",
-        //focus
-        "focus-visible:outline-hidden focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500",
-        className,
-      )}
+function Accordion({
+  className,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
+  return (
+    <AccordionPrimitive.Root
+      data-slot="accordion"
+      className={cn("flex w-full flex-col", className)}
       {...props}
-      ref={forwardedRef}
-    >
-      {children}
-      <RiAddLine
-        className={cx(
-          // base
-          "size-5 shrink-0 transition-transform duration-150 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:-rotate-45",
-          // text color
-          "text-gray-400 dark:text-gray-600",
-          // disabled
-          "group-data-disabled:text-gray-300 dark:group-data-disabled:text-gray-700",
+    />
+  )
+}
+
+function AccordionItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
+  return (
+    <AccordionPrimitive.Item
+      data-slot="accordion-item"
+      className={cn("not-last:border-b", className)}
+      {...props}
+    />
+  )
+}
+
+function AccordionTrigger({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
+  return (
+    <AccordionPrimitive.Header className="flex">
+      <AccordionPrimitive.Trigger
+        data-slot="accordion-trigger"
+        className={cn(
+          "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
+          className
         )}
-        aria-hidden="true"
-        focusable="false"
-      />
-    </AccordionPrimitives.Trigger>
-  </AccordionPrimitives.Header>
-))
+        {...props}
+      >
+        {children}
+        <ChevronDownIcon data-slot="accordion-trigger-icon" className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" />
+        <ChevronUpIcon data-slot="accordion-trigger-icon" className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" />
+      </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+  )
+}
 
-AccordionTrigger.displayName = "AccordionTrigger"
-
-const AccordionContent = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitives.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitives.Content>
->(({ className, children, ...props }, forwardedRef) => (
-  <AccordionPrimitives.Content
-    ref={forwardedRef}
-    className={cx("data-[state=closed]:animate-accordion-close data-[state=open]:animate-accordion-open transform-gpu")}
-    {...props}
-  >
-    <div
-      className={cx(
-        // base
-        "overflow-hidden pb-4 text-sm",
-        // text color
-        "text-gray-700 dark:text-gray-200",
-        className,
-      )}
+function AccordionContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
+  return (
+    <AccordionPrimitive.Content
+      data-slot="accordion-content"
+      className="overflow-hidden text-sm data-open:animate-accordion-down data-closed:animate-accordion-up"
+      {...props}
     >
-      {children}
-    </div>
-  </AccordionPrimitives.Content>
-))
+      <div
+        className={cn(
+          "h-(--radix-accordion-content-height) pt-0 pb-2.5 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
+          className
+        )}
+      >
+        {children}
+      </div>
+    </AccordionPrimitive.Content>
+  )
+}
 
-AccordionContent.displayName = "AccordionContent"
-
-const AccordionItem = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitives.Item>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitives.Item>
->(({ className, ...props }, forwardedRef) => (
-  <AccordionPrimitives.Item
-    ref={forwardedRef}
-    className={cx(
-      // base
-      "overflow-hidden border-b first:mt-0",
-      // border color
-      "border-gray-200 dark:border-gray-800",
-      className,
-    )}
-    tremor-id="tremor-raw"
-    {...props}
-  />
-))
-
-AccordionItem.displayName = "AccordionItem"
-
-export { Accordion, AccordionContent, AccordionItem, AccordionTrigger }
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }

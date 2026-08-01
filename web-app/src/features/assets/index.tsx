@@ -1,10 +1,12 @@
-import { Card } from "@tremor/react"
+import { Card, CardContent } from "@/components/ui/card"
 import AssetTable from "./AssetTable"
 
 export default function AssetsCard() {
   return (
-    <Card className="p-4">
-      <AssetTable />
+    <Card>
+      <CardContent>
+        <AssetTable />
+      </CardContent>
     </Card>
   )
 }
