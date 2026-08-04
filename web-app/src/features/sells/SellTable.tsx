@@ -118,7 +118,7 @@ export default function SellTable() {
                         date,
                         preview,
                       }) => {
-                        const benefit = amount - acquisitionValue * units - fees
+                        const benefit = amount - acquisitionValue * units
                         return (
                           <TableRow className={preview ? "opacity-60 hover:cursor-not-allowed" : ""} key={id}>
                             <TableCell>
