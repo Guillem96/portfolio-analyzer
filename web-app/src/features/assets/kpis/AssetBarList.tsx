@@ -56,7 +56,7 @@ export default function AssetBarList({ className = "" }: Props) {
           <Skeleton height={28} width={"50%"} />
         </div>
       ) : (
-        <BarList valueFormatter={(val: number) => `${(val * 100).toFixed()}%`} data={data} className="mt-2" />
+        <BarList valueFormatter={(val: number) => `${(val * 100).toFixed(1)}%`} data={data} className="mt-2" />
       )}
     </Card>
   )
